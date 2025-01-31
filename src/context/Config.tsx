@@ -3,14 +3,8 @@ import { loadCallbacks } from '@utils/performScript';
 import { warn } from '@utils/log';
 
 const defaultConfig: Partial<Form.Config> = {
-    type: 'builder',
+    type: 'viewer',
     locale: 'no',
-    creatorOptions: {
-        questionTypes: true,
-        propertyGrid: true,
-        tabs: true,
-        isAutoSave: true
-    },
 };
 
 // Parses the JSON from FileMaker into a readable config
@@ -46,9 +40,8 @@ window.init = cfg => {
 
 // Validates the config object every time it's set or updated
 const validateConfig = (config: any): Form.Config => {
-    const validTypes = ['builder', 'viewer', 'visualizer'];
+    const validTypes = ['viewer', 'overview'];
     const validLocales = ['en', 'no'];
-    const validTabs = ['logic', 'json', 'preview'];
 
     const validatedConfig = { ...defaultConfig, ...config };
   
@@ -82,67 +75,6 @@ const validateConfig = (config: any): Form.Config => {
         }
     }
 
-    if (config.answers) {
-        try {
-            const data = JSON.parse(config.answers);
-            
-            if (!Array.isArray(data)) {
-                throw new Error("Not an array");
-            }
-        } catch (e) {
-            warn("Failed to parse previous answers, will start with empty array", e);
-            validatedConfig.answers = [];
-        }
-    }
-
-    if (config.creatorOptions.questionTypes) {
-        try {
-            if (!Array.isArray(config.creatorOptions.questionTypes) && typeof config.creatorOptions.questionTypes !== 'boolean') {
-                throw new Error("Not an array or boolean");
-            }
-        } catch (e) {
-            warn("Failed to parse question types, defaulting to true (show all)", e);
-            validatedConfig.creatorOptions.questionTypes = true;
-        }
-    }
-
-    if (config.creatorOptions.propertyGrid) {
-        try {
-            if (!Array.isArray(config.creatorOptions.propertyGrid) && typeof config.creatorOptions.propertyGrid !== 'boolean') {
-                throw new Error("Not an array or boolean");
-            }
-        } catch (e) {
-            warn("Failed to parse question types, defaulting to true (show all)", e);
-            validatedConfig.creatorOptions.propertyGrid = true;
-        }
-    }
-
-    if (config.creatorOptions.tabs) {
-        if (typeof config.creatorOptions.tabs === 'boolean') {
-            validatedConfig.creatorOptions.tabs = config.creatorOptions.tabs;
-        } else if (Array.isArray(config.creatorOptions.tabs)) {
-            const filteredTabs = config.creatorOptions.tabs.filter((tab: string) => {
-                if (!validTabs.includes(tab)) {
-                    warn(`Invalid tab for creator "${tab}", won't use`);
-                    return false;
-                }
-                return true;
-            });
-        
-            // Only update if there's an actual difference, to avoid unnecessary re-renders
-            if (
-                !Array.isArray(validatedConfig.creatorOptions.tabs) ||
-                filteredTabs.length !== validatedConfig.creatorOptions.tabs.length ||
-                filteredTabs.some((t: string, i: number) => t !== validatedConfig.creatorOptions.tabs[i])
-            ) {
-                validatedConfig.creatorOptions.tabs = filteredTabs;
-            }
-        } else  {
-            warn("Invalid tabs for creator, defaulting to true (show all)");
-            validatedConfig.creatorOptions.tabs = true;
-        }
-    }
-  
     // Add additional validation
   
     return validatedConfig;

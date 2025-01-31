@@ -91,18 +91,6 @@ const FormViewer: FC = () => {
         });
 
         newSurvey.onComplete.add((result) => {
-            let prevAnswers = JSON.parse(config.answers || "[]");
-
-            if (!prevAnswers || !Array.isArray(prevAnswers)) {
-                warn("Failed to parse previous answers, will start with empty array.");
-                prevAnswers = [];
-            }
-
-            setConfig({ 
-                ...config, 
-                answers: JSON.stringify([...prevAnswers, result.data]) 
-            });
-
             if (config.scriptNames?.onSubmit) {
                 performScript("onSubmit", { result: result.data });
             }
