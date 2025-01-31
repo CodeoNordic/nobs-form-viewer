@@ -7,133 +7,32 @@
 }
 
 .compact {    
-    // .sd-element__content.sd-panel__content { // top and bottom of a panel
-    //     padding-top: 5px !important;
-    //     padding-bottom: 5px !important;
-    // }
-    
-    // .sd-row { // top of questions
-    //     margin-top: 16px !important;
-    // }
-
-    // .sd-element__erbox--above-element { // error box
-    //     margin-left: -5px !important;
-    //     margin-right: -5px !important;
-    //     margin-top: -5px !important;
-    //     margin-bottom: 0px !important;
-    // }
-
-    // .sd-row__panel { // panel
-    //     padding-bottom: 5px !important;
-    //     padding-left: 5px !important;
-    //     padding-right: 5px !important;
-    //     height: min-content !important;
-    // }
-    
-    // .sd-panel__header { // header of a panel
-    //     padding-top: 10px !important;
-    //     padding-bottom: 10px !important;
-    // }
-    
-    // .sd-element--complex > .sd-element__header:after { // line under header
-    //     content: none !important;
-    // }
-    
-    // .sd-input { // input fields
-    //     padding: 4px !important;
-    // }
-    
-    // // .sd-element--nested-with-borders { // dosent do anything i think
-    // //     //padding: 0 !important;
-    // //     //background-color: red !important;
-    // // }
-    
-    // .sd-item { // over and under checkboxes, maybe more
-    //     padding-top: 0px !important;
-    //     padding-bottom: 10px !important;
-    // }
-    
-    // .sd-question__header { // over question text
-    //     margin-top: 0 !important;
-    //     padding-bottom: 5px !important;
-    //     padding-top: 0px !important;
-    // }
-    
-    // .sd-element--with-frame.sd-row__question { // around normal questions
-    //     padding: 5px !important;
-    //     overflow: hidden !important;
-    // }
-    
-    // .sd-question__comment-area { // over "Annet (beskriv)" area
-    //     margin-top: 10px !important;
-    // }
-    
-    // .sd-body { // around the whole form
-    //     padding: 16px !important;
-    // }
-
-    // .sd-question__content { // around question text
-    //     padding-top: 0 !important;
-    // }
-    
-    // .sd-row--multiple > div {
-    //     padding: 0 !important; // makes text go out of the screen, find workaround maybe
-    // }
-
-    .sd-element__title span {
-        font-size: x-small !important;
-    }
-
-    .sd-item__control-label {
-        font-size: x-small !important;
-    }
-
-    .sd-dropdown__value {
-        font-size: x-small !important;
-    }
-
-    .sd-dropdown__filter-string-input {
-        font-size: x-small !important;
-    }
-
-    .sd-input {
-        font-size: x-small !important;
-    }
-
-    .sv-string-viewer {
-        font-size: x-small !important;
-    }
-
-    .sd-list__item-body { // needs some padding for text to be visible
-        padding: 0 0 0 2px !important;
-    }
-
     .sd-element__content.sd-panel__content { // top and bottom of a panel
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
     }
     
     .sd-row { // top of questions
-        margin-top: 0px !important;
+        margin-top: 16px !important;
     }
 
     .sd-element__erbox--above-element { // error box
-        margin-left: -0px !important;
-        margin-right: -0px !important;
-        margin-top: -0px !important;
+        margin-left: -5px !important;
+        margin-right: -5px !important;
+        margin-top: -5px !important;
         margin-bottom: 0px !important;
     }
 
     .sd-row__panel { // panel
-        padding-bottom: 0px !important;
-        padding-left: 0px !important;
-        padding-right: 0px !important;
+        padding-bottom: 5px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
         height: min-content !important;
     }
     
     .sd-panel__header { // header of a panel
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
     }
     
     .sd-element--complex > .sd-element__header:after { // line under header
@@ -141,34 +40,138 @@
     }
     
     .sd-input { // input fields
-        padding: 0px !important;
+        padding: 4px !important;
+        font-size: small !important;
     }
 
+    .sd-dropdown { // give space for clear button
+        padding-right: 40px !important;
+    }
+    
+    // .sd-element--nested-with-borders { // dosent do anything i think
+    //     //padding: 0 !important;
+    //     //background-color: red !important;
+    // }
+    
     .sd-item { // over and under checkboxes, maybe more
         padding-top: 0px !important;
-        padding-bottom: 0px !important;
+        padding-bottom: 10px !important;
     }
     
     .sd-question__header { // over question text
         margin-top: 0 !important;
-        padding-bottom: 0px !important;
+        padding-bottom: 5px !important;
         padding-top: 0px !important;
     }
     
     .sd-element--with-frame.sd-row__question { // around normal questions
-        padding: 0px !important;
+        padding: 5px !important;
         overflow: hidden !important;
     }
     
     .sd-question__comment-area { // over "Annet (beskriv)" area
-        margin-top: 0px !important;
+        margin-top: 10px !important;
     }
     
     .sd-body { // around the whole form
-        padding: 0px !important;
+        padding: 16px !important;
     }
 
     .sd-question__content { // around question text
         padding-top: 0 !important;
     }
+    
+    // .sd-row--multiple > div {
+    //     padding: 0px !important; // makes text go out of the screen, find workaround maybe
+    // }
+
+    .sd-element__title span {
+        font-size: small !important;
+    }
+
+    .sd-item__control-label {
+        font-size: small !important;
+    }
+
+    .sd-dropdown__value {
+        font-size: small !important;
+    }
+
+    .sd-dropdown__filter-string-input {
+        font-size: small !important;
+    }
+
+    .sv-string-viewer {
+        font-size: small !important;
+    }
+
+    .sd-list__item-body { // needs some padding for text to be visible
+        padding: 0 0 0 2px !important;
+    }
+
+    // TODO: Double check if these are needed
+
+    // .sd-element__content.sd-panel__content { // top and bottom of a panel
+    //     padding-top: 0px !important;
+    //     padding-bottom: 0px !important;
+    // }
+    
+    // .sd-row { // top of questions
+    //     margin-top: 0px !important;
+    // }
+
+    // .sd-element__erbox--above-element { // error box
+    //     margin-left: -0px !important;
+    //     margin-right: -0px !important;
+    //     margin-top: -0px !important;
+    //     margin-bottom: 0px !important;
+    // }
+
+    // .sd-row__panel { // panel
+    //     padding-bottom: 0px !important;
+    //     padding-left: 0px !important;
+    //     padding-right: 0px !important;
+    //     height: min-content !important;
+    // }
+    
+    // .sd-panel__header { // header of a panel
+    //     padding-top: 0px !important;
+    //     padding-bottom: 0px !important;
+    // }
+    
+    // .sd-element--complex > .sd-element__header:after { // line under header
+    //     content: none !important;
+    // }
+    
+    // .sd-input { // input fields
+    //     padding: 0px !important;
+    // }
+
+    // .sd-item { // over and under checkboxes, maybe more
+    //     padding-top: 0px !important;
+    //     padding-bottom: 0px !important;
+    // }
+    
+    // .sd-question__header { // over question text
+    //     margin-top: 0 !important;
+    //     padding-bottom: 0px !important;
+    //     padding-top: 0px !important;
+    // }
+    
+    // .sd-element--with-frame.sd-row__question { // around normal questions
+    //     padding: 0px !important;
+    //     overflow: hidden !important;
+    // }
+    
+    // .sd-question__comment-area { // over "Annet (beskriv)" area
+    //     margin-top: 0px !important;
+    // }
+    
+    // .sd-body { // around the whole form
+    //     padding: 0px !important;
+    // }
+
+    // .sd-question__content { // around question text
+    //     padding-top: 0 !important;
+    // }
 }
