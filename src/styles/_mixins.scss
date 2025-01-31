@@ -1,0 +1,27 @@
+// Apply rules when the screen is <= 1000px wide. Often used for mobile sizes.
+/*
+.element {
+    @include md {
+        font-size: 2em;
+    }
+}
+*/
+@mixin md {
+    @media screen and (max-width: 1000px) {
+        @content;
+    }
+}
+
+@mixin buttonEffects {
+    cursor: pointer;
+
+    border-radius: 100px;
+   
+    &:hover {
+        background-color: var(--button-hover);
+    }
+    
+    &:active {
+        background-color: var(--button-active);
+    }
+}

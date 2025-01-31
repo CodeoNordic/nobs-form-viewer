@@ -1,0 +1,44 @@
+{
+	"compilerOptions": {
+		"skipLibCheck": true,
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": ".",
+        "checkJs": true,
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"jsx": "react-jsx",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"outDir": "dist",
+		"paths": {
+			"@components/*": ["./src/components/*"],
+			"@context/*": ["./src/context/*"],
+			"@hooks/*": ["./src/hooks/*"],
+			"@png/*": ["./src/assets/png/*"],
+			"@styles/*": ["./src/styles/*"],
+			"@svg/*": ["./src/assets/svg/*"],
+			"@utils/*": ["./src/utils/*"],
+			"@assets/*": ["./src/assets/*"],
+			"@/*": ["./src/*"]
+		},
+        "pretty": true,
+        "removeComments": true,
+		"sourceMap": false,
+		"strict": true,
+		"target": "ESNext",
+		"typeRoots" : ["./node_modules/@types", "./src/types"]
+	},
+	"include": [
+		"./src/**/*.ts",
+		"./src/**/*.tsx"
+	],
+	"exclude": [
+		"node_modules/",
+		"./src/**/**.deprecated.ts",
+		"./src/**/**.deprecated.tsx"
+	],
+	"parcelTsPluginOptions": {
+		"transpileOnly": false
+    }
+}

@@ -1,0 +1,30 @@
+:root {
+    --form-font: Tahoma, Geneva, Verdana, sans-serif;
+
+    // Colors
+    --form-text: #000000;
+    --form-background: #FFFFFF;
+    --form-background-gray: #D9D9D9;
+
+    --form-blue: #009CC6;
+    --form-dark-blue: #007494;
+
+    --button-hover: rgba(0, 0, 0, .2);
+    --button-active: rgba(0, 0, 0, .3);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+
+    font-family: var(--form-font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    user-select: none;
+    font-size: 0.9em;
+}
+
+#app {
+    height: 100vh;
+}

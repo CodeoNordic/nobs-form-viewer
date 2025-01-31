@@ -1,0 +1,4 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+Dev.fmp12 merge=ours
+widget.json merge=ours

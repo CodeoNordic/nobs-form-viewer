@@ -1,0 +1,6 @@
+{
+    "name": "Survey",
+    "server": "devmaster.codeo.no",
+    "file": "NOBS_GUI",
+    "uploadScript": "UploadHTML"
+}
