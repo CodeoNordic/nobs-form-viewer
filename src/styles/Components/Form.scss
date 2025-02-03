@@ -8,31 +8,35 @@
 
 .compact {    
     .sd-element__content.sd-panel__content { // top and bottom of a panel
-        padding-top: 5px !important;
-        padding-bottom: 5px !important;
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
     }
     
     .sd-row { // top of questions
-        margin-top: 16px !important;
+        margin-top: 4px !important;
     }
 
     .sd-element__erbox--above-element { // error box
-        margin-left: -5px !important;
-        margin-right: -5px !important;
-        margin-top: -5px !important;
+        margin-left: -4px !important;
+        margin-right: -4px !important;
+        margin-top: -4px !important;
         margin-bottom: 0px !important;
     }
 
     .sd-row__panel { // panel
-        padding-bottom: 5px !important;
-        padding-left: 5px !important;
-        padding-right: 5px !important;
+        padding-bottom: 4px !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
         height: min-content !important;
+    }
+
+    .sd-panel--as-page {
+        padding-bottom: 8px !important;
     }
     
     .sd-panel__header { // header of a panel
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
     }
     
     .sd-element--complex > .sd-element__header:after { // line under header
@@ -55,42 +59,52 @@
     
     .sd-item { // over and under checkboxes, maybe more
         padding-top: 0px !important;
-        padding-bottom: 10px !important;
+        padding-bottom: 4px !important;
     }
     
     .sd-question__header { // over question text
         margin-top: 0 !important;
-        padding-bottom: 5px !important;
+        padding-bottom: 4px !important;
         padding-top: 0px !important;
     }
     
     .sd-element--with-frame.sd-row__question { // around normal questions
-        padding: 5px !important;
+        padding: 4px !important;
         overflow: hidden !important;
     }
     
     .sd-question__comment-area { // over "Annet (beskriv)" area
-        margin-top: 10px !important;
+        margin-top: 4px !important;
     }
     
     .sd-body { // around the whole form
-        padding: 16px !important;
+        padding: 0 4px !important;
     }
 
     .sd-question__content { // around question text
         padding-top: 0 !important;
     }
     
-    // .sd-row--multiple > div {
-    //     padding: 0px !important; // makes text go out of the screen, find workaround maybe
-    // }
+    .sd-row--multiple {
+        gap: 4px;
+        margin-left: 0px !important
+    }
 
-    .sd-element__title span {
+    .sd-row--multiple > div {
+        flex: 1 1 calc(50% - 2px) !important;
+        padding: 0 !important;
+    }
+
+    .sd-row.sd-clearfix.sd-page__row {
+        margin-top: 4px !important;
+    }
+
+    .sd-element__title span { 
         font-size: small !important;
     }
 
-    .sd-item__control-label {
-        font-size: small !important;
+    .sd-item__control-label { 
+        font-size: small !important; 
     }
 
     .sd-dropdown__value {

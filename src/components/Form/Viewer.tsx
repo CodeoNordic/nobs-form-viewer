@@ -3,8 +3,8 @@ import performScript from "@utils/performScript";
 import { Model, Survey } from "survey-react-ui";
 import { warn } from "@utils/log";
 import { useMemo } from "react";
-// import "survey-core/i18n";
-// import { Serializer } from "survey-core";
+import "survey-core/i18n";
+import { Serializer } from "survey-core";
 import fetchFromFileMaker from "@utils/fetchFromFilemaker";
 
 const FormViewer: FC = () => {
@@ -14,16 +14,16 @@ const FormViewer: FC = () => {
 
     // useMemo so you can choose when to re-render
     const survey = useMemo(() => {
-        // if (config.scriptNames?.validate) { // needs to happen before creating the survey
-        //     Serializer.addProperty("question", {
-        //         name: "validateFromFilemaker",
-        //         displayName: config.locale == "en" ? "Validate from FileMaker" : "Valider fra FileMaker",
-        //         default: false,
-        //         visible: true,
-        //         category: "validation",
-        //         type: "boolean",
-        //     });
-        // }
+        if (config.scriptNames?.validate) { // needs to happen before creating the survey
+            Serializer.addProperty("question", {
+                name: "validateFromFilemaker",
+                displayName: config.locale == "en" ? "Validate from FileMaker" : "Valider fra FileMaker",
+                default: false,
+                visible: true,
+                category: "validation",
+                type: "boolean",
+            });
+        }
 
         const newSurvey = new Model(config.value);
 
