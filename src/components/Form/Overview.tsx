@@ -78,7 +78,7 @@ const Overview: FC = () => {
 
     return <div className="overview">
         {questions.map((question, index) => {
-            return <div key={index}>
+            return <div key={index} className={`question ${question.type}`}>
                 <p>{question.title ? question.title + ": " : ""}{answerText[question.name]}</p>
             </div>
         })}
