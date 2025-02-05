@@ -5,6 +5,7 @@ const Overview: FC = () => {
     const [config, setConfig] = useConfigState();
     const [questions, setQuestions] = useState<any[]>([]);
     const [answerText, setAnswerText] = useState<any>({});
+    // const [testPages, setTestPages] = useState<any>([])
 
     if (!config) return null;
 
@@ -29,18 +30,25 @@ const Overview: FC = () => {
 
         let newAnswers = {} as any;
 
+        console.log(answers)
+
         questions.forEach((question) => {
             if (!answers[question.name]) {
             } else if (question.choices) {
-                const choice = question.choices.find((choice: any) => {
-                    if (typeof choice === "string") {
-                        return choice === answers[question.name]
-                    } else {
-                        return choice.value === answers[question.name]
-                    }
-                });
-
-                newAnswers[question.name] = typeof choice === "string" ? choice : choice.text
+                if (answers[question.name] == "other") {
+                    console.log(answers[`${question.name}-Comment`])
+                    newAnswers[question.name] = answers[`${question.name}-Comment`]     
+                } else {
+                    const choice = question.choices.find((choice: any) => {
+                        if (typeof choice === "string") {
+                            return choice === answers[question.name]
+                        } else {
+                            return choice.value === answers[question.name]
+                        }
+                    });
+    
+                    newAnswers[question.name] = typeof choice === "string" ? choice : choice.text
+                }
             } else {
                 newAnswers[question.name] = answers[question.name];
             }

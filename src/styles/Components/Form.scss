@@ -1,9 +1,9 @@
 .svc-creator {
-    height: 100vh !important;
+    height: 100vh;
 }
 
 .formviewer {
-    height: 100vh !important;
+    height: 100vh;
 }
 
 .compact {    
@@ -30,10 +30,22 @@
         height: min-content !important;
     }
 
+    .sd-body__navigation { // around Neste / Fullfør button
+        padding: 8px 0 0 0 !important;
+
+        .sd-btn { // button itself
+            padding: 14px 40px;
+        }
+    }
+
     .sd-panel--as-page {
-        padding-bottom: 8px !important;
+        padding: 0px !important;
     }
     
+    .sd-body.sd-body--responsive .sd-page { // entire form
+        padding-bottom: 8px
+    }
+
     .sd-panel__header { // header of a panel
         padding-top: 4px !important;
         padding-bottom: 4px !important;
@@ -77,8 +89,16 @@
         margin-top: 4px !important;
     }
     
+    .sd-page {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
     .sd-body { // around the whole form
-        padding: 0 4px !important;
+        margin: 0;
+        padding: 4px 8px 0px 8px !important;
+        width: 100%;
+        max-width: 100% !important;
     }
 
     .sd-question__content { // around question text
@@ -97,6 +117,22 @@
 
     .sd-row.sd-clearfix.sd-page__row {
         margin-top: 4px !important;
+    }
+
+    .sd-rating__item {
+        min-width: 32px !important;
+        height: 32px !important;
+        width: 32px !important;
+    }
+
+    .sd-table__cell {
+        padding: 0 !important;
+        border: 0 !important;
+        padding-left: 8px !important;
+    }
+
+    .sd-boolean__label, .sd-boolean__thumb {
+        padding: 6px 12px;
     }
 
     .sd-element__title span { 
@@ -121,6 +157,14 @@
 
     .sd-list__item-body { // needs some padding for text to be visible
         padding: 0 0 0 2px !important;
+    }
+
+    .sd-container-modern__title { // Title of form
+        padding: 8px !important;
+        
+        .sv-string-viewer {
+            font-size: large !important;
+        }
     }
 
     // TODO: Double check if these are needed
