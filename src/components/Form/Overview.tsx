@@ -1,95 +1,106 @@
 import { useConfigState } from "@context/Config";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 const Overview: FC = () => {
     const [config, setConfig] = useConfigState();
-    const [questions, setQuestions] = useState<any[]>([]);
-    const [answerText, setAnswerText] = useState<any>({});
-    // const [testPages, setTestPages] = useState<any>([])
 
     if (!config) return null;
 
-    const survey = useMemo(() => {
-        const jsonData = JSON.parse(config.value!);
-
-        console.log(jsonData);
-
-        return jsonData;
-    }, [config.value]);
+    const survey = JSON.parse(config.value!);
 
     const answers = useMemo(() => {
-        const jsonData = JSON.parse(config.answerData || '{}');
-
-        console.log(jsonData);
-
-        return jsonData;
-    }, [config.answerData]);
-
-    useEffect(() => {
-        if (!answers || !questions) return;
+        const jsonAnswers = JSON.parse(config.answerData || '{}');
 
         let newAnswers = {} as any;
+        const questions: any[] = [];
+        
+        const getNestedQuestions = (elements: any[]) => {
+            let questions: any[] = [];
+    
+            elements.forEach((el) => { 
+                if (el.elements) {
+                    questions = questions.concat(getNestedQuestions(el.elements));
+                } else {
+                    questions.push(el);
+                } 
+            });
+    
+            return questions;
+        };
 
-        console.log(answers)
+        survey.pages.forEach((page: any) => {
+            questions.push(...getNestedQuestions(page.elements));
+        });
 
         questions.forEach((question) => {
-            if (!answers[question.name]) {
+            if (!jsonAnswers[question.name]) {
             } else if (question.choices) {
-                if (answers[question.name] == "other") {
-                    console.log(answers[`${question.name}-Comment`])
-                    newAnswers[question.name] = answers[`${question.name}-Comment`]     
+                if (jsonAnswers[question.name] == "other") {
+                    newAnswers[question.name] = jsonAnswers[`${question.name}-Comment`];     
                 } else {
                     const choice = question.choices.find((choice: any) => {
                         if (typeof choice === "string") {
-                            return choice === answers[question.name]
+                            return choice === jsonAnswers[question.name];
                         } else {
-                            return choice.value === answers[question.name]
+                            return choice.value === jsonAnswers[question.name];
                         }
                     });
     
-                    newAnswers[question.name] = typeof choice === "string" ? choice : choice.text
+                    newAnswers[question.name] = typeof choice === "string" ? choice : choice.text;
                 }
             } else {
-                newAnswers[question.name] = answers[question.name];
+                newAnswers[question.name] = jsonAnswers[question.name];
             }
         });
 
-        setAnswerText(newAnswers)
-    }, [answers, questions]);
+        return newAnswers;
+    }, [config.answerData, survey]);
 
-    const getNestedQuestions = (elements: any[]) => {
-        let questions: any[] = [];
+    function surveyItem(element: any) {
+        let newElements: any[] = []; 
 
-        elements.forEach((el) => { 
-            if (el.elements) {
-                questions = questions.concat(getNestedQuestions(el.elements));
+        element.elements && element.elements.map((subElement: any, index: number) => {
+            const nextEl = element.elements[index + 1];
+            if (
+                (nextEl && nextEl.startWithNewLine === false) ||
+                subElement.startWithNewLine === false
+            ) {
+                if (newElements[newElements.length - 1] && newElements[newElements.length - 1].noNewLine === true) {
+                    let fixedSubElement = { ...subElement };
+                    fixedSubElement.startWithNewLine = true;
+                    newElements[newElements.length - 1].elements.push(fixedSubElement);
+                } else {
+                    newElements.push({
+                        elements: [subElement],
+                        noNewLine: true
+                    });
+                }
             } else {
-                questions.push(el);
-            } 
+                newElements.push(subElement);
+            }
         });
 
-        return questions;
-    };
+        return <div className={`question ${element.type ? element.type : ""}`}>
+            {(element.title || answers[element.name]) && <p>{!element.elements 
+                ? (element.title ? element.title + ": " : "") + (answers[element.name] ? answers[element.name] : "")
+                : (element.title ?? element.title)    
+            }</p>}
+            {newElements.length > 0 && <div className={`sub-elements ${element.noNewLine ? "no-new-line" : ""}`}> {
+                newElements.map((subElement: any, index: number) => {
+                return<div key={index}>
+                    {surveyItem(subElement)}
+                </div>})
+            }</div>}
+        </div>
+    }
 
-    useEffect(() => {
-        if (!survey) return;
-        const newQuestions: any[] = [];
-
-        survey.pages.forEach((page: any) => {
-            newQuestions.push(...getNestedQuestions(page.elements));
-        });
-
-        setQuestions(newQuestions);
-    }, [survey]);
-
-    console.log(questions);
+    console.log("render")
 
     return <div className="overview">
-        {questions.map((question, index) => {
-            return <div key={index} className={`question ${question.type}`}>
-                <p>{question.title ? question.title + ": " : ""}{answerText[question.name]}</p>
-            </div>
-        })}
+        {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
+        {survey.pages.map((page: any, index: number) => <div key={index}>
+            {surveyItem(page)}
+        </div>)}
     </div>
 }
 

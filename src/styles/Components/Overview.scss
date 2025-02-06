@@ -1,14 +1,22 @@
 .overview {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    max-height: 100vh;
+    height: calc(100vh - 2px);
+    border: 1px solid black;
 
     p {
         margin: 5px;
     }
 
-    // .question {
-    //     border: 1px solid black;
-    // }
+    .sub-elements {
+        border: 1px solid black;
+        margin: -1px;
+        background-color: white;
+    }
+
+    .no-new-line {
+        display: flex;
+
+        > div {
+            width: 100%;
+        }
+    }
 }
