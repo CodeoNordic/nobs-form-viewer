@@ -11,21 +11,21 @@ const Overview: FC = () => {
     const answers = useMemo(() => {
         const jsonAnswers = JSON.parse(config.answerData || '{}');
 
-        let newAnswers = {} as any;
+        let newAnswers: any = {};
         const questions: any[] = [];
         
         const getNestedQuestions = (elements: any[]) => {
-            let questions: any[] = [];
+            let nestedQuestions: any[] = [];
     
             elements.forEach((el) => { 
                 if (el.elements) {
-                    questions = questions.concat(getNestedQuestions(el.elements));
+                    nestedQuestions = nestedQuestions.concat(getNestedQuestions(el.elements));
                 } else {
-                    questions.push(el);
+                    nestedQuestions.push(el);
                 } 
             });
     
-            return questions;
+            return nestedQuestions;
         };
 
         survey.pages.forEach((page: any) => {
