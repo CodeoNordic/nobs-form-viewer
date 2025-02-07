@@ -81,10 +81,18 @@ const Overview: FC = () => {
         });
 
         return <div className={`question ${element.type ? element.type : ""}`}>
-            {(element.title || answers[element.name]) && <p>{!element.elements 
-                ? (element.title ? element.title + ": " : "") + (answers[element.name] ? answers[element.name] : "")
-                : (element.title ?? element.title)    
-            }</p>}
+            {((element.titleLocation != "hidden" &&  element.title !== "") || answers[element.name]) && (
+                <p>{!element.elements 
+                    ? (element.titleLocation == "hidden"
+                        ? "" 
+                        : element.title 
+                        ? element.title + ": " 
+                        : element.name + ": "
+                    ) + (
+                        answers[element.name] ? answers[element.name] : ""
+                    ) : element.title ?? element.title
+                }</p>
+            )}
             {newElements.length > 0 && <div className={`sub-elements ${element.noNewLine ? "no-new-line" : ""}`}> {
                 newElements.map((subElement: any, index: number) => {
                 return<div key={index}>

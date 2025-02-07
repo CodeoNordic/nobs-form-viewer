@@ -300,7 +300,7 @@ setConfigProp("answers", `[
   "pages": [
     {
       "name": "side1",
-      "title": "\n",
+      "title": "",
       "elements": [
         {
           "type": "radiogroup",
