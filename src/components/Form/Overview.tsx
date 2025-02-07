@@ -32,8 +32,14 @@ const Overview: FC = () => {
             questions.push(...getNestedQuestions(page.elements));
         });
 
+        console.log(questions, jsonAnswers)
+
         questions.forEach((question) => {
             if (!jsonAnswers[question.name]) {
+            } else if (question.type == "matrix") {
+                question.rows.map((row: any) => {
+                    if (row.value == "") {} // Continue here, fix matrix answers
+                })
             } else if (question.choices) {
                 if (jsonAnswers[question.name] == "other") {
                     newAnswers[question.name] = jsonAnswers[`${question.name}-Comment`];     
@@ -53,10 +59,12 @@ const Overview: FC = () => {
             }
         });
 
+        console.log(newAnswers)
+
         return newAnswers;
     }, [config.answerData, survey]);
 
-    function surveyItem(element: any) {
+    function surveyItem(element: any, key: number) {
         let newElements: any[] = []; 
 
         element.elements && element.elements.map((subElement: any, index: number) => {
@@ -80,7 +88,7 @@ const Overview: FC = () => {
             }
         });
 
-        return <div className={`question ${element.type ? element.type : ""}`}>
+        return <div key={key} className={`question${element.type ? " " + element.type : ""}`}>
             {((element.titleLocation != "hidden" &&  element.title !== "") || answers[element.name]) && (
                 <p>{!element.elements 
                     ? (element.titleLocation == "hidden"
@@ -93,11 +101,8 @@ const Overview: FC = () => {
                     ) : element.title ?? element.title
                 }</p>
             )}
-            {newElements.length > 0 && <div className={`sub-elements ${element.noNewLine ? "no-new-line" : ""}`}> {
-                newElements.map((subElement: any, index: number) => {
-                return<div key={index}>
-                    {surveyItem(subElement)}
-                </div>})
+            {newElements.length > 0 && <div className={`sub-elements${element.noNewLine ? " no-new-line" : ""}`}> {
+                newElements.map((subElement: any, index: number) => surveyItem(subElement, index))
             }</div>}
         </div>
     }
@@ -106,9 +111,7 @@ const Overview: FC = () => {
 
     return <div className="overview">
         {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
-        {survey.pages.map((page: any, index: number) => <div key={index}>
-            {surveyItem(page)}
-        </div>)}
+        {survey.pages.map((page: any, index: number) => surveyItem(page, index))}
     </div>
 }
 
