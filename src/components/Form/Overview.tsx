@@ -34,7 +34,7 @@ const Overview: FC = () => {
 
         questions.forEach((question: any) => {
             if (jsonAnswers[question.name] == undefined) { // No answer
-            } else if (question.type == "matrix") { // Question with multiple answers (matrix)
+            } else if (question.type == "matrix") { // Question with multiple answers
                 let fullAnswer = ""
 
                 question.rows.map((row: any) => {
@@ -57,6 +57,18 @@ const Overview: FC = () => {
                     newAnswers[question.name] = jsonAnswers[`${question.name}-Comment`];     
                 } else if (jsonAnswers[question.name] == "none") {
                     newAnswers[question.name] = config.locale == "no" ? "Ingen" : "None";     
+                } else if (Array.isArray(jsonAnswers[question.name])) {
+                    newAnswers[question.name] = jsonAnswers[question.name].map((answer: any) => {
+                        const choice = question.choices.find((choice: any) => {
+                            if (typeof choice === "string") {
+                                return choice === answer;
+                            } else {
+                                return choice.value === answer;
+                            }
+                        });
+        
+                        return typeof choice === "string" ? choice : choice.text;
+                    }).join(", ");
                 } else { // Normal answer
                     const choice = question.choices.find((choice: any) => {
                         if (typeof choice === "string") {
