@@ -32,18 +32,32 @@ const Overview: FC = () => {
             questions.push(...getNestedQuestions(page.elements));
         });
 
-        console.log(questions, jsonAnswers)
+        questions.forEach((question: any) => {
+            if (jsonAnswers[question.name] == undefined) { // No answer
+            } else if (question.type == "matrix") { // Question with multiple answers (matrix)
+                let fullAnswer = ""
 
-        questions.forEach((question) => {
-            if (!jsonAnswers[question.name]) {
-            } else if (question.type == "matrix") {
                 question.rows.map((row: any) => {
-                    if (row.value == "") {} // Continue here, fix matrix answers
+                    const rowIsString = typeof row === "string";
+
+                    if (jsonAnswers[question.name][rowIsString ? row : row.value]) {
+                        question.columns.map((column: any) => {
+                            const colIsString = typeof column === "string";
+
+                            if ((colIsString ? column : column.value) == jsonAnswers[question.name][(rowIsString ? row : row.value)]) {
+                                fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.text) + ": " + (colIsString ? column : column.text)
+                            }
+                        })
+                    }
                 })
-            } else if (question.choices) {
-                if (jsonAnswers[question.name] == "other") {
+
+                newAnswers[question.name] = fullAnswer
+            } else if (question.choices) { // Questions with choices (radio, checkbox, etc)
+                if (jsonAnswers[question.name] == "other") { // Other and none does not show up as normal answers
                     newAnswers[question.name] = jsonAnswers[`${question.name}-Comment`];     
-                } else {
+                } else if (jsonAnswers[question.name] == "none") {
+                    newAnswers[question.name] = config.locale == "no" ? "Ingen" : "None";     
+                } else { // Normal answer
                     const choice = question.choices.find((choice: any) => {
                         if (typeof choice === "string") {
                             return choice === jsonAnswers[question.name];
@@ -54,12 +68,10 @@ const Overview: FC = () => {
     
                     newAnswers[question.name] = typeof choice === "string" ? choice : choice.text;
                 }
-            } else {
+            } else { // Questions without choices (text, number, etc)
                 newAnswers[question.name] = jsonAnswers[question.name];
             }
         });
-
-        console.log(newAnswers)
 
         return newAnswers;
     }, [config.answerData, survey]);
@@ -72,7 +84,7 @@ const Overview: FC = () => {
             if (
                 (nextEl && nextEl.startWithNewLine === false) ||
                 subElement.startWithNewLine === false
-            ) {
+            ) { // If element and next element should be on the same line
                 if (newElements[newElements.length - 1] && newElements[newElements.length - 1].noNewLine === true) {
                     let fixedSubElement = { ...subElement };
                     fixedSubElement.startWithNewLine = true;
@@ -111,6 +123,7 @@ const Overview: FC = () => {
 
     return <div className="overview">
         {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
+        {(survey.description && survey.showTitle !== false) && <p className="description">{survey.description}</p>}
         {survey.pages.map((page: any, index: number) => surveyItem(page, index))}
     </div>
 }
