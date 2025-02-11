@@ -1,7 +1,7 @@
 import { useConfig } from "@context/Config";
 import FormViewer from "./Viewer";
 import { warn } from "@utils/log";
-import Overview from "./Overview";
+import Summary from "./Summary";
 
 const Form: FC = () => {
     const config = useConfig();
@@ -13,13 +13,13 @@ const Form: FC = () => {
         return null
     }
 
-    if (config.type === "overview" && !config.value) {
-        warn("No form value provided, cannot render overview.");
+    if (config.type === "summary" && !config.value) {
+        warn("No form value provided, cannot render summary.");
         return null;
     }
     
-    return config.type === "overview" 
-        ? <Overview /> 
+    return config.type === "summary" 
+        ? <Summary /> 
         : <div className={`formviewer ${config.compact ? "compact" : ""}`}>
             <FormViewer />
         </div>; 

@@ -40,7 +40,7 @@ window.init = cfg => {
 
 // Validates the config object every time it's set or updated
 const validateConfig = (config: any): Form.Config => {
-    const validTypes = ['viewer', 'overview'];
+    const validTypes = ['viewer', 'summary'];
     const validLocales = ['en', 'no'];
 
     const validatedConfig = { ...defaultConfig, ...config };

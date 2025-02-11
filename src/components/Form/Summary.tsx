@@ -1,7 +1,7 @@
 import { useConfigState } from "@context/Config";
 import { useMemo } from "react";
 
-const Overview: FC = () => {
+const Summary: FC = () => {
     const [config, setConfig] = useConfigState();
 
     if (!config) return null;
@@ -34,7 +34,7 @@ const Overview: FC = () => {
 
         questions.forEach((question: any) => {
             if (jsonAnswers[question.name] == undefined) { // No answer
-            } else if (question.type == "matrix") { // Question with multiple answers
+            } else if (question.type == "matrix") { // Matrix question, with rows and columns
                 let fullAnswer = ""
 
                 question.rows.map((row: any) => {
@@ -57,7 +57,7 @@ const Overview: FC = () => {
                     newAnswers[question.name] = jsonAnswers[`${question.name}-Comment`];     
                 } else if (jsonAnswers[question.name] == "none") {
                     newAnswers[question.name] = config.locale == "no" ? "Ingen" : "None";     
-                } else if (Array.isArray(jsonAnswers[question.name])) {
+                } else if (Array.isArray(jsonAnswers[question.name])) { // Multiple answers
                     newAnswers[question.name] = jsonAnswers[question.name].map((answer: any) => {
                         const choice = question.choices.find((choice: any) => {
                             if (typeof choice === "string") {
@@ -133,11 +133,11 @@ const Overview: FC = () => {
 
     console.log("render")
 
-    return <div className="overview">
+    return <div className="summary">
         {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
         {(survey.description && survey.showTitle !== false) && <p className="description">{survey.description}</p>}
         {survey.pages.map((page: any, index: number) => surveyItem(page, index))}
     </div>
 }
 
-export default Overview;
+export default Summary;

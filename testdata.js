@@ -523,6 +523,9 @@ init(JSON.stringify({
 setConfigProp("locale", "en")
 setConfigProp("locale", "no")
 
+setConfigProp("compact", true)
+setConfigProp("compact", false)
+
 setConfigProp("type", "viewer")
-setConfigProp("type", "overview")
+setConfigProp("type", "summary")
 setConfigProp("type", "builder")

@@ -9,7 +9,7 @@ declare global {
             answerData?: string; 
 
             // The version of the form
-            type: 'viewer'|'overview'
+            type: 'viewer'|'summary';
 
             // If the form should be compact or not
             compact?: boolean;

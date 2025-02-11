@@ -43,7 +43,7 @@
     }
     
     .sd-body.sd-body--responsive .sd-page { // entire form
-        padding-bottom: 8px
+        padding-bottom: 8px;
     }
 
     .sd-panel__header { // header of a panel
@@ -58,6 +58,10 @@
     .sd-input { // input fields
         padding: 4px !important;
         font-size: small !important;
+
+        &[type="date"] {
+            width: calc(100% - 8px) !important;
+        }
     }
 
     .sd-dropdown { // give space for clear button
@@ -153,6 +157,14 @@
 
     .sv-string-viewer {
         font-size: small !important;
+    }
+
+    .sv-list__empty-text {
+        font-size: small !important;
+    }
+
+    .sv-list__empty-container {
+        padding: 4px !important;
     }
 
     .sd-list__item-body { // needs some padding for text to be visible
