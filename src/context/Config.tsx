@@ -5,6 +5,7 @@ import { warn } from '@utils/log';
 const defaultConfig: Partial<Form.Config> = {
     type: 'viewer',
     locale: 'no',
+    hideUnanswered: false,
 };
 
 // Parses the JSON from FileMaker into a readable config
@@ -73,6 +74,11 @@ const validateConfig = (config: any): Form.Config => {
             warn("Failed to parse answer data, will start with empty data.", e);
             validatedConfig.answerData = '';
         }
+    }
+
+    if (config.hideUnanswered && typeof config.hideUnanswered !== 'boolean') {
+        warn("hideUnanswered must be a boolean, defaulting to false.");
+        validatedConfig.hideUnanswered = false;
     }
 
     // Add additional validation

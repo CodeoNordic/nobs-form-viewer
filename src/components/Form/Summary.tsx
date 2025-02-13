@@ -112,6 +112,8 @@ const Summary: FC = () => {
             }
         });
 
+        if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
+
         return <div key={key} className={`question${element.type ? " " + element.type : ""}`}>
             {((element.titleLocation != "hidden" &&  element.title !== "") || answers[element.name]) && (
                 <p>{!element.elements 

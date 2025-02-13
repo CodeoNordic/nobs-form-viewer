@@ -14,6 +14,9 @@ declare global {
             // If the form should be compact or not
             compact?: boolean;
 
+            // Hides the questions that have not been answered in the summary
+            hideUnanswered?: boolean;
+
             // The language of the form, can be more if needed
             locale: "no"|"en";
 
