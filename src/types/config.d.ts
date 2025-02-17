@@ -14,6 +14,10 @@ declare global {
             // If the form should be compact or not
             compact?: boolean;
 
+            // If some questions should be validated from FileMaker
+            // Must have the validate script name in the scriptNames object
+            validateFromFileMaker?: boolean;
+
             // Hides the questions that have not been answered in the summary
             hideUnanswered?: boolean;
 

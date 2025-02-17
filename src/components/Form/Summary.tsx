@@ -133,8 +133,6 @@ const Summary: FC = () => {
         </div>
     }
 
-    console.log("render")
-
     return <div className="summary">
         {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
         {(survey.description && survey.showTitle !== false) && <p className="description">{survey.description}</p>}

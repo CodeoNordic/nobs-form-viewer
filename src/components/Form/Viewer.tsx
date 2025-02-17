@@ -14,9 +14,9 @@ const FormViewer: FC = () => {
 
     // useMemo so you can choose when to re-render
     const survey = useMemo(() => {
-        if (config.scriptNames?.validate) { // needs to happen before creating the survey
+        if (config.validateFromFileMaker && config.scriptNames?.validate) { // needs to happen before creating the survey
             Serializer.addProperty("question", {
-                name: "validateFromFilemaker",
+                name: "validateFromFileMaker",
                 displayName: config.locale == "en" ? "Validate from FileMaker" : "Valider fra FileMaker",
                 default: false,
                 visible: true,
@@ -60,7 +60,7 @@ const FormViewer: FC = () => {
             if (
                 options.question && 
                 config.scriptNames?.validate && 
-                options.question.validateFromFilemaker 
+                options.question.validateFromFileMaker 
             ) {
                 fetchFromFileMaker(config.scriptNames.validate, {
                     name: options.question.name,
