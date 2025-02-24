@@ -57,24 +57,30 @@ const FormViewer: FC = () => {
         }
 
         const validateQuestion = (_: any, options: any) => {
+            console.log("TEST");
             if (
                 options.question && 
                 config.scriptNames?.validate && 
                 options.question.validateFromFileMaker 
             ) {
-                fetchFromFileMaker(config.scriptNames.validate, {
+                console.log("TEST2");
+                fetchFromFileMaker(config.scriptNames.validate, { // TODO: cant handle async, find workaround
                     name: options.question.name,
                     value: options.value as string,
                 }, undefined, true, 30000).then((res) => {
-                    if (typeof res === "string" && res === "false") {
+                    const data = res as {status: boolean, message?: string} | null;
+                    console.log("TEST3", res);
+
+                    if (data?.status === false && !data.message) {
                         options.error = config.locale == "en" ? "Invalid value." : "Ugyldig verdi.";
-                    } else if (typeof res === "string" && res !== "true") {
-                        options.error = res;
+                    } else if (data?.status === false && data.message) {
+                        console.log("TEST4", data.message);
+                        options.error = data.message;
                     } else {
                         options.error = null;
                     }
                 }).catch((e) => {
-                    warn("Failed to validate question usinmg filemaker.", e);
+                    warn("Failed to validate question using filemaker.", e);
                     options.error = null;
                 });
             }
