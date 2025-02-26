@@ -4,7 +4,7 @@ import { Model, Survey } from "survey-react-ui";
 import { warn } from "@utils/log";
 import { useMemo } from "react";
 import "survey-core/i18n";
-import { Serializer } from "survey-core";
+import { Serializer, SurveyError } from "survey-core";
 import fetchFromFileMaker from "@utils/fetchFromFilemaker";
 
 const FormViewer: FC = () => {
@@ -56,37 +56,81 @@ const FormViewer: FC = () => {
             setConfig({ ...config, answerData: JSON.stringify(data) });
         }
 
-        const validateQuestion = (_: any, options: any) => {
-            console.log("TEST");
+        const validateQuestion = async (_: any, options: any) => {
+            console.log(options);
+        
+            const question = newSurvey.getQuestionByName(options.question.name);
+        
+            // Preserve "existing" errors (if any) to avoid flicker
+            if (options.question.errors.length > 0) {
+                options.error = options.question.errors[0].text;
+            }
+        
             if (
                 options.question && 
                 config.scriptNames?.validate && 
-                options.question.validateFromFileMaker 
+                options.question.validateFromFileMaker
             ) {
-                console.log("TEST2");
-                fetchFromFileMaker(config.scriptNames.validate, { // TODO: cant handle async, find workaround
-                    name: options.question.name,
-                    value: options.value as string,
-                }, undefined, true, 30000).then((res) => {
-                    const data = res as {status: boolean, message?: string} | null;
-                    console.log("TEST3", res);
-
+                try {
+                    const res = await fetchFromFileMaker(
+                        config.scriptNames.validate,
+                        { 
+                          name: options.question.name, 
+                          value: options.value as string 
+                        },
+                        undefined,
+                        true,
+                        30000
+                    );
+        
+                    const data = res as { status: boolean; message?: string } | null;
+        
                     if (data?.status === false && !data.message) {
-                        options.error = config.locale == "en" ? "Invalid value." : "Ugyldig verdi.";
+                        const msg = config.locale == "en" ? "Invalid value." : "Ugyldig verdi.";
+                        question.errors = [new SurveyError(msg)];
+                        return msg;
                     } else if (data?.status === false && data.message) {
-                        console.log("TEST4", data.message);
-                        options.error = data.message;
+                        question.errors = [new SurveyError(data.message)];
+                        return data.message;
                     } else {
-                        options.error = null;
+                        question.errors = [];
+                        return null;
                     }
-                }).catch((e) => {
+                } catch (e) {
                     warn("Failed to validate question using filemaker.", e);
-                    options.error = null;
-                });
-            }
+                    question.errors = [];
+                    return null;
+                }
+            } 
+            return null;
         };
+        
 
-        newSurvey.onValidateQuestion.add(validateQuestion);
+        if (JSON.parse(config.value || "{}").checkErrorsMode === "onValueChanged") {
+            newSurvey.onValidateQuestion.add(validateQuestion);
+        } else {
+            newSurvey.onServerValidateQuestions.add(async (_, { data, errors, complete }) => {
+                await Promise.all(Object.keys(data).map(async (key) => {
+                    const question = newSurvey.getQuestionByName(key);
+                
+                    const error = await validateQuestion(null, {
+                        question,
+                        value: data[key],
+                        error: ""
+                    });
+
+                    // if (question.errors.length > 0) { // TODO: makes error box flicker
+                    //     question.errors = [];
+                    // }
+                
+                    if (error) {
+                        errors[key] = error;
+                    }
+                }));
+              
+                complete();
+            });
+        }    
 
         newSurvey.onValueChanged.add((result) => {
             saveAnswerData(result);
