@@ -56,7 +56,7 @@ const FormViewer: FC = () => {
             setConfig({ ...config, answerData: JSON.stringify(data) });
         }
 
-        const validateQuestion = async (_: any, options: any) => {
+        const validateQuestion = async (_: any, options: any, addErr: boolean = true) => {
             console.log(options);
         
             const question = newSurvey.getQuestionByName(options.question.name);
@@ -87,25 +87,24 @@ const FormViewer: FC = () => {
         
                     if (data?.status === false && !data.message) {
                         const msg = config.locale == "en" ? "Invalid value." : "Ugyldig verdi.";
-                        question.errors = [new SurveyError(msg)];
+                        addErr && (question.errors = [new SurveyError(msg)]);
                         return msg;
                     } else if (data?.status === false && data.message) {
-                        question.errors = [new SurveyError(data.message)];
+                        addErr && (question.errors = [new SurveyError(data.message)]);
                         return data.message;
                     } else {
-                        question.errors = [];
+                        addErr && (question.errors = []);
                         return null;
                     }
                 } catch (e) {
                     warn("Failed to validate question using filemaker.", e);
-                    question.errors = [];
+                    addErr && (question.errors = []);
                     return null;
                 }
             } 
             return null;
         };
         
-
         if (JSON.parse(config.value || "{}").checkErrorsMode === "onValueChanged") {
             newSurvey.onValidateQuestion.add(validateQuestion);
         } else {
@@ -117,12 +116,12 @@ const FormViewer: FC = () => {
                         question,
                         value: data[key],
                         error: ""
-                    });
+                    }, false);
 
-                    // if (question.errors.length > 0) { // TODO: makes error box flicker
-                    //     question.errors = [];
-                    // }
-                
+                    if (question.errors.length > 0 && error) {
+                        question.errors = [new SurveyError(error)];
+                    }
+
                     if (error) {
                         errors[key] = error;
                     }
