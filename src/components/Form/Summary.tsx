@@ -34,15 +34,21 @@ const Summary: FC = () => {
 
         questions.forEach((question: any) => {
             if (jsonAnswers[question.name] == undefined) { // No answer
-            } else if (question.type == "matrix") { // Matrix question, with rows and columns
+            } else if (question.type == "matrix" || question.type == "matrixdropdown") { // Matrix question, with rows and columns
                 let fullAnswer = ""
 
                 question.rows.map((row: any) => {
                     const rowIsString = typeof row === "string";
 
+                    console.log(row, jsonAnswers[question.name][rowIsString ? row : row.value]);
+
                     if (jsonAnswers[question.name][rowIsString ? row : row.value]) {
+                        // console.log(question.columns);
+
                         question.columns.map((column: any) => {
                             const colIsString = typeof column === "string";
+                            
+                            // console.log(column, colIsString, typeof column);
 
                             if ((colIsString ? column : column.value) == jsonAnswers[question.name][(rowIsString ? row : row.value)]) {
                                 fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.text) + ": " + (colIsString ? column : column.text)

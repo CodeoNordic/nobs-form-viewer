@@ -111,16 +111,12 @@ const FormViewer: FC = () => {
             newSurvey.onServerValidateQuestions.add(async (_, { data, errors, complete }) => {
                 await Promise.all(Object.keys(data).map(async (key) => {
                     const question = newSurvey.getQuestionByName(key);
-                
+                    
                     const error = await validateQuestion(null, {
                         question,
                         value: data[key],
                         error: ""
                     }, false);
-
-                    if (question.errors.length > 0 && error) {
-                        question.errors = [new SurveyError(error)];
-                    }
 
                     if (error) {
                         errors[key] = error;
