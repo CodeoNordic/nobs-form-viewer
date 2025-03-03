@@ -36,20 +36,22 @@ const Summary: FC = () => {
             if (jsonAnswers[question.name] == undefined) { // No answer
             } else if (question.type == "matrix" || question.type == "matrixdropdown") { // Matrix question, with rows and columns
                 let fullAnswer = ""
-
+                
                 question.rows.map((row: any) => {
                     const rowIsString = typeof row === "string";
 
-                    console.log(row, jsonAnswers[question.name][rowIsString ? row : row.value]);
+                    if (question.type == "matrixdropdown") {
+                        fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.value) + ": ";
 
-                    if (jsonAnswers[question.name][rowIsString ? row : row.value]) {
-                        // console.log(question.columns);
+                        let tempAns = ""
+                        Object.keys(jsonAnswers[question.name][rowIsString ? row : row.value]).map((key: any) => {
+                            tempAns += (fullAnswer && ", ") + key + ": " + jsonAnswers[question.name][rowIsString ? row : row.value][key]
+                        })
 
+                        fullAnswer += tempAns;
+                    } else if (jsonAnswers[question.name][rowIsString ? row : row.value]) {
                         question.columns.map((column: any) => {
                             const colIsString = typeof column === "string";
-                            
-                            // console.log(column, colIsString, typeof column);
-
                             if ((colIsString ? column : column.value) == jsonAnswers[question.name][(rowIsString ? row : row.value)]) {
                                 fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.text) + ": " + (colIsString ? column : column.text)
                             }
@@ -58,7 +60,10 @@ const Summary: FC = () => {
                 })
 
                 newAnswers[question.name] = fullAnswer
-            } else if (question.choices) { // Questions with choices (radio, checkbox, etc)
+            } else if (question.type == "file") { // Image (TODO: Consider adding more testing)
+                newAnswers[question.name] = jsonAnswers[question.name];
+            }
+             else if (question.choices) { // Questions with choices (radio, checkbox, etc)
                 if (jsonAnswers[question.name] == "other") { // Other and none does not show up as normal answers
                     newAnswers[question.name] = jsonAnswers[`${question.name}-Comment`];     
                 } else if (jsonAnswers[question.name] == "none") {
@@ -121,7 +126,7 @@ const Summary: FC = () => {
         if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 
         return <div key={key} className={`question${element.type ? " " + element.type : ""}`}>
-            {((element.titleLocation != "hidden" &&  element.title !== "") || answers[element.name]) && (
+            {((element.titleLocation != "hidden" && element.title != "" && element.type != undefined) || answers[element.name]) && (
                 <p>{!element.elements 
                     ? (element.titleLocation == "hidden"
                         ? "" 
@@ -129,9 +134,12 @@ const Summary: FC = () => {
                         ? element.title + ": " 
                         : element.name + ": "
                     ) + (
-                        answers[element.name] ? answers[element.name] : ""
+                        (typeof answers[element.name] !== "object" && answers[element.name] != undefined) ? answers[element.name] : ""
                     ) : element.title ?? element.title
                 }</p>
+            )}
+            {(element.type == "file" && answers[element.name] != undefined) && answers[element.name].map((answer: any) =>
+                <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
             )}
             {newElements.length > 0 && <div className={`sub-elements${element.noNewLine ? " no-new-line" : ""}`}> {
                 newElements.map((subElement: any, index: number) => surveyItem(subElement, index))
