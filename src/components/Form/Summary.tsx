@@ -62,8 +62,7 @@ const Summary: FC = () => {
                 newAnswers[question.name] = fullAnswer
             } else if (question.type == "file") { // Image (TODO: Consider adding more testing)
                 newAnswers[question.name] = jsonAnswers[question.name];
-            }
-             else if (question.choices) { // Questions with choices (radio, checkbox, etc)
+            } else if (question.choices) { // Questions with choices (radio, checkbox, etc)
                 if (jsonAnswers[question.name] == "other") { // Other and none does not show up as normal answers
                     newAnswers[question.name] = jsonAnswers[`${question.name}-Comment`];     
                 } else if (jsonAnswers[question.name] == "none") {
