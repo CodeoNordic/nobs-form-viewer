@@ -57,8 +57,6 @@ const FormViewer: FC = () => {
         }
 
         const validateQuestion = async (_: any, options: any, addErr: boolean = true) => {
-            console.log(options);
-        
             const question = newSurvey.getQuestionByName(options.question.name);
         
             // Preserve "existing" errors (if any) to avoid flicker
