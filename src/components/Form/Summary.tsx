@@ -1,8 +1,8 @@
-import { useConfigState } from "@context/Config";
+import { useConfig } from "@context/Config";
 import { useMemo } from "react";
 
 const Summary: FC = () => {
-    const [config, setConfig] = useConfigState();
+    const config = useConfig();
 
     if (!config) return null;
 
