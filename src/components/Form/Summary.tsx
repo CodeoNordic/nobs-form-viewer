@@ -140,13 +140,13 @@ const Summary: FC = () => {
                 <div className="column-header">
                     <div></div> {/* Empty div for the first column */}
                     {element.columns.map((column: any, index: number) =>
-                        <div key={index}><p>{typeof column === "string" ? column : column.name}</p></div>
+                        <div key={index}><p>{column.name ?? column.text ?? column}</p></div>
                     )}
                 </div>
                 {element.rows.map((row: any, index: number) => 
                     <div key={index} className="row">
                         <div className="row-header">
-                            <p>{row.name ?? row}</p>
+                            <p>{row.name ?? row.text ?? row}</p>
                         </div>
                         {element.columns.map((column: any, index: number) => 
                             <div key={index} className="column">
