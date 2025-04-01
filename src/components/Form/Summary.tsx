@@ -38,32 +38,32 @@ const Summary: FC = () => {
                 console.log("question", question)
                 
 
-                
-                const fullAnswer = question.rows.map((row: any) => {
+                let fullAnswer = ""
+                question.rows.map((row: any) => {
                     
-                    // const rowIsString = typeof row === "string";
+                    const rowIsString = typeof row === "string";
 
-                    return <div>{question.columns.map((column: any) => {
-                        return <div>test</div>
-                    })}</div>
+                    // return <div>{question.columns.map((column: any) => {
+                    //     return <div>test</div>
+                    // })}</div>
 
-                    // if (question.type == "matrixdropdown") {
-                    //     fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.value) + ": ";
+                    if (question.type == "matrixdropdown") {
+                        fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.value) + ": ";
 
-                    //     let tempAns = ""
-                    //     Object.keys(jsonAnswers[question.name][rowIsString ? row : row.value]).map((key: any) => {
-                    //         tempAns += (fullAnswer && ", ") + key + ": " + jsonAnswers[question.name][rowIsString ? row : row.value][key]
-                    //     })
+                        let tempAns = ""
+                        Object.keys(jsonAnswers[question.name][rowIsString ? row : row.value]).map((key: any) => {
+                            tempAns += (fullAnswer && ", ") + key + ": " + jsonAnswers[question.name][rowIsString ? row : row.value][key]
+                        })
 
-                    //     fullAnswer += tempAns;
-                    // } else if (jsonAnswers[question.name][rowIsString ? row : row.value]) {
-                    //     question.columns.map((column: any) => {
-                    //         const colIsString = typeof column === "string";
-                    //         if ((colIsString ? column : column.value) == jsonAnswers[question.name][(rowIsString ? row : row.value)]) {
-                    //             fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.text) + ": " + (colIsString ? column : column.text)
-                    //         }
-                    //     })
-                    // }
+                        fullAnswer += tempAns;
+                    } else if (jsonAnswers[question.name][rowIsString ? row : row.value]) {
+                        question.columns.map((column: any) => {
+                            const colIsString = typeof column === "string";
+                            if ((colIsString ? column : column.value) == jsonAnswers[question.name][(rowIsString ? row : row.value)]) {
+                                fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.text) + ": " + (colIsString ? column : column.text)
+                            }
+                        })
+                    }
                 })
 
                 newAnswers[question.name] = fullAnswer
@@ -140,16 +140,16 @@ const Summary: FC = () => {
                 <div className="column-header">
                     <div></div> {/* Empty div for the first column */}
                     {element.columns.map((column: any, index: number) =>
-                        <div key={index}>{typeof column === "string" ? column : column.name}</div>
+                        <div key={index}><p>{typeof column === "string" ? column : column.name}</p></div>
                     )}
                 </div>
                 {element.rows.map((row: any, index: number) => 
                     <div key={index} className="row">
                         <div className="row-header">
-                            <p>{typeof row === "string" ? row : row.name}</p>
+                            <p>{row.name ?? row}</p>
                         </div>
-                        {element.columns.map((column: any, index2: number) => 
-                            <div key={index2} className="column">
+                        {element.columns.map((column: any, index: number) => 
+                            <div key={index} className="column">
                                 <p>test</p>
                             </div>
                         )}
