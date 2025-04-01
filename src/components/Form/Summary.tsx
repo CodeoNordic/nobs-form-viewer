@@ -35,28 +35,35 @@ const Summary: FC = () => {
         questions.forEach((question: any) => {
             if (jsonAnswers[question.name] == undefined) { // No answer
             } else if (question.type == "matrix" || question.type == "matrixdropdown") { // Matrix question, with rows and columns
-                let fullAnswer = ""
+                console.log("question", question)
                 
-                question.rows.map((row: any) => {
-                    const rowIsString = typeof row === "string";
 
-                    if (question.type == "matrixdropdown") {
-                        fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.value) + ": ";
+                
+                const fullAnswer = question.rows.map((row: any) => {
+                    
+                    // const rowIsString = typeof row === "string";
 
-                        let tempAns = ""
-                        Object.keys(jsonAnswers[question.name][rowIsString ? row : row.value]).map((key: any) => {
-                            tempAns += (fullAnswer && ", ") + key + ": " + jsonAnswers[question.name][rowIsString ? row : row.value][key]
-                        })
+                    return <div>{question.columns.map((column: any) => {
+                        return <div>test</div>
+                    })}</div>
 
-                        fullAnswer += tempAns;
-                    } else if (jsonAnswers[question.name][rowIsString ? row : row.value]) {
-                        question.columns.map((column: any) => {
-                            const colIsString = typeof column === "string";
-                            if ((colIsString ? column : column.value) == jsonAnswers[question.name][(rowIsString ? row : row.value)]) {
-                                fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.text) + ": " + (colIsString ? column : column.text)
-                            }
-                        })
-                    }
+                    // if (question.type == "matrixdropdown") {
+                    //     fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.value) + ": ";
+
+                    //     let tempAns = ""
+                    //     Object.keys(jsonAnswers[question.name][rowIsString ? row : row.value]).map((key: any) => {
+                    //         tempAns += (fullAnswer && ", ") + key + ": " + jsonAnswers[question.name][rowIsString ? row : row.value][key]
+                    //     })
+
+                    //     fullAnswer += tempAns;
+                    // } else if (jsonAnswers[question.name][rowIsString ? row : row.value]) {
+                    //     question.columns.map((column: any) => {
+                    //         const colIsString = typeof column === "string";
+                    //         if ((colIsString ? column : column.value) == jsonAnswers[question.name][(rowIsString ? row : row.value)]) {
+                    //             fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.text) + ": " + (colIsString ? column : column.text)
+                    //         }
+                    //     })
+                    // }
                 })
 
                 newAnswers[question.name] = fullAnswer
@@ -95,6 +102,8 @@ const Summary: FC = () => {
             }
         });
 
+        console.log("answers", newAnswers)
+
         return newAnswers;
     }, [config.answerData, survey]);
 
@@ -123,6 +132,31 @@ const Summary: FC = () => {
         });
 
         if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
+
+        console.log("element", element, answers[element.name])
+
+        if (element.type == "matrix" || element.type == "matrixdropdown") {
+            return <div key={key} className={`question ${element.type}`}>
+                <div className="column-header">
+                    <div></div> {/* Empty div for the first column */}
+                    {element.columns.map((column: any, index: number) =>
+                        <div key={index}>{typeof column === "string" ? column : column.name}</div>
+                    )}
+                </div>
+                {element.rows.map((row: any, index: number) => 
+                    <div key={index} className="row">
+                        <div className="row-header">
+                            <p>{typeof row === "string" ? row : row.name}</p>
+                        </div>
+                        {element.columns.map((column: any, index2: number) => 
+                            <div key={index2} className="column">
+                                <p>test</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        }
 
         return <div key={key} className={`question${element.type ? " " + element.type : ""}`}>
             {((element.titleLocation != "hidden" && element.title != "" && element.type != undefined) || answers[element.name]) && (

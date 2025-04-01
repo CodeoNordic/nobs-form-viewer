@@ -24,4 +24,31 @@
         width: 100px;
         height: 100%;
     }
+
+    .matrix,
+    .matrixdropdown {
+        // border-bottom: 1px solid black;
+    
+        .row-header {
+            width: 100%;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .column-header {
+            display: flex;
+
+            div {
+                width: 100%;
+            }
+        }
+        
+        .column {
+            border-top: 1px solid black;
+            border-left: 1px solid black;
+            width: 100%;
+        }
+    }
 }
