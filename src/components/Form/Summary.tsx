@@ -38,11 +38,11 @@ const Summary: FC = () => {
                 let answer: { [key: string]: any } = {};
 
                 question.rows.map((row: any) => {
-                    const rowName = row.name ?? row.text ?? row
+                    const rowName = row.name ?? row.value ?? row
                     answer[rowName] = {};
 
                     question.columns.map((column: any) => {
-                        const colName = column.name ?? column.text ?? column;
+                        const colName = column.name ?? column.value ?? column;
                         const ans = jsonAnswers[question.name]
 
                         if (ans[rowName]?.[colName] || ans[rowName] == colName) {
@@ -50,6 +50,10 @@ const Summary: FC = () => {
                         }
                     })
                 })
+
+                console.log(question)
+                console.log(jsonAnswers[question.name])
+                console.log(answer)
 
                 newAnswers[question.name] = answer;
             } else if (question.type == "file") { // Image (TODO: Consider adding more testing)
@@ -121,19 +125,20 @@ const Summary: FC = () => {
                 <div className="column-header">
                     <div></div> {/* Empty div for the first column */}
                     {element.columns.map((column: any, index: number) =>
-                        <div key={index}><p>{column.name ?? column.text ?? column}</p></div>
+                        <div key={index}><p>{column.text ?? column.name ?? column}</p></div>
                     )}
                 </div>
                 {element.rows.map((row: any, index: number) => {
-                    const rowName = row.name ?? row.text ?? row
+                    const rowName = row.name ?? row.value ?? row;
+                    const rowTitle = row.text ?? row.name ?? row;
 
                     return <div key={index} className="row">
                         <div className="row-header">
-                            <p>{rowName}</p>
+                            <p>{rowTitle}</p>
                         </div>
                         {element.columns.map((column: any, index: number) => {
-                            const colName = column.name ?? column.text ?? column;
-                            const ans = answers[element.name]?.[rowName]?.[colName]
+                            const colName = column.name ?? column.value ?? column;
+                            const ans = answers[element.name]?.[rowName]?.[colName];
 
                             return <div key={index} className="column">
                                 <p>{ans 
