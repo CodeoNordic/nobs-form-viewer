@@ -35,38 +35,23 @@ const Summary: FC = () => {
         questions.forEach((question: any) => {
             if (jsonAnswers[question.name] == undefined) { // No answer
             } else if (question.type == "matrix" || question.type == "matrixdropdown") { // Matrix question, with rows and columns
-                console.log("question", question)
-                
+                let answer: { [key: string]: any } = {};
 
-                let fullAnswer = ""
                 question.rows.map((row: any) => {
-                    
-                    const rowIsString = typeof row === "string";
+                    const rowName = row.name ?? row.text ?? row
+                    answer[rowName] = {};
 
-                    // return <div>{question.columns.map((column: any) => {
-                    //     return <div>test</div>
-                    // })}</div>
+                    question.columns.map((column: any) => {
+                        const colName = column.name ?? column.text ?? column;
+                        const ans = jsonAnswers[question.name]
 
-                    if (question.type == "matrixdropdown") {
-                        fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.value) + ": ";
-
-                        let tempAns = ""
-                        Object.keys(jsonAnswers[question.name][rowIsString ? row : row.value]).map((key: any) => {
-                            tempAns += (fullAnswer && ", ") + key + ": " + jsonAnswers[question.name][rowIsString ? row : row.value][key]
-                        })
-
-                        fullAnswer += tempAns;
-                    } else if (jsonAnswers[question.name][rowIsString ? row : row.value]) {
-                        question.columns.map((column: any) => {
-                            const colIsString = typeof column === "string";
-                            if ((colIsString ? column : column.value) == jsonAnswers[question.name][(rowIsString ? row : row.value)]) {
-                                fullAnswer += (fullAnswer && ", ") + (rowIsString ? row : row.text) + ": " + (colIsString ? column : column.text)
-                            }
-                        })
-                    }
+                        if (ans[rowName]?.[colName] || ans[rowName] == colName) {
+                            answer[rowName][colName] = ans[rowName][colName] ?? ans[rowName] == colName;
+                        }
+                    })
                 })
 
-                newAnswers[question.name] = fullAnswer
+                newAnswers[question.name] = answer;
             } else if (question.type == "file") { // Image (TODO: Consider adding more testing)
                 newAnswers[question.name] = jsonAnswers[question.name];
             } else if (question.choices) { // Questions with choices (radio, checkbox, etc)
@@ -102,8 +87,6 @@ const Summary: FC = () => {
             }
         });
 
-        console.log("answers", newAnswers)
-
         return newAnswers;
     }, [config.answerData, survey]);
 
@@ -133,8 +116,6 @@ const Summary: FC = () => {
 
         if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 
-        console.log("element", element, answers[element.name])
-
         if (element.type == "matrix" || element.type == "matrixdropdown") {
             return <div key={key} className={`question ${element.type}`}>
                 <div className="column-header">
@@ -143,18 +124,27 @@ const Summary: FC = () => {
                         <div key={index}><p>{column.name ?? column.text ?? column}</p></div>
                     )}
                 </div>
-                {element.rows.map((row: any, index: number) => 
-                    <div key={index} className="row">
+                {element.rows.map((row: any, index: number) => {
+                    const rowName = row.name ?? row.text ?? row
+
+                    return <div key={index} className="row">
                         <div className="row-header">
-                            <p>{row.name ?? row.text ?? row}</p>
+                            <p>{rowName}</p>
                         </div>
-                        {element.columns.map((column: any, index: number) => 
-                            <div key={index} className="column">
-                                <p>test</p>
+                        {element.columns.map((column: any, index: number) => {
+                            const colName = column.name ?? column.text ?? column;
+                            const ans = answers[element.name]?.[rowName]?.[colName]
+
+                            return <div key={index} className="column">
+                                <p>{ans 
+                                    ? typeof ans === "boolean" 
+                                        ? "X" : ans 
+                                    : ""}
+                                </p>
                             </div>
-                        )}
+                        })}
                     </div>
-                )}
+                })}
             </div>
         }
 
