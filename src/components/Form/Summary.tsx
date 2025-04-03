@@ -37,6 +37,9 @@ const Summary: FC = () => {
             } else if (question.type == "matrix" || question.type == "matrixdropdown") { // Matrix question, with rows and columns
                 let answer: { [key: string]: any } = {};
 
+                console.log(question)
+                console.log(jsonAnswers[question.name])
+
                 question.rows.map((row: any) => {
                     const rowName = row.name ?? row.value ?? row
                     answer[rowName] = {};
@@ -56,6 +59,17 @@ const Summary: FC = () => {
                 console.log(answer)
 
                 newAnswers[question.name] = answer;
+            } else if (question.type == "matrixdynamic") { // Different from normal matrix
+                let answer: { [key: string]: any } = {};
+
+                console.log(question)
+                console.log(jsonAnswers[question.name])
+
+                question.columns.map((column: any) => {
+                    jsonAnswers[question.name].map((ansCol: any) => {
+                        
+                    })
+                })
             } else if (question.type == "file") { // Image (TODO: Consider adding more testing)
                 newAnswers[question.name] = jsonAnswers[question.name];
             } else if (question.choices) { // Questions with choices (radio, checkbox, etc)
@@ -120,7 +134,7 @@ const Summary: FC = () => {
 
         if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 
-        if (element.type == "matrix" || element.type == "matrixdropdown") {
+        if (element.type == "matrix" || element.type == "matrixdropdown" || element.type == "matrixdynamic") {
             return <div key={key} className={`question ${element.type}`}>
                 <div className="column-header">
                     <div></div> {/* Empty div for the first column */}
