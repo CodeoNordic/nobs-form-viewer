@@ -141,7 +141,7 @@ const Summary: FC = () => {
                             const ans = answers[element.name]?.[rowName]?.[colName];
 
                             return <div key={index} className="column">
-                                <p>{ans 
+                                <p className={typeof ans === "boolean" ? "crossmark" : ""}>{ans 
                                     ? typeof ans === "boolean" 
                                         ? "X" : ans 
                                     : ""}
