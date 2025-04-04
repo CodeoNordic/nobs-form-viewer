@@ -60,16 +60,23 @@ const Summary: FC = () => {
 
                 newAnswers[question.name] = answer;
             } else if (question.type == "matrixdynamic") { // Different from normal matrix
-                let answer: { [key: string]: any } = {};
+                let answer: { [key: string]: any }[] = [];
 
-                console.log(question)
-                console.log(jsonAnswers[question.name])
-
-                question.columns.map((column: any) => {
-                    jsonAnswers[question.name].map((ansCol: any) => {
-                        
+                jsonAnswers[question.name].map((ans: any, index: number) => {
+                    answer.push({});
+                    Object.keys(ans).forEach((key: any) => {
+                        if (ans[key] == "other") {
+                            answer[index][key] = ans[`${key}-Comment`];
+                        } else if (key.endsWith("-Comment")) {
+                        } else {
+                            answer[index][key] = ans[key];
+                        }
                     })
                 })
+
+                console.log(answer)
+
+                newAnswers[question.name] = answer;
             } else if (question.type == "file") { // Image (TODO: Consider adding more testing)
                 newAnswers[question.name] = jsonAnswers[question.name];
             } else if (question.choices) { // Questions with choices (radio, checkbox, etc)
@@ -134,7 +141,7 @@ const Summary: FC = () => {
 
         if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 
-        if (element.type == "matrix" || element.type == "matrixdropdown" || element.type == "matrixdynamic") {
+        if (element.type == "matrix" || element.type == "matrixdropdown") {
             return <div key={key} className={`question ${element.type}`}>
                 <div className="column-header">
                     <div></div> {/* Empty div for the first column */}
@@ -153,6 +160,38 @@ const Summary: FC = () => {
                         {element.columns.map((column: any, index: number) => {
                             const colName = column.name ?? column.value ?? column;
                             const ans = answers[element.name]?.[rowName]?.[colName];
+
+                            return <div key={index} className="column">
+                                <p className={typeof ans === "boolean" ? "crossmark" : ""}>{ans 
+                                    ? typeof ans === "boolean" 
+                                        ? "X" : ans 
+                                    : ""}
+                                </p>
+                            </div>
+                        })}
+                    </div>
+                })}
+            </div>
+        }
+
+        if (element.type == "matrixdynamic") {
+            console.log(element)
+
+            return <div key={key} className={`question ${element.type}`}>
+                <div className="column-header">
+                    <div></div> {/* Empty div for the first column */}
+                    {element.columns.map((column: any, index: number) =>
+                        <div key={index}><p>{column.text ?? column.title ?? column.name ?? column}</p></div>
+                    )}
+                </div>
+                {answers[element.name]?.map((row: any, index: number) => {
+                    return <div key={index} className="row">
+                        <div className="row-header">
+                            <p>{index + 1}</p>
+                        </div>
+                        {element.columns.map((column: any, index: number) => {
+                            const colName = column.name ?? column.value ?? column;
+                            const ans = row[colName];
 
                             return <div key={index} className="column">
                                 <p className={typeof ans === "boolean" ? "crossmark" : ""}>{ans 
