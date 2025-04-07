@@ -37,9 +37,6 @@ const Summary: FC = () => {
             } else if (question.type == "matrix" || question.type == "matrixdropdown") { // Matrix question, with rows and columns
                 let answer: { [key: string]: any } = {};
 
-                console.log(question)
-                console.log(jsonAnswers[question.name])
-
                 question.rows.map((row: any) => {
                     const rowName = row.name ?? row.value ?? row
                     answer[rowName] = {};
@@ -53,10 +50,6 @@ const Summary: FC = () => {
                         }
                     })
                 })
-
-                console.log(question)
-                console.log(jsonAnswers[question.name])
-                console.log(answer)
 
                 newAnswers[question.name] = answer;
             } else if (question.type == "matrixdynamic") { // Different from normal matrix
@@ -73,8 +66,6 @@ const Summary: FC = () => {
                         }
                     })
                 })
-
-                console.log(answer)
 
                 newAnswers[question.name] = answer;
             } else if (question.type == "file") { // Image (TODO: Consider adding more testing)
@@ -108,6 +99,8 @@ const Summary: FC = () => {
                     newAnswers[question.name] = typeof choice === "string" ? choice : choice.text;
                 }
             } else { // Questions without choices (text, number, etc)
+                console.log(jsonAnswers[question.name]);
+
                 newAnswers[question.name] = jsonAnswers[question.name];
             }
         });
@@ -143,6 +136,18 @@ const Summary: FC = () => {
 
         if (element.type == "matrix" || element.type == "matrixdropdown") {
             return <div key={key} className={`question ${element.type}`}>
+                {((element.titleLocation != "hidden" && element.title != "" && element.type != undefined) || answers[element.name]) && (
+                    <p>{!element.elements 
+                        ? (element.titleLocation == "hidden"
+                            ? "" 
+                            : element.title 
+                            ? element.title + ": " 
+                            : element.name + ": "
+                        ) + (
+                            (typeof answers[element.name] !== "object" && answers[element.name] != undefined) ? answers[element.name] : ""
+                        ) : element.title ?? element.title
+                    }</p>
+                )}
                 <div className="column-header">
                     <div></div> {/* Empty div for the first column */}
                     {element.columns.map((column: any, index: number) =>
@@ -175,9 +180,19 @@ const Summary: FC = () => {
         }
 
         if (element.type == "matrixdynamic") {
-            console.log(element)
-
             return <div key={key} className={`question ${element.type}`}>
+                {((element.titleLocation != "hidden" && element.title != "" && element.type != undefined) || answers[element.name]) && (
+                    <p>{!element.elements 
+                        ? (element.titleLocation == "hidden"
+                            ? "" 
+                            : element.title 
+                            ? element.title + ": " 
+                            : element.name + ": "
+                        ) + (
+                            (typeof answers[element.name] !== "object" && answers[element.name] != undefined) ? answers[element.name] : ""
+                        ) : element.title ?? element.title
+                    }</p>
+                )}
                 <div className="column-header">
                     <div></div> {/* Empty div for the first column */}
                     {element.columns.map((column: any, index: number) =>
