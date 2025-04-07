@@ -1,6 +1,7 @@
 .summary {
     height: calc(100vh - 2px);
     border: 1px solid black;
+    overflow: hidden;
 
     p {
         margin: 5px;

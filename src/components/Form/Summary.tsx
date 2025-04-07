@@ -53,7 +53,7 @@ const Summary: FC = () => {
 
                 newAnswers[question.name] = answer;
             } else if (question.type == "matrixdynamic") { // Different from normal matrix
-                let answer: { [key: string]: any }[] = [];
+                let answer: { [key: string]: any }[] = []; // TODO: Empty answer looking weird
 
                 jsonAnswers[question.name].map((ans: any, index: number) => {
                     answer.push({});
@@ -99,7 +99,10 @@ const Summary: FC = () => {
                     newAnswers[question.name] = typeof choice === "string" ? choice : choice.text;
                 }
             } else { // Questions without choices (text, number, etc)
-                console.log(jsonAnswers[question.name]);
+                console.log(jsonAnswers[question.name]); 
+                // TODO: multipletext, imagepicker not working
+                // yes/no showing as true/false
+                // text type color, date, time, etc not working
 
                 newAnswers[question.name] = jsonAnswers[question.name];
             }
