@@ -98,11 +98,23 @@ const Summary: FC = () => {
     
                     newAnswers[question.name] = typeof choice === "string" ? choice : choice.text;
                 }
+            } else if (question.type == "text") {
+                console.log(jsonAnswers[question.name], question);
+
+                if (question.inputType == "date") { // Date input
+                    newAnswers[question.name] = new Date(jsonAnswers[question.name]).toLocaleDateString(config.locale, { year: 'numeric', month: '2-digit', day: '2-digit' });
+                } else if (question.inputType == "datetime-local") { // Time input
+                    newAnswers[question.name] = new Date(jsonAnswers[question.name]).toLocaleTimeString(config.locale, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+                } else if (question.inputType == "week") { // Number input
+                    newAnswers[question.name] = (config.locale === "no" ? "Uke " : "Week ") + jsonAnswers[question.name].split("-W")[1] + ", " + jsonAnswers[question.name].split("-W")[0];
+                } else {
+                    newAnswers[question.name] = jsonAnswers[question.name];
+                }
             } else { // Questions without choices (text, number, etc)
                 console.log(jsonAnswers[question.name]); 
                 // TODO: multipletext, imagepicker not working
                 // yes/no showing as true/false
-                // text type color, date, time, etc not working
+                // text type color, range not working
 
                 newAnswers[question.name] = jsonAnswers[question.name];
             }
