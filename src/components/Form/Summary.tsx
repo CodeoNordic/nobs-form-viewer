@@ -149,20 +149,50 @@ const Summary: FC = () => {
 
         if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 
-        if (element.type == "matrix" || element.type == "matrixdropdown") {
-            return <div key={key} className={`question ${element.type}`}>
-                {((element.titleLocation != "hidden" && element.title != "" && element.type != undefined) || answers[element.name]) && (
-                    <p>{!element.elements 
-                        ? (element.titleLocation == "hidden"
-                            ? "" 
-                            : element.title 
-                            ? element.title + ": " 
-                            : element.name + ": "
-                        ) + (
-                            (typeof answers[element.name] !== "object" && answers[element.name] != undefined) ? answers[element.name] : ""
-                        ) : element.title ?? element.title
-                    }</p>
-                )}
+        return <div key={key} className={`question${element.type ? " " + element.type : ""}`}>
+            {((element.titleLocation != "hidden" && element.title != "" && element.type != undefined) || answers[element.name]) && (
+                <p>{!element.elements 
+                    ? (element.titleLocation == "hidden"
+                        ? "" 
+                        : element.title 
+                        ? element.title + ": " 
+                        : element.name + ": "
+                    ) + (
+                        (typeof answers[element.name] !== "object" && answers[element.name] != undefined) ? answers[element.name] : ""
+                    ) : element.title ?? element.title
+                }</p>
+            )}
+            {(element.type == "file" && answers[element.name] != undefined) && answers[element.name].map((answer: any) =>
+                <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
+            )}
+            {element.type == "matrixdynamic" && <div>
+                <div className="column-header">
+                    <div></div> {/* Empty div for the first column */}
+                    {element.columns.map((column: any, index: number) =>
+                        <div key={index}><p>{column.text ?? column.title ?? column.name ?? column}</p></div>
+                    )}
+                </div>
+                {answers[element.name]?.map((row: any, index: number) => {
+                    return <div key={index} className="row">
+                        <div className="row-header">
+                            <p>{index + 1}</p>
+                        </div>
+                        {element.columns.map((column: any, index: number) => {
+                            const colName = column.name ?? column.value ?? column;
+                            const ans = row[colName];
+
+                            return <div key={index} className="column">
+                                <p className={typeof ans === "boolean" ? "crossmark" : ""}>{ans 
+                                    ? typeof ans === "boolean" 
+                                        ? "X" : ans 
+                                    : ""}
+                                </p>
+                            </div>
+                        })}
+                    </div>
+                })}
+            </div>}
+            {(element.type == "matrix" || element.type == "matrixdropdown") && <div>
                 <div className="column-header">
                     <div></div> {/* Empty div for the first column */}
                     {element.columns.map((column: any, index: number) =>
@@ -191,67 +221,7 @@ const Summary: FC = () => {
                         })}
                     </div>
                 })}
-            </div>
-        }
-
-        if (element.type == "matrixdynamic") {
-            return <div key={key} className={`question ${element.type}`}>
-                {((element.titleLocation != "hidden" && element.title != "" && element.type != undefined) || answers[element.name]) && (
-                    <p>{!element.elements 
-                        ? (element.titleLocation == "hidden"
-                            ? "" 
-                            : element.title 
-                            ? element.title + ": " 
-                            : element.name + ": "
-                        ) + (
-                            (typeof answers[element.name] !== "object" && answers[element.name] != undefined) ? answers[element.name] : ""
-                        ) : element.title ?? element.title
-                    }</p>
-                )}
-                <div className="column-header">
-                    <div></div> {/* Empty div for the first column */}
-                    {element.columns.map((column: any, index: number) =>
-                        <div key={index}><p>{column.text ?? column.title ?? column.name ?? column}</p></div>
-                    )}
-                </div>
-                {answers[element.name]?.map((row: any, index: number) => {
-                    return <div key={index} className="row">
-                        <div className="row-header">
-                            <p>{index + 1}</p>
-                        </div>
-                        {element.columns.map((column: any, index: number) => {
-                            const colName = column.name ?? column.value ?? column;
-                            const ans = row[colName];
-
-                            return <div key={index} className="column">
-                                <p className={typeof ans === "boolean" ? "crossmark" : ""}>{ans 
-                                    ? typeof ans === "boolean" 
-                                        ? "X" : ans 
-                                    : ""}
-                                </p>
-                            </div>
-                        })}
-                    </div>
-                })}
-            </div>
-        }
-
-        return <div key={key} className={`question${element.type ? " " + element.type : ""}`}>
-            {((element.titleLocation != "hidden" && element.title != "" && element.type != undefined) || answers[element.name]) && (
-                <p>{!element.elements 
-                    ? (element.titleLocation == "hidden"
-                        ? "" 
-                        : element.title 
-                        ? element.title + ": " 
-                        : element.name + ": "
-                    ) + (
-                        (typeof answers[element.name] !== "object" && answers[element.name] != undefined) ? answers[element.name] : ""
-                    ) : element.title ?? element.title
-                }</p>
-            )}
-            {(element.type == "file" && answers[element.name] != undefined) && answers[element.name].map((answer: any) =>
-                <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
-            )}
+            </div>}
             {newElements.length > 0 && <div className={`sub-elements${element.noNewLine ? " no-new-line" : ""}`}> {
                 newElements.map((subElement: any, index: number) => surveyItem(subElement, index))
             }</div>}
