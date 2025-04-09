@@ -112,9 +112,26 @@ const Summary: FC = () => {
                 }
             } else if (question.type == "boolean") {
                 newAnswers[question.name] = jsonAnswers[question.name] ? (config.locale == "no" ? "Ja" : "Yes") : (config.locale == "no" ? "Nei" : "No");
+            } else if (question.type == "multipletext") {
+                let answer: { [key: string]: any }[] = [];
+
+                question.items.map((item: any) => {
+                    const itemName = item.title ?? item.name ?? item;
+
+                    console.log(itemName, jsonAnswers[question.name][item.name ?? item]);
+
+                    answer.push({
+                        name: itemName,
+                        value: jsonAnswers[question.name][item.name ?? item]
+                    });
+                })
+
+                console.log(answer);
+
+                newAnswers[question.name] = answer;
             } else { // Questions without choices (text, number, etc)
                 console.log(jsonAnswers[question.name], question); 
-                // TODO: multipletext, imagepicker not working
+                // TODO: imagepicker not working
 
                 newAnswers[question.name] = jsonAnswers[question.name];
             }
@@ -174,6 +191,11 @@ const Summary: FC = () => {
             {(element.type == "file" && answers[element.name] != undefined) && answers[element.name].map((answer: any) =>
                 <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
             )}
+            {element.type == "multipletext" && <div className="multipletext">
+                {answers[element.name]?.map((answer: any, index: number) => 
+                    <p key={index} className="multipletext-item">{answer.name}: {answer.value}</p>
+                )}
+            </div>}
             {element.type == "matrixdynamic" && <div>
                 <div className="column-header">
                     <div></div> {/* Empty div for the first column */}
