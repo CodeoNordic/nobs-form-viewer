@@ -110,11 +110,11 @@ const Summary: FC = () => {
                 } else {
                     newAnswers[question.name] = jsonAnswers[question.name];
                 }
+            } else if (question.type == "boolean") {
+                newAnswers[question.name] = jsonAnswers[question.name] ? (config.locale == "no" ? "Ja" : "Yes") : (config.locale == "no" ? "Nei" : "No");
             } else { // Questions without choices (text, number, etc)
-                console.log(jsonAnswers[question.name]); 
+                console.log(jsonAnswers[question.name], question); 
                 // TODO: multipletext, imagepicker not working
-                // yes/no showing as true/false
-                // text type color, range not working
 
                 newAnswers[question.name] = jsonAnswers[question.name];
             }
@@ -150,18 +150,27 @@ const Summary: FC = () => {
         if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 
         return <div key={key} className={`question${element.type ? " " + element.type : ""}`}>
-            {((element.titleLocation != "hidden" && element.title != "" && element.type != undefined) || answers[element.name]) && (
-                <p>{!element.elements 
-                    ? (element.titleLocation == "hidden"
-                        ? "" 
-                        : element.title 
-                        ? element.title + ": " 
-                        : element.name + ": "
-                    ) + (
-                        (typeof answers[element.name] !== "object" && answers[element.name] != undefined) ? answers[element.name] : ""
-                    ) : element.title ?? element.title
-                }</p>
-            )}
+            <div style={{ display: "flex" }}>
+                {(element.titleLocation != "hidden" && element.title != "" && element.type != undefined) && (
+                    <p>{!element.elements 
+                        ? (element.titleLocation == "hidden"
+                            ? "" 
+                            : element.title 
+                                ? element.title + ":" 
+                                : element.name + ":"
+                        ) : element.title ?? element.title
+                    }</p>
+                )}
+                {(element.inputType == "color" && answers[element.name]) && <div className="color-box" style={{ backgroundColor: answers[element.name] }}></div>}
+                {(element.inputType == "range" && answers[element.name]) && <p>{answers[element.name]}%</p>}
+                {(element.inputType !== "color" 
+                    && element.inputType !== "range" 
+                    && typeof answers[element.name] !== "object" 
+                    && answers[element.name] != undefined
+                ) && <p>{
+                    answers[element.name]
+                }</p>}
+            </div>
             {(element.type == "file" && answers[element.name] != undefined) && answers[element.name].map((answer: any) =>
                 <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
             )}
