@@ -70,6 +70,10 @@ const Summary: FC = () => {
                 newAnswers[question.name] = answer;
             } else if (question.type == "file") { // Image (TODO: Consider adding more testing)
                 newAnswers[question.name] = jsonAnswers[question.name];
+            } else if (question.type == "imagepicker") {
+                newAnswers[question.name] = question.choices.find((choice: any) => {
+                    return choice.value === jsonAnswers[question.name];
+                }).imageLink;
             } else if (question.choices) { // Questions with choices (radio, checkbox, etc)
                 if (jsonAnswers[question.name] == "other") { // Other and none does not show up as normal answers
                     newAnswers[question.name] = jsonAnswers[`${question.name}-Comment`];     
@@ -99,8 +103,6 @@ const Summary: FC = () => {
                     newAnswers[question.name] = typeof choice === "string" ? choice : choice.text;
                 }
             } else if (question.type == "text") {
-                console.log(jsonAnswers[question.name], question);
-
                 if (question.inputType == "date") { // Date input
                     newAnswers[question.name] = new Date(jsonAnswers[question.name]).toLocaleDateString(config.locale, { year: 'numeric', month: '2-digit', day: '2-digit' });
                 } else if (question.inputType == "datetime-local") { // Time input
@@ -126,13 +128,8 @@ const Summary: FC = () => {
                     });
                 })
 
-                console.log(answer);
-
                 newAnswers[question.name] = answer;
             } else { // Questions without choices (text, number, etc)
-                console.log(jsonAnswers[question.name], question); 
-                // TODO: imagepicker not working
-
                 newAnswers[question.name] = jsonAnswers[question.name];
             }
         });
@@ -182,12 +179,16 @@ const Summary: FC = () => {
                 {(element.inputType == "range" && answers[element.name]) && <p>{answers[element.name]}%</p>}
                 {(element.inputType !== "color" 
                     && element.inputType !== "range" 
+                    && element.type !== "imagepicker"
                     && typeof answers[element.name] !== "object" 
                     && answers[element.name] != undefined
                 ) && <p>{
                     answers[element.name]
                 }</p>}
             </div>
+            {element.type == "imagepicker" && answers[element.name] && 
+                <img src={answers[element.name]} alt={answers[element.name]} className="image" />
+            }
             {(element.type == "file" && answers[element.name] != undefined) && answers[element.name].map((answer: any) =>
                 <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
             )}
@@ -213,11 +214,11 @@ const Summary: FC = () => {
                             const ans = row[colName];
 
                             return <div key={index} className="column">
-                                <p className={typeof ans === "boolean" ? "crossmark" : ""}>{ans 
-                                    ? typeof ans === "boolean" 
-                                        ? "X" : ans 
-                                    : ""}
-                                </p>
+                                <p className={typeof ans === "boolean" ? "crossmark" : ""}>{
+                                    ans 
+                                        ? typeof ans === "boolean" ? "X" : ans
+                                        : ""
+                                }</p>
                             </div>
                         })}
                     </div>
