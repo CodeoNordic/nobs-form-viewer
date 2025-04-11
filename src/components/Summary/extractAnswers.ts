@@ -1,5 +1,3 @@
-import { useConfig } from "@context/Config";
-
 export default function extractAnswers(answers: any, survey: any, config: any) {
     let newAnswers: any = {};
     const questions: any[] = [];
