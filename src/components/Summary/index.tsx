@@ -222,7 +222,14 @@ const Summary: FC = () => {
                             </div>
                         })}
                     </div>
-                })}
+                }) ?? <div className="row">
+                    <div className="row-header">
+                        <p>1</p>
+                    </div>
+                    {element.columns.map((column: any, index: number) =>
+                        <div key={index} className="column"/>
+                    )}
+                </div>}
             </div>}
             {(element.type == "matrix" || element.type == "matrixdropdown") && <div>
                 <div className="column-header">
