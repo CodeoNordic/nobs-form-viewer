@@ -24,6 +24,27 @@ declare global {
             // The language of the form, can be more if needed
             locale: "no"|"en";
 
+            header?: {
+                leftColumn?: {
+                    navn?: string;
+                    født?: string;
+                    kjønn?: string;
+                    adresse?: string;
+                    telefon?: string;
+                }
+                rightColumn?: {
+                    ordrenummer?: string;
+                    ordredato?: string;
+                    type?: string;
+                    ortopediingeniør?: string;
+                    prodansvarlig?: string;
+                }
+            }
+
+            footer?: {
+            
+            }
+
             scriptNames?: Form.ScriptNames;
             
             ignoreInfo: boolean;

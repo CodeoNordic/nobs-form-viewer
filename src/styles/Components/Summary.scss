@@ -7,6 +7,43 @@
         margin: 5px;
     }
 
+    .header {
+        display: flex;
+        margin: 5px;
+
+        p {
+            margin: 0;
+        }
+
+        .header-left {
+            width: 100%;
+
+            .navn {
+                font-size: 1.5em;
+                margin-bottom: 5px;
+            }
+
+            .født-kjønn {
+                margin-bottom: 10px;
+            }
+        }
+
+        .header-right {
+            width: 100%;
+
+            .ordrenummer {
+                font-size: 1.5em;
+                margin-bottom: 5px;
+            }
+
+            .type {
+                margin: 10px 0;
+            }            
+
+
+        }
+    }
+
     .sub-elements {
         border: 1px solid black;
         margin: -1px;
