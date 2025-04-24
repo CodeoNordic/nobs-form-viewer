@@ -1,5 +1,5 @@
 .summary {
-    height: calc(100vh - 2px);
+    min-height: calc(100vh - 2px);
     border: 1px solid black;
     overflow: hidden;
 
@@ -40,6 +40,47 @@
                 margin: 10px 0;
             }            
 
+
+        }
+    }
+
+    .footer {        
+        p {
+            margin: 0 0 0 5px;
+        }
+
+        .footer-top {
+            > div {
+                margin: 5px
+            }
+        }
+        
+        .footer-bottom {
+            > div {
+                margin: 5px
+            }
+            
+            .checkboxes {
+
+                .checkboxes-top,
+                .checkboxes-middle,
+                .checkboxes-bottom {
+                    display: flex;
+                    align-items: center;
+                    margin: 5px 0;
+                    gap: 5px;
+                }
+
+                .checkbox {
+                    display: flex;
+                    align-items: center;
+    
+                    input {
+                        margin: 0;
+                        height: min-content;
+                    }
+                }
+            }
 
         }
     }

@@ -42,7 +42,29 @@ declare global {
             }
 
             footer?: {
-            
+                top: {
+                    høyde?: string;
+                    vekt?: string;
+                    skadeside?: string;
+                    skadetype?: string;
+                    gipslager?: string;
+                    behandlingsrisiko?: string;
+                    kommunikasjonsbehov?: string;
+                    sted?: string;
+                }
+                bottom: {
+                    timeavtaler?: string;
+                    prøvedato?: string;
+                    planlagtLevering?: string;
+                    ingeniør?: boolean;
+                    skoklinikk?: boolean;
+                    sendPost?: boolean;
+                    brev?: boolean;
+                    ring?: boolean;
+                    sms?: boolean;
+                    innlevertLuka?: boolean;
+                    tilsendtPost?: boolean;
+                }
             }
 
             scriptNames?: Form.ScriptNames;
