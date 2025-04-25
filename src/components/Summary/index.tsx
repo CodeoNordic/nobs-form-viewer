@@ -42,37 +42,37 @@ const Summary: FC = () => {
             return <SummaryItem key={index} element={page} answers={answers} />;
         })}
         {config.footer && <div className="footer">
-            {config.footer.top && <div className="footer-top">
+            <div className="footer-top">
                 <p className="title">Pasientopplysninger og behandlingsrisiko</p>
-                <div className="content">
-                    <div className="footer-top-left">
-                        <div className="høyde-vekt grid">
+                <div className="content flex">
+                    <div className="flex">
+                        <div className="grid">
                             <p className="høyde"><span>Høyde</span><span>{config.footer.top.høyde}</span></p>
                             <p className="vekt"><span>Vekt</span><span>{config.footer.top.vekt}</span></p>
                         </div>
-                        <div className="skadeside-skadetype-gipslager grid">
+                        <div className="grid">
                             <p className="skadeside"><span>Skadeside</span><span>{config.footer.top.skadeside}</span></p>
                             <p className="skadetype"><span>Skadetype</span><span>{config.footer.top.skadetype}</span></p>
                             <p className="gipslager"><span>Gipslager</span><span>{config.footer.top.gipslager}</span></p>
                         </div>
                     </div>
-                    <div className="footer-top-right grid">
+                    <div className="grid">
                         <p className="behandlingsrisiko"><span>Beh. risiko</span><span>{config.footer.top.behandlingsrisiko}</span></p>
                         <p className="kommunikasjonsbehov"><span>Kom. behov</span><span>{config.footer.top.kommunikasjonsbehov}</span></p>
                         <p className="sted"><span>Sted:</span><span>{config.footer.top.sted}</span></p>
                     </div>
                 </div>
-            </div>}
-            {config.footer.bottom && <div className="footer-bottom">
+            </div>
+            <div className="footer-bottom">
                 <p className="title">Prøving og levering</p>
-                <div className="content">
-                    <div className="additional-info grid">
+                <div className="content flex">
+                    <div className="grid">
                         <p className="timeavtaler"><span>Timeavtaler ordre</span><span>{config.footer.bottom.timeavtaler}</span></p>
                         <p className="prøvedato"><span>Prøvedato</span><span>{config.footer.bottom.prøvedato}</span></p>
                         <p className="planlagtLevering"><span>Planlagt levering</span><span>{config.footer.bottom.planlagtLevering}</span></p>
                     </div>
                     <div className="checkboxes">
-                        <div className="checkboxes-top">
+                        <div className="checkbox-wrapper">
                             <div className="checkbox ingeniør">
                                 <input type="checkbox" checked={!!config.footer.bottom.ingeniør} readOnly />
                                 <p>Ingeniør</p>
@@ -86,7 +86,7 @@ const Summary: FC = () => {
                             <input type="checkbox" checked={!!config.footer.bottom.sendPost} readOnly />
                             <p>Send med posten</p>
                         </div>
-                        <div className="checkboxes-middle">
+                        <div className="checkbox-wrapper">
                             <div className="checkbox brev">
                                 <input type="checkbox" checked={!!config.footer.bottom.brev} readOnly />
                                 <p>Brev</p>
@@ -100,7 +100,7 @@ const Summary: FC = () => {
                                 <p>SMS</p>
                             </div>
                         </div>
-                        <div className="checkboxes-bottom">
+                        <div className="checkbox-wrapper">
                             <div className="checkbox innlevert-luka">
                                 <input type="checkbox" checked={!!config.footer.bottom.innlevertLuka} readOnly />
                                 <p>Innlevert i luka</p>
@@ -112,7 +112,7 @@ const Summary: FC = () => {
                         </div>
                     </div>
                 </div>
-            </div>}
+            </div>
         </div>}
     </div>
 }
