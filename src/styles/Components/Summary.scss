@@ -44,44 +44,90 @@
         }
     }
 
-    .footer {        
+    .footer {       
+        margin: 5px;
+
         p {
-            margin: 0 0 0 5px;
+            margin: 0;
         }
 
         .footer-top {
-            > div {
-                margin: 5px
+            .title {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+
+            .content {
+                display: flex;
+                margin-bottom: 5px;
+
+                > div {
+                    width: 100%;
+                }
+
+                .footer-top-left {
+                    display: flex;
+                
+                    > div {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 5px;
+                        width: 100%;
+                    }
+                }
+
+                .footer-top-right {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                }
             }
         }
         
         .footer-bottom {
-            > div {
-                margin: 5px
+            .title {
+                font-weight: bold;
+                margin-bottom: 5px;
             }
-            
-            .checkboxes {
 
-                .checkboxes-top,
-                .checkboxes-middle,
-                .checkboxes-bottom {
+            .content {
+                display: flex;
+
+                > div {
+                    width: 100%;
+                }
+
+                .additional-info {
                     display: flex;
-                    align-items: center;
-                    margin: 5px 0;
+                    flex-direction: column;
                     gap: 5px;
                 }
 
-                .checkbox {
+                .checkboxes {
                     display: flex;
-                    align-items: center;
-    
-                    input {
-                        margin: 0;
-                        height: min-content;
+                    flex-direction: column;
+                    gap: 5px;
+
+                    .checkboxes-top,
+                    .checkboxes-middle,
+                    .checkboxes-bottom {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                    }
+
+                    .checkbox {
+                        display: flex;
+                        gap: 5px;
+                        align-items: center;
+        
+                        input {
+                            margin: 0;
+                            height: min-content;
+                        }
                     }
                 }
             }
-
         }
     }
 
