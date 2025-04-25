@@ -51,15 +51,27 @@
             margin: 0;
         }
 
-        .footer-top {
-            .title {
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
+        .title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
 
+        .grid {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            column-gap: 5px;
+            row-gap: 5px;
+            
+            p {
+                display: contents;
+            }
+        }
+
+        .footer-top {
+            margin-bottom: 5px;
+            
             .content {
                 display: flex;
-                margin-bottom: 5px;
 
                 > div {
                     width: 100%;
@@ -67,40 +79,22 @@
 
                 .footer-top-left {
                     display: flex;
-                
+                    align-items: flex-start;
+                    
                     > div {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 5px;
                         width: 100%;
                     }
-                }
-
-                .footer-top-right {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 5px;
                 }
             }
         }
         
         .footer-bottom {
-            .title {
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
-
             .content {
                 display: flex;
+                align-items: flex-start;
 
                 > div {
                     width: 100%;
-                }
-
-                .additional-info {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 5px;
                 }
 
                 .checkboxes {

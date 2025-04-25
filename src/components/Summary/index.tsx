@@ -46,67 +46,67 @@ const Summary: FC = () => {
                 <p className="title">Pasientopplysninger og behandlingsrisiko</p>
                 <div className="content">
                     <div className="footer-top-left">
-                        <div className="høyde-vekt">
-                            <p className="høyde">Høyde {config.footer.top.høyde}</p>
-                            <p className="vekt">Vekt {config.footer.top.vekt}</p>
+                        <div className="høyde-vekt grid">
+                            <p className="høyde"><span>Høyde</span><span>{config.footer.top.høyde}</span></p>
+                            <p className="vekt"><span>Vekt</span><span>{config.footer.top.vekt}</span></p>
                         </div>
-                        <div className="skadeside-skadetype-gipslager">
-                            <p className="skadeside">Skadeside {config.footer.top.skadeside}</p>
-                            <p className="skadetype">Skadetype {config.footer.top.skadetype}</p>
-                            <p className="gipslager">Gipslager {config.footer.top.gipslager}</p>
+                        <div className="skadeside-skadetype-gipslager grid">
+                            <p className="skadeside"><span>Skadeside</span><span>{config.footer.top.skadeside}</span></p>
+                            <p className="skadetype"><span>Skadetype</span><span>{config.footer.top.skadetype}</span></p>
+                            <p className="gipslager"><span>Gipslager</span><span>{config.footer.top.gipslager}</span></p>
                         </div>
                     </div>
-                    <div className="footer-top-right">
-                        <p className="behandlingsrisiko">Beh. risiko {config.footer.top.behandlingsrisiko}</p>
-                        <p className="kommunikasjonsbehov">Kom. behov {config.footer.top.kommunikasjonsbehov}</p>
-                        <p className="sted">Sted: {config.footer.top.sted}</p>
+                    <div className="footer-top-right grid">
+                        <p className="behandlingsrisiko"><span>Beh. risiko</span><span>{config.footer.top.behandlingsrisiko}</span></p>
+                        <p className="kommunikasjonsbehov"><span>Kom. behov</span><span>{config.footer.top.kommunikasjonsbehov}</span></p>
+                        <p className="sted"><span>Sted:</span><span>{config.footer.top.sted}</span></p>
                     </div>
                 </div>
             </div>}
             {config.footer.bottom && <div className="footer-bottom">
                 <p className="title">Prøving og levering</p>
                 <div className="content">
-                    <div className="additional-info">
-                        <p className="timeavtaler">Timeavtaler ordre {config.footer.bottom.timeavtaler}</p>
-                        <p className="prøvedato">Prøvedato {config.footer.bottom.prøvedato}</p>
-                        <p className="planlagtLevering">Planlagt levering {config.footer.bottom.planlagtLevering}</p>
+                    <div className="additional-info grid">
+                        <p className="timeavtaler"><span>Timeavtaler ordre</span><span>{config.footer.bottom.timeavtaler}</span></p>
+                        <p className="prøvedato"><span>Prøvedato</span><span>{config.footer.bottom.prøvedato}</span></p>
+                        <p className="planlagtLevering"><span>Planlagt levering</span><span>{config.footer.bottom.planlagtLevering}</span></p>
                     </div>
                     <div className="checkboxes">
                         <div className="checkboxes-top">
                             <div className="checkbox ingeniør">
-                                <input type="checkbox" checked={config.footer.bottom.ingeniør} readOnly />
+                                <input type="checkbox" checked={!!config.footer.bottom.ingeniør} readOnly />
                                 <p>Ingeniør</p>
                             </div>
                             <div className="checkbox skoklinikk">
-                                <input type="checkbox" checked={config.footer.bottom.skoklinikk} readOnly />
+                                <input type="checkbox" checked={!!config.footer.bottom.skoklinikk} readOnly />
                                 <p>Skoklinikk</p>
                             </div>
                         </div>
                         <div className="checkbox send-post">
-                            <input type="checkbox" checked={config.footer.bottom.sendPost} readOnly />
+                            <input type="checkbox" checked={!!config.footer.bottom.sendPost} readOnly />
                             <p>Send med posten</p>
                         </div>
                         <div className="checkboxes-middle">
                             <div className="checkbox brev">
-                                <input type="checkbox" checked={config.footer.bottom.brev} readOnly />
+                                <input type="checkbox" checked={!!config.footer.bottom.brev} readOnly />
                                 <p>Brev</p>
                             </div>
                             <div className="checkbox ring">
-                                <input type="checkbox" checked={config.footer.bottom.ring} readOnly />
+                                <input type="checkbox" checked={!!config.footer.bottom.ring} readOnly />
                                 <p>Ringes</p>
                             </div>
                             <div className="checkbox sms">
-                                <input type="checkbox" checked={config.footer.bottom.sms} readOnly />
+                                <input type="checkbox" checked={!!config.footer.bottom.sms} readOnly />
                                 <p>SMS</p>
                             </div>
                         </div>
                         <div className="checkboxes-bottom">
                             <div className="checkbox innlevert-luka">
-                                <input type="checkbox" checked={config.footer.bottom.innlevertLuka} readOnly />
+                                <input type="checkbox" checked={!!config.footer.bottom.innlevertLuka} readOnly />
                                 <p>Innlevert i luka</p>
                             </div>
                             <div className="checkbox tilsendt-post">
-                                <input type="checkbox" checked={config.footer.bottom.tilsendtPost} readOnly />
+                                <input type="checkbox" checked={!!config.footer.bottom.tilsendtPost} readOnly />
                                 <p>Tilsendt per post</p>
                             </div>
                         </div>
