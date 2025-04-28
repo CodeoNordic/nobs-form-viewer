@@ -25,46 +25,38 @@ declare global {
             locale: "no"|"en";
 
             header?: {
-                leftColumn?: {
-                    navn?: string;
-                    født?: string;
-                    kjønn?: string;
-                    adresse?: string;
-                    telefon?: string;
-                }
-                rightColumn?: {
-                    ordrenummer?: string;
-                    ordredato?: string;
-                    type?: string;
-                    ortopediingeniør?: string;
-                    prodansvarlig?: string;
-                }
+                navn?: string;
+                født?: string;
+                kjønn?: string;
+                adresse?: string;
+                telefon?: string;
+                ordrenummer?: string;
+                ordredato?: string;
+                type?: string;
+                ortopediingeniør?: string;
+                prodansvarlig?: string;                
             }
 
             footer?: {
-                top: {
-                    høyde?: string;
-                    vekt?: string;
-                    skadeside?: string;
-                    skadetype?: string;
-                    gipslager?: string;
-                    behandlingsrisiko?: string;
-                    kommunikasjonsbehov?: string;
-                    sted?: string;
-                }
-                bottom: {
-                    timeavtaler?: string;
-                    prøvedato?: string;
-                    planlagtLevering?: string;
-                    ingeniør?: boolean;
-                    skoklinikk?: boolean;
-                    sendPost?: boolean;
-                    brev?: boolean;
-                    ring?: boolean;
-                    sms?: boolean;
-                    innlevertLuka?: boolean;
-                    tilsendtPost?: boolean;
-                }
+                høyde?: string;
+                vekt?: string;
+                skadeside?: string;
+                skadetype?: string;
+                gipslager?: string;
+                behandlingsrisiko?: string;
+                kommunikasjonsbehov?: string;
+                sted?: string;
+                timeavtaler?: string;
+                prøvedato?: string;
+                planlagtLevering?: string;
+                ingeniør?: boolean;
+                skoklinikk?: boolean;
+                sendPost?: boolean;
+                brev?: boolean;
+                ring?: boolean;
+                sms?: boolean;
+                innlevertLuka?: boolean;
+                tilsendtPost?: boolean; 
             }
 
             scriptNames?: Form.ScriptNames;
