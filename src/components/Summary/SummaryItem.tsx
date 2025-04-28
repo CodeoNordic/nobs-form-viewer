@@ -35,7 +35,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div style={{ display: "flex" }}>
-                {(element.titleLocation != "hidden" && element.title != "" && element.type != undefined) && (
+                {(element.titleLocation != "hidden" && element.title != "" && element.type != undefined && (element.type != "panel" || element.title)) && (
                     <p>{!element.elements 
                         ? (element.titleLocation == "hidden"
                             ? "" 
@@ -96,7 +96,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
                     <div className="row-header">
                         <p>1</p>
                     </div>
-                    {element.columns.map((column: any, index: number) =>
+                    {element.columns.map((_: any, index: number) =>
                         <div key={index} className="column"/>
                     )}
                 </div>}

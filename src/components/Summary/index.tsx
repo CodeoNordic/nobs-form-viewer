@@ -21,13 +21,13 @@ const Summary: FC = () => {
     }, [config.answerData, survey]);
 
     return <div className="summary">
-        {config.header && <Header />}
+        <Header />
         {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
         {(survey.description && survey.showTitle !== false) && <p className="description">{survey.description}</p>}
         {survey.pages.map((page: any, index: number) => {
             return <SummaryItem key={index} element={page} answers={answers} />;
         })}
-        {config.footer && <Footer />}
+        <Footer />
     </div>
 }
 
