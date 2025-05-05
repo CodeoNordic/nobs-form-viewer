@@ -26,19 +26,19 @@ declare global {
 
             header?: {
                 navn?: string;
-                født?: string;
-                kjønn?: string;
+                fodt?: string;
+                kjonn?: string;
                 adresse?: string;
                 telefon?: string;
                 ordrenummer?: string;
                 ordredato?: string;
                 type?: string;
-                ortopediingeniør?: string;
+                ortopediingenior?: string;
                 prodansvarlig?: string;                
             }
 
             footer?: {
-                høyde?: string;
+                hoyde?: string;
                 vekt?: string;
                 skadeside?: string;
                 skadetype?: string;
@@ -47,9 +47,9 @@ declare global {
                 kommunikasjonsbehov?: string;
                 sted?: string;
                 timeavtaler?: string;
-                prøvedato?: string;
+                provedato?: string;
                 planlagtLevering?: string;
-                ingeniør?: boolean;
+                ingenior?: boolean;
                 skoklinikk?: boolean;
                 sendPost?: boolean;
                 brev?: boolean;

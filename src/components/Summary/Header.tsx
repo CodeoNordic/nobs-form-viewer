@@ -10,7 +10,7 @@ const Header: FC = () => {
             <div className="header-left">
                 <p className="navn">{config.header.navn}</p>
                 <p className="født-kjønn">
-                    Født: {config.header.født}, Kjønn: {config.header.kjønn}
+                    Født: {config.header.fodt}, Kjønn: {config.header.kjonn}
                 </p>
                 <p className="adresse">{config.header.adresse}</p>
                 <p className="telefon">Telefon: {config.header.telefon}</p>
@@ -19,7 +19,7 @@ const Header: FC = () => {
                 <p className="ordrenummer">{config.header.ordrenummer}</p>
                 <p className="ordredato">Ordredato: <strong>{config.header.ordredato}</strong></p>
                 <p className="type">{config.header.type}</p>
-                <p className="ortopediingeniør">Ortopediingeniør: <strong>{config.header.ortopediingeniør}</strong></p>
+                <p className="ortopediingenior">Ortopediingeniør: <strong>{config.header.ortopediingenior}</strong></p>
                 <p className="prodansvarlig">Prod. ansvarlig: <strong>{config.header.prodansvarlig}</strong></p>
             </div>
         </div>

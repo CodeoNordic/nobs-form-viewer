@@ -12,7 +12,7 @@ const Footer: FC = () => {
                 <div className="content flex">
                     <div className="flex">
                         <div className="grid">
-                            <p className="høyde"><span>Høyde</span><span>{config.footer.høyde}</span></p>
+                            <p className="hoyde"><span>Høyde</span><span>{config.footer.hoyde}</span></p>
                             <p className="vekt"><span>Vekt</span><span>{config.footer.vekt}</span></p>
                         </div>
                         <div className="grid">
@@ -33,13 +33,13 @@ const Footer: FC = () => {
                 <div className="content flex">
                     <div className="grid">
                         <p className="timeavtaler"><span>Timeavtaler ordre</span><span>{config.footer.timeavtaler}</span></p>
-                        <p className="prøvedato"><span>Prøvedato</span><span>{config.footer.prøvedato}</span></p>
+                        <p className="provedato"><span>Prøvedato</span><span>{config.footer.provedato}</span></p>
                         <p className="planlagtLevering"><span>Planlagt levering</span><span>{config.footer.planlagtLevering}</span></p>
                     </div>
                     <div className="checkboxes">
                         <div className="checkbox-wrapper">
-                            <div className="checkbox ingeniør">
-                                <input type="checkbox" checked={!!config.footer.ingeniør} readOnly />
+                            <div className="checkbox ingenior">
+                                <input type="checkbox" checked={!!config.footer.ingenior} readOnly />
                                 <p>Ingeniør</p>
                             </div>
                             <div className="checkbox skoklinikk">
