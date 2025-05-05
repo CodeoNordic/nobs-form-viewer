@@ -19,7 +19,7 @@ const Header: FC = () => {
                 <p className="ordrenummer">{config.header.ordrenummer}</p>
                 <p className="ordredato">Ordredato: <strong>{config.header.ordredato}</strong></p>
                 <p className="type">{config.header.type}</p>
-                <p className="ortopediingenior">Ortopediingeniør: <strong>{config.header.ortopediingenior}</strong></p>
+                <p className="ortopediingeniør">Ortopediingeniør: <strong>{config.header.ortopediingenior}</strong></p>
                 <p className="prodansvarlig">Prod. ansvarlig: <strong>{config.header.prodansvarlig}</strong></p>
             </div>
         </div>

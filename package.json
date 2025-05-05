@@ -16,7 +16,7 @@
     "types": false
   },
   "scripts": {
-    "start": "parcel --no-cache --no-source-maps --no-hmr",
+    "start": "parcel --no-cache --no-source-maps",
     "build": "rimraf .parcel-cache dist && parcel build --no-cache --no-scope-hoist",
     "b:build": "rm -rf .parcel-cache dist && parcel build --no-cache --no-scope-hoist",
     "upload": "node upload.js",
