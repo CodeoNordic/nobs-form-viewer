@@ -21,6 +21,9 @@ declare global {
             // Hides the questions that have not been answered in the summary
             hideUnanswered?: boolean;
 
+            // Hides the button to complete the form
+            hideCompleteButton?: boolean;
+
             // The language of the form, can be more if needed
             locale: "no"|"en";
 

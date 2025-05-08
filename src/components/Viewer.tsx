@@ -139,8 +139,13 @@ const FormViewer: FC = () => {
             }
         });
         
+        if (config.hideCompleteButton) {
+            const completeButton = newSurvey.navigationBar.actions.find(x => x.id === "sv-nav-complete");
+            completeButton && newSurvey.navigationBar.actions.splice(newSurvey.navigationBar.actions.indexOf(completeButton), 1);
+        }
+
         return newSurvey;
-    }, [config.value, config.locale, config.compact, config.scriptNames]); // Add deps that should trigger a re-render
+    }, [config.value, config.locale, config.compact, config.scriptNames, config.hideCompleteButton]); // Add deps that should trigger a re-render
 
     return <Survey model={survey} />;
 }
