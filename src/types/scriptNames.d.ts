@@ -1,9 +1,6 @@
 declare global {
     namespace Form {
         interface ScriptNames {
-            /** Script to be ran when autosave triggers */
-            autoSave?: string;
-
             /** Script to be ran to validate a question. Return {status: boolean, message?: string} */
             validate?: string;
 

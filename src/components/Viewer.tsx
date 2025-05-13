@@ -46,6 +46,8 @@ const FormViewer: FC = () => {
 
         // Save answer data on answer and page change
         const saveAnswerData = (result: Model) => {
+            console.log("Saving answer data", result);
+
             const data = result.data;
             data.pageNo = result.currentPageNo;
 
