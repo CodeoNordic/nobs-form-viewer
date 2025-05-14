@@ -36,7 +36,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div style={{ display: "flex" }}>
                 {(element.titleLocation != "hidden" && element.title != "" && element.type != undefined && (element.type != "panel" || element.title)) && (
-                    <p>{!element.elements 
+                    <p className="question-title">{!element.elements 
                         ? (element.titleLocation == "hidden"
                             ? "" 
                             : element.title 
@@ -46,13 +46,13 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
                     }</p>
                 )}
                 {(element.inputType == "color" && answers[element.name]) && <div className="color-box" style={{ backgroundColor: answers[element.name] }}></div>}
-                {(element.inputType == "range" && answers[element.name]) && <p>{answers[element.name]}%</p>}
+                {(element.inputType == "range" && answers[element.name]) && <p className="question-answer">{answers[element.name]}%</p>}
                 {(element.inputType !== "color" 
                     && element.inputType !== "range" 
                     && element.type !== "imagepicker"
                     && typeof answers[element.name] !== "object" 
                     && answers[element.name] != undefined
-                ) && <p>{
+                ) && <p className="question-answer">{
                     answers[element.name]
                 }</p>}
             </div>

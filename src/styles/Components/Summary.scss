@@ -99,9 +99,14 @@
     }
 
     .sub-elements {
+        border-radius: 5px;
         border: 1px solid black;
-        margin: -1px;
-        background-color: white;
+        margin: 1px;
+        background-color: #f5f5f5;
+    }
+
+    .question-title {
+        font-weight: bold;
     }
 
     .no-new-line {
