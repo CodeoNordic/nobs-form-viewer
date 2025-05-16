@@ -158,6 +158,11 @@
     }
 
     &.default {
+        .title{
+            font-weight: bold;
+            font-size: large;
+        }
+
         .question-title {
             font-weight: bold;
         }

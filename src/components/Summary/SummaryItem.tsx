@@ -32,6 +32,26 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
 
     if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 
+    const checkForAnswers = (answers: any, elements: any) => {
+        return elements.some((subElement: any) => {
+            if (subElement.type == "text" || subElement.type == "matrix") {
+                return answers[subElement.name] != undefined;
+            } else if (subElement.elements) {
+                return checkForAnswers(answers, subElement.elements);
+            } else {
+                return false;
+            }
+        });
+    }
+
+    if (newElements.length > 0 && config?.hideUnanswered) {
+        const hasAnswers = checkForAnswers(answers, newElements);
+        console.log("hasAnswers", hasAnswers, newElements);
+
+        if (!hasAnswers) return null;
+    }
+
+
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div style={{ 
