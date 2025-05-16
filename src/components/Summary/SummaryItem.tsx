@@ -44,6 +44,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
         });
     }
 
+    // Check if any subelements of the panel or page have answers
     if (newElements.length > 0 && config?.hideUnanswered) {
         const hasAnswers = checkForAnswers(answers, newElements);
         console.log("hasAnswers", hasAnswers, newElements);
