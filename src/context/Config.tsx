@@ -5,6 +5,8 @@ import { warn } from '@utils/log';
 const defaultConfig: Partial<Form.Config> = {
     type: 'viewer',
     locale: 'no',
+    compact: false,
+    style: 'default',
     hideUnanswered: false,
 };
 
@@ -76,9 +78,14 @@ const validateConfig = (config: any): Form.Config => {
         }
     }
 
+    if (config.style && !['minimal', 'default'].includes(config.style)) {
+        warn(`Invalid style "${config.style}", defaulting to "${defaultConfig.style}"`);
+        validatedConfig.style = defaultConfig.style;
+    }
+
     if (config.hideUnanswered && typeof config.hideUnanswered !== 'boolean') {
-        warn("hideUnanswered must be a boolean, defaulting to false.");
-        validatedConfig.hideUnanswered = false;
+        warn(`Invalid hideUnanswered "${config.hideUnanswered}", defaulting to "${defaultConfig.hideUnanswered}"`);
+        validatedConfig.hideUnanswered = defaultConfig.hideUnanswered;
     }
 
     // Add additional validation

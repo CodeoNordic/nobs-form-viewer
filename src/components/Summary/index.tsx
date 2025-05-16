@@ -20,7 +20,9 @@ const Summary: FC = () => {
         return newAnswers;
     }, [config.answerData, survey]);
 
-    return <div className="summary">
+    console.log("answers", answers);
+
+    return <div className={"summary" + (config.style ? " " + config.style : "")}>
         <Header />
         {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
         {(survey.description && survey.showTitle !== false) && <p className="description">{survey.description}</p>}
