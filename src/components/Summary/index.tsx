@@ -20,15 +20,13 @@ const Summary: FC = () => {
         return newAnswers;
     }, [config.answerData, survey]);
 
-    console.log("answers", answers);
-
     return <div className={"summary" + (config.style ? " " + config.style : "")}>
         <Header />
         {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
         {(survey.description && survey.showTitle !== false) && <p className="description">{survey.description}</p>}
-        {survey.pages.map((page: any, index: number) => {
-            return <SummaryItem key={index} element={page} answers={answers} />;
-        })}
+        {survey.pages.map((page: any, index: number) => 
+            <SummaryItem key={index} element={page} answers={answers} />
+        )}
         <Footer />
     </div>
 

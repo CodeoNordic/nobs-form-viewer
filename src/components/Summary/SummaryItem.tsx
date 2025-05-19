@@ -52,14 +52,13 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
         if (!hasAnswers) return null;
     }
 
-
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div style={{ 
                 display: "flex", 
                 alignItems: "center",
             }}>
-                {(element.titleLocation != "hidden" && element.title != "" && element.type != undefined && (element.type != "panel" || element.title)) && (
+                {(element.titleLocation != "hidden" && ((element.type != undefined && element.type != "panel") || (element.title != undefined && element.title != ""))) && (
                     <p className="question-title">{!element.elements 
                         ? (element.titleLocation == "hidden"
                             ? "" 
