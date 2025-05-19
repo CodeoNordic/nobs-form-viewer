@@ -46,13 +46,15 @@ const FormViewer: FC = () => {
 
         // Save answer data on answer and page change
         const saveAnswerData = (result: Model) => {
-            console.log("Saving answer data", result);
-
+            const hasErrors = result.hasErrors(false);
             const data = result.data;
             data.pageNo = result.currentPageNo;
 
             if (config.scriptNames?.onChange) {
-                performScript("onChange", { result: data });
+                performScript("onChange", { 
+                    result: data,
+                    hasErrors
+                });
             }
 
             setConfig({ ...config, answerData: JSON.stringify(data) });
