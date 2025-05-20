@@ -32,12 +32,12 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
 
     if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 
-    const checkForAnswers = (answers: any, elements: any) => {
+    const checkForAnswers = (elements: any) => {
         return elements.some((subElement: any) => {
-            if (subElement.type == "text" || subElement.type == "matrix") {
-                return answers[subElement.name] != undefined;
+            if (answers[subElement.name] != undefined) {
+                return true;
             } else if (subElement.elements) {
-                return checkForAnswers(answers, subElement.elements);
+                return checkForAnswers(subElement.elements);
             } else {
                 return false;
             }
@@ -46,18 +46,13 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
 
     // Check if any subelements of the panel or page have answers
     if (newElements.length > 0 && config?.hideUnanswered) {
-        const hasAnswers = checkForAnswers(answers, newElements);
-        console.log("hasAnswers", hasAnswers, newElements);
-
+        const hasAnswers = checkForAnswers(newElements);
         if (!hasAnswers) return null;
     }
 
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
-            <div style={{ 
-                display: "flex", 
-                alignItems: "center",
-            }}>
+            <div className="question-content">
                 {(element.titleLocation != "hidden" && ((element.type != undefined && element.type != "panel") || (element.title != undefined && element.title != ""))) && (
                     <p className="question-title">{!element.elements 
                         ? (element.titleLocation == "hidden"
