@@ -191,6 +191,53 @@
             margin: 1px;
             background-color: #e0e1ff;
         }
+
+        .matrix,
+        .matrixdropdown,
+        .matrixdynamic {
+            // Note: added extra margin because of the border
+            margin: 0 5px 2px 0;
+
+            .row-header {
+                min-width: 100px;
+                width: 100px;
+                margin-right: 25px;
+            }
+
+            .column-header p,
+            .row-header p {
+                font-weight: bold;
+                margin-right: 0;
+            }
+
+            .row {
+                .column:nth-child(2) {
+                    margin-left: 4px;
+                }
+            }
+            
+            .row:nth-child(2) {
+                .column:nth-child(2) {
+                    border-top-left-radius: 5px;
+                }
+                .column:last-child {
+                    border-top-right-radius: 5px;
+                }
+            }
+
+            .row:last-of-type {
+                .column:nth-child(2) {
+                    border-bottom-left-radius: 5px;
+                }
+                .column:last-child {
+                    border-bottom-right-radius: 5px;
+                }
+            }
+
+            .column {
+                background-color: #fff;
+            }
+        }
     }
 
     &.minimal {

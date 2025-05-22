@@ -87,7 +87,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
             </div>}
             {element.type == "matrixdynamic" && <div>
                 <div className="column-header">
-                    <div></div> {/* Empty div for the first column */}
+                    <div className="row-header"></div> {/* Empty div for the first column */}
                     {element.columns.map((column: any, index: number) =>
                         <div key={index}><p>{column.text ?? column.title ?? column.name ?? column}</p></div>
                     )}
@@ -121,7 +121,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
             </div>}
             {(element.type == "matrix" || element.type == "matrixdropdown") && <div>
                 <div className="column-header">
-                    <div></div> {/* Empty div for the first column */}
+                    <div className="row-header"></div> {/* Empty div for the first column */}
                     {element.columns.map((column: any, index: number) =>
                         <div key={index}><p>{column.text ?? column.name ?? column}</p></div>
                     )}
