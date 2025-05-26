@@ -50,10 +50,21 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
         if (!hasAnswers) return null;
     }
 
+    const hasTitle = element.titleLocation != "hidden" && 
+        (
+            (element.type != undefined && element.type != "panel") || 
+            (element.title != undefined && (element.title as string).trim() != "")
+        );
+
+    // If there are no answers, no title and no sub-elements, return null
+    if (!answers[element.name] && newElements.length == 0 && !hasTitle) {
+        return null;
+    }
+
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div className="question-content">
-                {(element.titleLocation != "hidden" && ((element.type != undefined && element.type != "panel") || (element.title != undefined && element.title != ""))) && (
+                {hasTitle && (
                     <p className="question-title">{!element.elements 
                         ? (element.titleLocation == "hidden"
                             ? "" 
