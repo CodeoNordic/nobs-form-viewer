@@ -105,9 +105,10 @@
 
     .no-new-line {
         display: flex;
+        flex-wrap: wrap;
 
         > div {
-            width: 100%;
+            flex: 1 1 50%;
         }
     }
 
@@ -194,7 +195,7 @@
     
         .sub-elements {
             border-radius: 5px;
-            margin: 1px;
+            margin: 0 1px;
             background-color: var(--background-color-secondary);
         }
 
