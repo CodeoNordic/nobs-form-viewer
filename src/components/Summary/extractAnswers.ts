@@ -21,7 +21,9 @@ export default function extractAnswers(answers: any, survey: any, config: any) {
     });
 
     questions.forEach((question: any) => {
-        if (answers[question.name] == undefined) { // No answer
+        console.log("Processing question:", question.name, question.title, "Type:", question.type);
+
+        if (!answers[question.name]) { // No answer
         } else if (question.type == "matrix" || question.type == "matrixdropdown") { // Matrix question, with rows and columns
             let answer: { [key: string]: any } = {};
 
@@ -87,10 +89,13 @@ export default function extractAnswers(answers: any, survey: any, config: any) {
                         return choice.value === answers[question.name];
                     }
                 });
-
-                newAnswers[question.name] = typeof choice === "string" ? choice : choice.text;
+                if (choice) {
+                    newAnswers[question.name] = typeof choice === "string" ? choice : choice.text;
+                }
             }
         } else if (question.type == "text") {
+            console.log(answers[question.name], question.name, question.type);
+
             if (question.inputType == "date") {
                 newAnswers[question.name] = new Date(answers[question.name]).toLocaleDateString(config?.locale, { year: 'numeric', month: '2-digit', day: '2-digit' });
             } else if (question.inputType == "datetime-local") {
@@ -113,7 +118,7 @@ export default function extractAnswers(answers: any, survey: any, config: any) {
             })
 
             newAnswers[question.name] = answer;
-        } else { // Questions without choices (text, number, etc)
+        } else { // Questions without choices (comment, number, etc)
             newAnswers[question.name] = answers[question.name];
         }
     });

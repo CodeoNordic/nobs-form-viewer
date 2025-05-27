@@ -4,6 +4,9 @@ declare global {
             // The form data, in json format
             value?: string;
 
+            // Old data, used to convert to the new format
+            oldData?: any;
+
             // The current answers to the form, updated along the way. 
             // Use to continue where the user left off 
             answerData?: string; 

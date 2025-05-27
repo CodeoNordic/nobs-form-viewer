@@ -10,12 +10,28 @@ const Summary: FC = () => {
 
     if (!config) return null;
 
+    if (config.oldData) {
+        console.log(config.oldData);
+    }
+
     const survey = JSON.parse(config.value!);
 
     const answers = useMemo(() => {
         const jsonAnswers = JSON.parse(config.answerData || '{}');
 
+        if (!jsonAnswers || Object.keys(jsonAnswers).length === 0 && config.oldData) {
+            console.log("survey", survey)
+
+            Object.keys(config.oldData).forEach((key, index) => {
+                jsonAnswers["spørsmål" + index] = config.oldData[key].value;
+            })
+
+            console.log("answers", jsonAnswers);
+        }
+
         const newAnswers = extractAnswers(jsonAnswers, survey, config);
+
+        console.log("Extracted answers:", newAnswers);
 
         return newAnswers;
     }, [config.answerData, survey]);
