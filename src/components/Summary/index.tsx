@@ -23,10 +23,8 @@ const Summary: FC = () => {
             console.log("survey", survey)
 
             Object.keys(config.oldData).forEach((key, index) => {
-                jsonAnswers["spørsmål" + index] = config.oldData[key].value;
+                jsonAnswers[key] = config.oldData[key].value;
             })
-
-            console.log("answers", jsonAnswers);
         }
 
         const newAnswers = extractAnswers(jsonAnswers, survey, config);
