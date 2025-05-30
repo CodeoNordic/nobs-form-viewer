@@ -7,6 +7,13 @@ declare global {
             // Old data, used to convert to the new format
             oldData?: any;
 
+            // Answers to the form, used for a kind of version control 
+            answers?: {
+                answer: string;
+                user: string;
+                timestamp?: string;   
+            }[];
+
             // The current answers to the form, updated along the way. 
             // Use to continue where the user left off 
             answerData?: string; 

@@ -7,6 +7,46 @@
     p {
         margin: 3px 4px;
     }
+
+    &__content {
+        position: relative;
+    }
+
+    .change-history {
+
+        &__badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+
+            &:hover { 
+                background: var(--background-color); 
+            }
+        }
+
+        &__panel {
+            position: absolute;
+            bottom: 8px;
+            right: 0;
+            width: 18rem;
+            background: var(--background-color-secondary);
+            border: 1px solid var(--border-color);
+            z-index: 10;
+
+            ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+
+            li {
+                display: flex;
+                gap: 0.5rem;
+                padding: 0.5rem 0.75rem;
+                cursor: pointer;
+            }
+        }
+    }
     
     .header {
         display: flex;

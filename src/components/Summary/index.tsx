@@ -1,12 +1,16 @@
-import { useConfig } from "@context/Config";
-import { useMemo } from "react";
+import { useConfigState } from "@context/Config";
+import { useMemo, useState } from "react";
 import SummaryItem from "./SummaryItem";
 import extractAnswers from "./extractAnswers";
 import Footer from "./Footer";
 import Header from "./Header";
+import { getTimeAgo } from "@utils/timeAgo";
 
 const Summary: FC = () => {
-    const config = useConfig();
+    const [vcOpen, setVcOpen] = useState(false);
+    const [viewingChanges, setViewingChanges] = useState(false);
+    const [answerData, setAnswerData] = useState<string | null>(null);
+    const [config, setConfig] = useConfigState();
 
     if (!config) return null;
 
@@ -20,8 +24,6 @@ const Summary: FC = () => {
         const jsonAnswers = JSON.parse(config.answerData || '{}');
 
         if (!jsonAnswers || Object.keys(jsonAnswers).length === 0 && config.oldData) {
-            console.log("survey", survey)
-
             Object.keys(config.oldData).forEach((key, index) => {
                 jsonAnswers[key] = config.oldData[key].value;
             })
@@ -29,18 +31,89 @@ const Summary: FC = () => {
 
         const newAnswers = extractAnswers(jsonAnswers, survey, config);
 
-        console.log("Extracted answers:", newAnswers);
-
         return newAnswers;
     }, [config.answerData, survey]);
 
+    if (config.answers && config.answers.length > 0) {
+        // TODO: order changes by timestamp or smtn
+    }
+
     return <div className={"summary" + (config.style ? " " + config.style : "")}>
         <Header />
-        {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
-        {(survey.description && survey.showTitle !== false) && <p className="description">{survey.description}</p>}
-        {survey.pages.map((page: any, index: number) => 
-            <SummaryItem key={index} element={page} answers={answers} />
-        )}
+        <div className="summary__content">
+            {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
+            {(survey.description && survey.showTitle !== false) && <p className="description">{survey.description}</p>}
+            {survey.pages.map((page: any, index: number) => 
+                <SummaryItem key={index} element={page} answers={answers} />
+            )}
+            {config.answers && config.answers.length > 0 && (
+                <div className="change-history">
+                    <button
+                        className="change-history__badge"
+                        aria-label="Show change history"
+                        onClick={() => setVcOpen(!vcOpen)}
+                    >
+                        {config.locale === "no" ? "Endringshistorikk" : "Changes history"} ({config.answers.length})
+                    </button>
+                    {vcOpen && (
+                        <div className="change-history__panel">
+                            <button
+                                className="change-history__close"
+                                onClick={() => {
+                                    setVcOpen(false);
+                                    setViewingChanges(false);
+                                    setAnswerData(null);
+                                    setConfig((prev): any => ({
+                                        ...prev,
+                                        answerData: answerData || '',
+                                    }));
+                                }}
+                            >
+                                {config.locale === 'no' ? 'Lukk' : 'Close'}
+                            </button>
+                            {viewingChanges && (
+                                <button
+                                    className="change-history__close"
+                                    onClick={() => {
+                                        setViewingChanges(false);
+                                        setAnswerData(null);
+                                        setConfig((prev): any => ({
+                                            ...prev,
+                                            answerData: answerData || '',
+                                        }));
+                                    }}
+                                >
+                                    {config.locale === 'no' ? 'Stopp visning av endringer' : 'Stop viewing changes'}
+                                </button>
+                            )}
+                            
+                            <ul>
+                                {config.answers.map((h, index) => (
+                                    <li
+                                        key={index}
+                                        onClick={() => {
+                                            !answerData && setAnswerData(config.answerData || null);
+                                            setConfig((prev): any => ({
+                                                ...prev,
+                                                answerData: h.answer,
+                                            }));
+                                            setViewingChanges(true);
+                                        }}
+                                    >
+                                        <div className="meta">
+                                            <span className="user">{h.user}</span>{' '}
+                                            {h.timestamp && (
+                                                getTimeAgo(h.timestamp)
+                                            )}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
         <Footer />
     </div>
 

@@ -21,8 +21,6 @@ export default function extractAnswers(answers: any, survey: any, config: any) {
     });
 
     questions.forEach((question: any) => {
-        console.log("Processing question:", question.name, question.title, "Type:", question.type);
-
         if (!answers[question.name]) { // No answer
         } else if (question.type == "matrix" || question.type == "matrixdropdown") { // Matrix question, with rows and columns
             let answer: { [key: string]: any } = {};
@@ -94,8 +92,6 @@ export default function extractAnswers(answers: any, survey: any, config: any) {
                 }
             }
         } else if (question.type == "text") {
-            console.log(answers[question.name], question.name, question.type);
-
             if (question.inputType == "date") {
                 newAnswers[question.name] = new Date(answers[question.name]).toLocaleDateString(config?.locale, { year: 'numeric', month: '2-digit', day: '2-digit' });
             } else if (question.inputType == "datetime-local") {
