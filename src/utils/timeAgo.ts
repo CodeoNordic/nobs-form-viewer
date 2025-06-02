@@ -7,26 +7,31 @@ export const getTimeAgo = (date: string) => {
     const minutes = Math.floor((sinceUploadMs / (1000 * 60)) % 60);
     const seconds = Math.floor((sinceUploadMs / 1000) % 60);
 
-    const translations = {
-        years: window._config?.locale === 'no' ? 'år' : years === 1 ? 'year' : 'years',
-        months: window._config?.locale === 'no' ? 'måneder' : months === 1 ? 'month' : 'months',
-        days: window._config?.locale === 'no' ? 'dager' : days === 1 ? 'day' : 'days',
-        hours: window._config?.locale === 'no' ? 'timer' : hours === 1 ? 'hour' : 'hours',
-        minutes: window._config?.locale === 'no' ? 'minutter' : minutes === 1 ? 'minute' : 'minutes',
-        seconds: window._config?.locale === 'no' ? 'sekunder' : seconds === 1 ? 'second' : 'seconds',
-    }
+    const isNo = window._config?.locale === 'no';
 
-    return years > 0 ?
-        `${years} ${translations.years} ago` :
-        months > 0 ?
-        `${months} ${translations.months} ago` :
-        days > 0 ?
-        `${days} ${translations.days} ago` :
-        hours > 0 ?
-        `${hours} ${translations.hours} ago` :
-        minutes > 0 ?
-        `${minutes} ${translations.minutes} ago` :
-        seconds > 0 ?
-        `${seconds} ${translations.seconds} ago` :
-        (window._config?.locale === 'no' ? 'akkurat nå' : 'just now');
+    const translations = {
+        years: isNo ? 'år' : years === 1 ? 'year' : 'years',
+        months: isNo ? hours === 1 ? 'måned' : 'måneder' : months === 1 ? 'month' : 'months',
+        days: isNo ? hours === 1 ? 'dag' : 'dager' : days === 1 ? 'day' : 'days',
+        hours: isNo ? hours === 1 ? 'time' : 'timer' : hours === 1 ? 'hour' : 'hours',
+        minutes: isNo ? hours === 1 ? 'minutt' : 'minutter' : minutes === 1 ? 'minute' : 'minutes',
+        seconds: isNo ? hours === 1 ?  'sekund' : 'sekunder' : seconds === 1 ? 'second' : 'seconds',
+        ago: isNo ? 'siden' : 'ago',
+    };
+
+    if (years > 0) {
+        return `${years} ${translations.years} ${translations.ago}`;
+    } else if (months > 0) {
+        return `${months} ${translations.months} ${translations.ago}`;
+    } else if (days > 0) {
+        return `${days} ${translations.days} ${translations.ago}`;
+    } else if (hours > 0) {
+        return `${hours} ${translations.hours} ${translations.ago}`;
+    } else if (minutes > 0) {
+        return `${minutes} ${translations.minutes} ${translations.ago}`;
+    } else if (seconds > 0) {
+        return `${seconds} ${translations.seconds} ${translations.ago}`;
+    } else {
+        return isNo ? 'akkurat nå' : 'just now';
+    }
 }

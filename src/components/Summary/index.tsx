@@ -1,5 +1,5 @@
 import { useConfigState } from "@context/Config";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SummaryItem from "./SummaryItem";
 import extractAnswers from "./extractAnswers";
 import Footer from "./Footer";
@@ -11,6 +11,48 @@ const Summary: FC = () => {
     const [viewingChanges, setViewingChanges] = useState(false);
     const [answerData, setAnswerData] = useState<string | null>(null);
     const [config, setConfig] = useConfigState();
+    const [sortedHitory, setSortedHistory] = useState<any[]>([]);
+    const [sortedAnswerHistory, setSortedAnswerHistory] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (config && config.answers && config.answers.length > 0) {
+            const sortedHistory = [...config.answers].sort((a, b) => {
+                const dateA = new Date(a.timestamp || 0);
+                const dateB = new Date(b.timestamp || 0);
+                return dateB.getTime() - dateA.getTime();
+            });
+
+            const answers = sortedHistory.map((h) => {
+                const jsonAnswers = JSON.parse(h.answer || '{}');
+
+                return extractAnswers(jsonAnswers, JSON.parse(config.value!), config);
+            });
+            
+            console.log(answers);
+
+            let answerHistoryFull = {} as Record<string, any[]>; 
+            
+            answers.map((answer, index) => {
+                Object.keys(answer).forEach((key) => {
+                    if (!answerHistoryFull[key]) {
+                        answerHistoryFull[key] = [];
+                    }
+                    const value = {
+                        answer: answer[key],
+                        timestamp: sortedHistory[index].timestamp,
+                        user: sortedHistory[index].user,
+                    }
+
+                    answerHistoryFull[key].push(value);
+                });
+            });
+
+            console.log(answerHistoryFull);
+
+            setSortedAnswerHistory(answers);
+            setSortedHistory(sortedHistory);
+        }
+    }, [config]);
 
     if (!config) return null;
 
@@ -34,10 +76,6 @@ const Summary: FC = () => {
         return newAnswers;
     }, [config.answerData, survey]);
 
-    if (config.answers && config.answers.length > 0) {
-        // TODO: order changes by timestamp or smtn
-    }
-
     return <div className={"summary" + (config.style ? " " + config.style : "")}>
         <Header />
         <div className="summary__content">
@@ -46,14 +84,14 @@ const Summary: FC = () => {
             {survey.pages.map((page: any, index: number) => 
                 <SummaryItem key={index} element={page} answers={answers} />
             )}
-            {config.answers && config.answers.length > 0 && (
+            {sortedHitory.length > 0 && (
                 <div className="change-history">
                     <button
                         className="change-history__badge"
                         aria-label="Show change history"
                         onClick={() => setVcOpen(!vcOpen)}
                     >
-                        {config.locale === "no" ? "Endringshistorikk" : "Changes history"} ({config.answers.length})
+                        {config.locale === "no" ? "Endringshistorikk" : "Changes history"} ({sortedHitory.length})
                     </button>
                     {vcOpen && (
                         <div className="change-history__panel">
@@ -63,9 +101,11 @@ const Summary: FC = () => {
                                     setVcOpen(false);
                                     setViewingChanges(false);
                                     setAnswerData(null);
+
+                                    const newAnswerData = answerData || config.answerData;
                                     setConfig((prev): any => ({
                                         ...prev,
-                                        answerData: answerData || '',
+                                        answerData: newAnswerData,
                                     }));
                                 }}
                             >
@@ -77,9 +117,11 @@ const Summary: FC = () => {
                                     onClick={() => {
                                         setViewingChanges(false);
                                         setAnswerData(null);
+
+                                        const newAnswerData = answerData || config.answerData;
                                         setConfig((prev): any => ({
                                             ...prev,
-                                            answerData: answerData || '',
+                                            answerData: newAnswerData,
                                         }));
                                     }}
                                 >
@@ -88,7 +130,7 @@ const Summary: FC = () => {
                             )}
                             
                             <ul>
-                                {config.answers.map((h, index) => (
+                                {sortedHitory.map((h, index) => (
                                     <li
                                         key={index}
                                         onClick={() => {
