@@ -12,7 +12,7 @@ const Summary: FC = () => {
     const [answerData, setAnswerData] = useState<string | null>(null);
     const [config, setConfig] = useConfigState();
     const [sortedHitory, setSortedHistory] = useState<any[]>([]);
-    const [sortedAnswerHistory, setSortedAnswerHistory] = useState<any[]>([]);
+    const [sortedAnswerHistory, setSortedAnswerHistory] = useState<any>([]);
 
     useEffect(() => {
         if (config && config.answers && config.answers.length > 0) {
@@ -27,8 +27,6 @@ const Summary: FC = () => {
 
                 return extractAnswers(jsonAnswers, JSON.parse(config.value!), config);
             });
-            
-            console.log(answers);
 
             let answerHistoryFull = {} as Record<string, any[]>; 
             
@@ -46,19 +44,12 @@ const Summary: FC = () => {
                     answerHistoryFull[key].push(value);
                 });
             });
-
-            console.log(answerHistoryFull);
-
-            setSortedAnswerHistory(answers);
+            setSortedAnswerHistory(answerHistoryFull);
             setSortedHistory(sortedHistory);
         }
     }, [config]);
 
     if (!config) return null;
-
-    if (config.oldData) {
-        console.log(config.oldData);
-    }
 
     const survey = JSON.parse(config.value!);
 
@@ -82,18 +73,19 @@ const Summary: FC = () => {
             {(survey.title && survey.showTitle !== false) && <p className="title">{survey.title}</p>}
             {(survey.description && survey.showTitle !== false) && <p className="description">{survey.description}</p>}
             {survey.pages.map((page: any, index: number) => 
-                <SummaryItem key={index} element={page} answers={answers} />
+                <SummaryItem key={index} element={page} answers={answers} answerHistory={sortedAnswerHistory} />
             )}
             {sortedHitory.length > 0 && (
                 <div className="change-history">
-                    <button
-                        className="change-history__badge"
-                        aria-label="Show change history"
-                        onClick={() => setVcOpen(!vcOpen)}
-                    >
-                        {config.locale === "no" ? "Endringshistorikk" : "Changes history"} ({sortedHitory.length})
-                    </button>
-                    {vcOpen && (
+                    {!vcOpen ? (
+                        <button
+                            className="change-history__badge"
+                            aria-label="Show change history"
+                            onClick={() => setVcOpen(!vcOpen)}
+                        >
+                            {config.locale === "no" ? "Endringshistorikk" : "Changes history"} ({sortedHitory.length})
+                        </button>
+                    ) : (
                         <div className="change-history__panel">
                             <button
                                 className="change-history__close"

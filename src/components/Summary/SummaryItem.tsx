@@ -1,13 +1,18 @@
 import { useConfig } from "@context/Config";
+import { getTimeAgo } from "@utils/timeAgo";
+import { useState } from "react";
+import History from 'jsx:@svg/history.svg';
 
 interface SummaryItemProps {
     element: any;
     answers: any;
+    answerHistory?: any;
 }
 
-const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
+const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) => {
     const config = useConfig();
     let newElements: any[] = []; 
+    const [answerHistoryOpen, setAnswerHistoryOpen] = useState(false);
 
     element.elements && element.elements.map((subElement: any, index: number) => {
         const nextEl = element.elements[index + 1];
@@ -160,12 +165,41 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers }) => {
                     </div>
                 })}
             </div>}
+            {(answerHistory[element.name] != undefined) &&
+                <div className="answer-history">
+                    {!answerHistoryOpen ? (
+                        <button className="answer-history__open" onClick={() => setAnswerHistoryOpen(true)}>
+                            <History />
+                        </button>
+                    ) : (
+                        <div className="answer-history__panel">
+                            <button className="answer-history__close" onClick={() => setAnswerHistoryOpen(false)}>
+                                {config?.locale === "no" ? "Lukk" : "Close"}
+                            </button>
+                            <ul>
+                                {answerHistory[element.name].map((history: any, index: number) => {
+
+                                    // TODO: If empty skips, send list to SummaryItem
+                                    if (answerHistory[element.name][index+1]?.answer === history.answer) return null;
+
+                                    return <li key={index}>
+                                        <p>{history.user}</p>
+                                        <p>{history.answer}</p>
+                                        {history.timestamp && <p className="time-ago">{getTimeAgo(history.timestamp)}</p>}
+                                    </li>
+                                })}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            }
             {newElements.length > 0 && <div className={`sub-elements${element.noNewLine ? " no-new-line" : ""}`}> {
                 newElements.map((subElement: any, index: number) => 
                     <SummaryItem 
                         key={index} 
                         element={subElement} 
                         answers={answers} 
+                        answerHistory={answerHistory || undefined}
                     />
                 )}
             </div>}
