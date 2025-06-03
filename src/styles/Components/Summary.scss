@@ -207,20 +207,45 @@
         .question {
             margin: 1px 0;
             position: relative;
+
+            .answer-history {
+                display: none;
+                position: absolute;
+                top: 0;
+                right: 0;
+                
+                &.open {
+                    display: block;
+                }
+
+                &__panel {
+                    position: relative;
+                    z-index: 20;
+                    border: 1px solid var(--border-color);
+                    background-color: var(--background-color-secondary);
+                }
+
+                ul {
+                    margin: 0;
+                    padding: 0;
+                    list-style: none;
+                }
+
+                li {
+                    display: flex;
+                    gap: 0.5rem;
+                    padding: 0.5rem 0.75rem;
+                }
+            }
+
+            :hover {
+                >.answer-history {
+                    display: block;
+                }
+            }
+
         }
 
-        .answer-history {
-            position: absolute;
-            top: 0;
-            right: 0;
-            
-            &__panel {
-                position: relative;
-                z-index: 20;
-                border: 1px solid var(--border-color);
-                background-color: var(--background-color-secondary);
-            }
-        }
 
         .title{
             font-weight: bold;

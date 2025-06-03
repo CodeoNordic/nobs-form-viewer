@@ -11,7 +11,10 @@ const Summary: FC = () => {
     const [viewingChanges, setViewingChanges] = useState(false);
     const [answerData, setAnswerData] = useState<string | null>(null);
     const [config, setConfig] = useConfigState();
+
+    // Used for bottom right button
     const [sortedHitory, setSortedHistory] = useState<any[]>([]);
+    // Used for each summary item
     const [sortedAnswerHistory, setSortedAnswerHistory] = useState<any>([]);
 
     useEffect(() => {
@@ -28,22 +31,14 @@ const Summary: FC = () => {
                 return extractAnswers(jsonAnswers, JSON.parse(config.value!), config);
             });
 
-            let answerHistoryFull = {} as Record<string, any[]>; 
-            
-            answers.map((answer, index) => {
-                Object.keys(answer).forEach((key) => {
-                    if (!answerHistoryFull[key]) {
-                        answerHistoryFull[key] = [];
-                    }
-                    const value = {
-                        answer: answer[key],
-                        timestamp: sortedHistory[index].timestamp,
-                        user: sortedHistory[index].user,
-                    }
-
-                    answerHistoryFull[key].push(value);
-                });
+            let answerHistoryFull = answers.map((answer, index) => {
+                return {
+                    answers: answer,
+                    user: sortedHistory[index].user,
+                    timestamp: sortedHistory[index].timestamp,
+                }
             });
+
             setSortedAnswerHistory(answerHistoryFull);
             setSortedHistory(sortedHistory);
         }

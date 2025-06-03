@@ -11,11 +11,11 @@ export const getTimeAgo = (date: string) => {
 
     const translations = {
         years: isNo ? 'år' : years === 1 ? 'year' : 'years',
-        months: isNo ? hours === 1 ? 'måned' : 'måneder' : months === 1 ? 'month' : 'months',
-        days: isNo ? hours === 1 ? 'dag' : 'dager' : days === 1 ? 'day' : 'days',
+        months: isNo ? months === 1 ? 'måned' : 'måneder' : months === 1 ? 'month' : 'months',
+        days: isNo ? days === 1 ? 'dag' : 'dager' : days === 1 ? 'day' : 'days',
         hours: isNo ? hours === 1 ? 'time' : 'timer' : hours === 1 ? 'hour' : 'hours',
-        minutes: isNo ? hours === 1 ? 'minutt' : 'minutter' : minutes === 1 ? 'minute' : 'minutes',
-        seconds: isNo ? hours === 1 ?  'sekund' : 'sekunder' : seconds === 1 ? 'second' : 'seconds',
+        minutes: isNo ? minutes === 1 ? 'minutt' : 'minutter' : minutes === 1 ? 'minute' : 'minutes',
+        seconds: isNo ? seconds === 1 ?  'sekund' : 'sekunder' : seconds === 1 ? 'second' : 'seconds',
         ago: isNo ? 'siden' : 'ago',
     };
 

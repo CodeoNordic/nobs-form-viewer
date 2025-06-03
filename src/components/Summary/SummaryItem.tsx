@@ -1,6 +1,6 @@
 import { useConfig } from "@context/Config";
 import { getTimeAgo } from "@utils/timeAgo";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import History from 'jsx:@svg/history.svg';
 
 interface SummaryItemProps {
@@ -13,6 +13,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     const config = useConfig();
     let newElements: any[] = []; 
     const [answerHistoryOpen, setAnswerHistoryOpen] = useState(false);
+    const itemRef = useRef<HTMLDivElement>(null);
 
     element.elements && element.elements.map((subElement: any, index: number) => {
         const nextEl = element.elements[index + 1];
@@ -34,6 +35,27 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
             newElements.push(subElement);
         }
     });
+
+    useEffect(() => {
+        if (!answerHistoryOpen) return;
+
+        const handleClick = (e: MouseEvent) => {
+            const target = e.target as Node;
+            if (
+                itemRef.current &&
+                !itemRef.current.contains(target)
+            ) {
+                setAnswerHistoryOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClick);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, [answerHistoryOpen]);
+
 
     if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 
@@ -165,8 +187,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                     </div>
                 })}
             </div>}
-            {(answerHistory[element.name] != undefined) &&
-                <div className="answer-history">
+            {(answerHistory.some((item: any) => item.answers[element.name] != undefined)) &&
+                <div className={"answer-history" + (answerHistoryOpen ? " open" : "")} ref={itemRef}>
                     {!answerHistoryOpen ? (
                         <button className="answer-history__open" onClick={() => setAnswerHistoryOpen(true)}>
                             <History />
@@ -177,15 +199,17 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                 {config?.locale === "no" ? "Lukk" : "Close"}
                             </button>
                             <ul>
-                                {answerHistory[element.name].map((history: any, index: number) => {
-
-                                    // TODO: If empty skips, send list to SummaryItem
-                                    if (answerHistory[element.name][index+1]?.answer === history.answer) return null;
+                                {answerHistory.map((history: any, index: number) => {
+                                    const answer = history.answers[element.name];
+                                    const next = answerHistory[index + 1]?.answers[element.name];
+                                    
+                                    if (answer === next) return null;
 
                                     return <li key={index}>
-                                        <p>{history.user}</p>
-                                        <p>{history.answer}</p>
-                                        {history.timestamp && <p className="time-ago">{getTimeAgo(history.timestamp)}</p>}
+                                        <span>{history.user}</span>
+                                        <span>•</span>
+                                        <span>{answer ? answer : (config?.locale === "no" ? "slettet svaret" : "deleted answer")}</span>
+                                        {history.timestamp && <><span>•</span><span className="time-ago">{getTimeAgo(history.timestamp)}</span></>}
                                     </li>
                                 })}
                             </ul>
