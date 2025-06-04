@@ -1,5 +1,4 @@
 import { useConfig } from "@context/Config";
-import { getTimeAgo } from "@utils/timeAgo";
 import { useEffect, useRef, useState } from "react";
 import History from 'jsx:@svg/history.svg';
 
@@ -209,7 +208,12 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                         <span>{history.user}</span>
                                         <span>•</span>
                                         <span>{answer ? answer : (config?.locale === "no" ? "slettet svaret" : "deleted answer")}</span>
-                                        {history.timestamp && <><span>•</span><span className="time-ago">{getTimeAgo(history.timestamp)}</span></>}
+                                        {history.timestamp && <><span>•</span><span className="time-ago">{
+                                            new Date(history.timestamp).toLocaleString(config?.locale || "en-US", {
+                                                dateStyle: "short",
+                                                timeStyle: "short"
+                                            })    
+                                        }</span></>}
                                     </li>
                                 })}
                             </ul>

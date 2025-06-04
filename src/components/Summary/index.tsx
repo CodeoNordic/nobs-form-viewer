@@ -4,7 +4,6 @@ import SummaryItem from "./SummaryItem";
 import extractAnswers from "./extractAnswers";
 import Footer from "./Footer";
 import Header from "./Header";
-import { getTimeAgo } from "@utils/timeAgo";
 
 const Summary: FC = () => {
     const [vcOpen, setVcOpen] = useState(false);
@@ -52,7 +51,7 @@ const Summary: FC = () => {
         const jsonAnswers = JSON.parse(config.answerData || '{}');
 
         if (!jsonAnswers || Object.keys(jsonAnswers).length === 0 && config.oldData) {
-            Object.keys(config.oldData).forEach((key, index) => {
+            Object.keys(config.oldData).forEach((key) => {
                 jsonAnswers[key] = config.oldData[key].value;
             })
         }
@@ -132,7 +131,12 @@ const Summary: FC = () => {
                                         <div className="meta">
                                             <span className="user">{h.user}</span>{' '}
                                             {h.timestamp && (
-                                                getTimeAgo(h.timestamp)
+                                                <span className="timestamp">
+                                                    {new Date(h.timestamp).toLocaleString(config.locale || 'en-US', {
+                                                        dateStyle: 'short',
+                                                        timeStyle: 'short',
+                                                    })}
+                                                </span>
                                             )}
                                         </div>
                                     </li>
