@@ -4,6 +4,7 @@ import SummaryItem from "./SummaryItem";
 import extractAnswers from "./extractAnswers";
 import Footer from "./Footer";
 import Header from "./Header";
+import { HistoryList } from "./History";
 
 const Summary: FC = () => {
     const [vcOpen, setVcOpen] = useState(false);
@@ -69,83 +70,7 @@ const Summary: FC = () => {
             {survey.pages.map((page: any, index: number) => 
                 <SummaryItem key={index} element={page} answers={answers} answerHistory={sortedAnswerHistory} />
             )}
-            {sortedHitory.length > 0 && (
-                <div className="change-history">
-                    {!vcOpen ? (
-                        <button
-                            className="change-history__badge"
-                            aria-label="Show change history"
-                            onClick={() => setVcOpen(!vcOpen)}
-                        >
-                            {config.locale === "no" ? "Endringshistorikk" : "Changes history"} ({sortedHitory.length})
-                        </button>
-                    ) : (
-                        <div className="change-history__panel">
-                            <button
-                                className="change-history__close"
-                                onClick={() => {
-                                    setVcOpen(false);
-                                    setViewingChanges(false);
-                                    setAnswerData(null);
-
-                                    const newAnswerData = answerData || config.answerData;
-                                    setConfig((prev): any => ({
-                                        ...prev,
-                                        answerData: newAnswerData,
-                                    }));
-                                }}
-                            >
-                                {config.locale === 'no' ? 'Lukk' : 'Close'}
-                            </button>
-                            {viewingChanges && (
-                                <button
-                                    className="change-history__close"
-                                    onClick={() => {
-                                        setViewingChanges(false);
-                                        setAnswerData(null);
-
-                                        const newAnswerData = answerData || config.answerData;
-                                        setConfig((prev): any => ({
-                                            ...prev,
-                                            answerData: newAnswerData,
-                                        }));
-                                    }}
-                                >
-                                    {config.locale === 'no' ? 'Stopp visning av endringer' : 'Stop viewing changes'}
-                                </button>
-                            )}
-                            
-                            <ul>
-                                {sortedHitory.map((h, index) => (
-                                    <li
-                                        key={index}
-                                        onClick={() => {
-                                            !answerData && setAnswerData(config.answerData || null);
-                                            setConfig((prev): any => ({
-                                                ...prev,
-                                                answerData: h.answer,
-                                            }));
-                                            setViewingChanges(true);
-                                        }}
-                                    >
-                                        <div className="meta">
-                                            <span className="user">{h.user}</span>{' '}
-                                            {h.timestamp && (
-                                                <span className="timestamp">
-                                                    {new Date(h.timestamp).toLocaleString(config.locale || 'en-US', {
-                                                        dateStyle: 'short',
-                                                        timeStyle: 'short',
-                                                    })}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </div>
-            )}
+            {sortedHitory.length > 0 && <HistoryList sortedHistory={sortedHitory} />}
         </div>
         <Footer />
     </div>

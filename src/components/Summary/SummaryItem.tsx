@@ -1,6 +1,6 @@
 import { useConfig } from "@context/Config";
 import { useEffect, useRef, useState } from "react";
-import History from 'jsx:@svg/history.svg';
+import { HistoryItem } from "./History";
 
 interface SummaryItemProps {
     element: any;
@@ -187,39 +187,10 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 })}
             </div>}
             {(answerHistory.some((item: any) => item.answers[element.name] != undefined)) &&
-                <div className={"answer-history" + (answerHistoryOpen ? " open" : "")} ref={itemRef}>
-                    {!answerHistoryOpen ? (
-                        <button className="answer-history__open" onClick={() => setAnswerHistoryOpen(true)}>
-                            <History />
-                        </button>
-                    ) : (
-                        <div className="answer-history__panel">
-                            <button className="answer-history__close" onClick={() => setAnswerHistoryOpen(false)}>
-                                {config?.locale === "no" ? "Lukk" : "Close"}
-                            </button>
-                            <ul>
-                                {answerHistory.map((history: any, index: number) => {
-                                    const answer = history.answers[element.name];
-                                    const next = answerHistory[index + 1]?.answers[element.name];
-                                    
-                                    if (answer === next) return null;
-
-                                    return <li key={index}>
-                                        <span>{history.user}</span>
-                                        <span>•</span>
-                                        <span>{answer ? answer : (config?.locale === "no" ? "slettet svaret" : "deleted answer")}</span>
-                                        {history.timestamp && <><span>•</span><span className="time-ago">{
-                                            new Date(history.timestamp).toLocaleString(config?.locale || "en-US", {
-                                                dateStyle: "short",
-                                                timeStyle: "short"
-                                            })    
-                                        }</span></>}
-                                    </li>
-                                })}
-                            </ul>
-                        </div>
-                    )}
-                </div>
+                <HistoryItem 
+                    answerHistory={answerHistory} 
+                    elementName={element.name}
+                />
             }
             {newElements.length > 0 && <div className={`sub-elements${element.noNewLine ? " no-new-line" : ""}`}> {
                 newElements.map((subElement: any, index: number) => 
