@@ -1,4 +1,4 @@
-import { useConfigState } from "@context/Config";
+import { useConfig } from "@context/Config";
 import { useEffect, useMemo, useState } from "react";
 import SummaryItem from "./SummaryItem";
 import extractAnswers from "./extractAnswers";
@@ -7,11 +7,8 @@ import Header from "./Header";
 import { HistoryList } from "./History";
 
 const Summary: FC = () => {
-    const [vcOpen, setVcOpen] = useState(false);
-    const [viewingChanges, setViewingChanges] = useState(false);
-    const [answerData, setAnswerData] = useState<string | null>(null);
-    const [config, setConfig] = useConfigState();
-
+    const config = useConfig();
+    
     // Used for bottom right button
     const [sortedHitory, setSortedHistory] = useState<any[]>([]);
     // Used for each summary item

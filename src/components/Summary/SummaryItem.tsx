@@ -1,5 +1,4 @@
 import { useConfig } from "@context/Config";
-import { useEffect, useRef, useState } from "react";
 import { HistoryItem } from "./History";
 
 interface SummaryItemProps {
@@ -11,8 +10,6 @@ interface SummaryItemProps {
 const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) => {
     const config = useConfig();
     let newElements: any[] = []; 
-    const [answerHistoryOpen, setAnswerHistoryOpen] = useState(false);
-    const itemRef = useRef<HTMLDivElement>(null);
 
     element.elements && element.elements.map((subElement: any, index: number) => {
         const nextEl = element.elements[index + 1];
@@ -34,27 +31,6 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
             newElements.push(subElement);
         }
     });
-
-    useEffect(() => {
-        if (!answerHistoryOpen) return;
-
-        const handleClick = (e: MouseEvent) => {
-            const target = e.target as Node;
-            if (
-                itemRef.current &&
-                !itemRef.current.contains(target)
-            ) {
-                setAnswerHistoryOpen(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClick);
-
-        return () => {
-            document.removeEventListener("mousedown", handleClick);
-        };
-    }, [answerHistoryOpen]);
-
 
     if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
 

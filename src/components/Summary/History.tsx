@@ -1,11 +1,31 @@
 import { useConfig, useConfigState } from "@context/Config";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import History from 'jsx:@svg/history.svg';
 
 export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ answerHistory, elementName }) => {
     const config = useConfig();
     const [answerHistoryOpen, setAnswerHistoryOpen] = useState(false);
     const itemRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!answerHistoryOpen) return;
+
+        const handleClick = (e: MouseEvent) => {
+            const target = e.target as Node;
+            if (
+                itemRef.current &&
+                !itemRef.current.contains(target)
+            ) {
+                setAnswerHistoryOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClick);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, [answerHistoryOpen]);
 
     if (!(answerHistory.some((item: any) => item.answers[elementName] != undefined))) return null;
 
