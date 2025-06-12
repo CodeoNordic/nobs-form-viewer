@@ -1,6 +1,7 @@
 import { useConfig, useConfigState } from "@context/Config";
 import { useEffect, useRef, useState } from "react";
 import History from 'jsx:@svg/history.svg';
+import performScript from "@utils/performScript";
 
 export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ answerHistory, elementName }) => {
     const config = useConfig();
@@ -51,9 +52,9 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
                             <span>•</span>
                             <span>{answer ? answer : (config?.locale === "no" ? "slettet svaret" : "deleted answer")}</span>
                             {history.timestamp && <><span>•</span><span className="time-ago">{
-                                new Date(history.timestamp).toLocaleString(config?.locale || "en-US", {
+                                new Date(history.timestamp).toLocaleString(config?.locale === "no" ? "nb-NO" : "en-US", {
                                     dateStyle: "short",
-                                    timeStyle: "short"
+                                    timeStyle: "short",
                                 })    
                             }</span></>}
                         </li>
@@ -100,21 +101,39 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
                     {config.locale === 'no' ? 'Lukk' : 'Close'}
                 </button>
                 {viewingChanges && (
-                    <button
-                        className="change-history__close"
-                        onClick={() => {
-                            setViewingChanges(false);
-                            setAnswerData(null);
+                    <>
+                        <button
+                            className="change-history__close"
+                            onClick={() => {
+                                setViewingChanges(false);
+                                setAnswerData(null);
 
-                            const newAnswerData = answerData || config.answerData;
-                            setConfig((prev): any => ({
-                                ...prev,
-                                answerData: newAnswerData,
-                            }));
-                        }}
-                    >
-                        {config.locale === 'no' ? 'Stopp visning av endringer' : 'Stop viewing changes'}
-                    </button>
+                                const newAnswerData = answerData || config.answerData;
+                                setConfig((prev): any => ({
+                                    ...prev,
+                                    answerData: newAnswerData,
+                                }));
+                            }}
+                        >
+                            {config.locale === 'no' ? 'Stopp visning av endringer' : 'Stop viewing changes'}
+                        </button>
+                        <button
+                            className="change-history__save"
+                            onClick={() => {
+                                if (config.scriptNames?.onChange) {
+                                    performScript("onChange", {
+                                        result: JSON.parse(config.answerData || '{}'),
+                                        hasErrors: false,
+                                    });
+                                }
+                                setViewingChanges(false);
+                                setAnswerData(null);
+                                setHistoryOpen(false);
+                            }}
+                        >
+                            {config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
+                        </button>
+                    </>
                 )}
                 
                 <ul>
