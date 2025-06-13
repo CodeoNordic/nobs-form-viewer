@@ -47,17 +47,29 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
                         
                         if (answer === next) return null;
 
-                        return <li key={index}>
-                            <span>{history.user}</span>
-                            <span>•</span>
-                            <span>{answer ? answer : (config?.locale === "no" ? "slettet svaret" : "deleted answer")}</span>
-                            {history.timestamp && <><span>•</span><span className="time-ago">{
-                                new Date(history.timestamp).toLocaleString(config?.locale === "no" ? "nb-NO" : "en-US", {
-                                    dateStyle: "short",
-                                    timeStyle: "short",
-                                })    
-                            }</span></>}
-                        </li>
+                        return (
+                            <li key={index}>
+                                <span>{history.user}</span>
+                                <span>•</span>
+                                <span>
+                                    {answer ?? (config?.locale === 'no' ? 'slettet svaret' : 'deleted answer')}
+                                </span>
+                                {history.timestamp && (
+                                    <>
+                                        <span>•</span>
+                                        <span className="time-ago">
+                                            {new Date(history.timestamp).toLocaleString(
+                                                config?.locale === 'no' ? 'nb-NO' : 'en-US',
+                                                {
+                                                    dateStyle: 'short',
+                                                    timeStyle: 'short',
+                                                }
+                                            )}
+                                        </span>
+                                    </>
+                                )}
+                            </li>
+                        );
                     })}
                 </ul>
             </div>
