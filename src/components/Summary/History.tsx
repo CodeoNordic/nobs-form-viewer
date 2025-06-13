@@ -37,7 +37,7 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
             </button>
         ) : (
             <div className="answer-history__panel">
-                <button className="answer-history__close" onClick={() => setAnswerHistoryOpen(false)}>
+                <button className="answer-history__button" onClick={() => setAnswerHistoryOpen(false)}>
                     {config?.locale === "no" ? "Lukk" : "Close"}
                 </button>
                 <ul>
@@ -70,6 +70,7 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
     const [historyOpen, setHistoryOpen] = useState(false);
     const [viewingChanges, setViewingChanges] = useState(false);
     const [answerData, setAnswerData] = useState<any>(null);
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     if (!config) return null;
 
@@ -84,61 +85,66 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
             </button>
         ) : (
             <div className="change-history__panel">
-                <button
-                    className="change-history__close"
-                    onClick={() => {
-                        setHistoryOpen(false);
-                        setViewingChanges(false);
-                        setAnswerData(null);
+                <div className="change-history__buttons">
+                    <button
+                        className="change-history__button"
+                        onClick={() => {
+                            setHistoryOpen(false);
+                            setViewingChanges(false);
+                            setAnswerData(null);
+                            setActiveIndex(null);
 
-                        const newAnswerData = answerData || config.answerData;
-                        setConfig((prev): any => ({
-                            ...prev,
-                            answerData: newAnswerData,
-                        }));
-                    }}
-                >
-                    {config.locale === 'no' ? 'Lukk' : 'Close'}
-                </button>
-                {viewingChanges && (
-                    <>
-                        <button
-                            className="change-history__close"
-                            onClick={() => {
-                                setViewingChanges(false);
-                                setAnswerData(null);
+                            const newAnswerData = answerData || config.answerData;
+                            setConfig((prev): any => ({
+                                ...prev,
+                                answerData: newAnswerData,
+                            }));
+                        }}
+                    >
+                        {config.locale === 'no' ? 'Lukk' : 'Close'}
+                    </button>
+                    {viewingChanges && (
+                        <>
+                            <button
+                                className="change-history__button"
+                                onClick={() => {
+                                    setViewingChanges(false);
+                                    setAnswerData(null);
+                                    setActiveIndex(null);
 
-                                const newAnswerData = answerData || config.answerData;
-                                setConfig((prev): any => ({
-                                    ...prev,
-                                    answerData: newAnswerData,
-                                }));
-                            }}
-                        >
-                            {config.locale === 'no' ? 'Stopp visning av endringer' : 'Stop viewing changes'}
-                        </button>
-                        <button
-                            className="change-history__save"
-                            onClick={() => {
-                                if (config.scriptNames?.onChange) {
-                                    performScript("onChange", {
-                                        result: JSON.parse(config.answerData || '{}'),
-                                        hasErrors: false,
-                                    });
-                                }
-                                setViewingChanges(false);
-                                setAnswerData(null);
-                                setHistoryOpen(false);
-                            }}
-                        >
-                            {config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
-                        </button>
-                    </>
-                )}
-                
+                                    const newAnswerData = answerData || config.answerData;
+                                    setConfig((prev): any => ({
+                                        ...prev,
+                                        answerData: newAnswerData,
+                                    }));
+                                }}
+                            >
+                                {config.locale === 'no' ? 'Stopp visning av endringer' : 'Stop viewing changes'}
+                            </button>
+                            <button
+                                className="change-history__button"
+                                onClick={() => {
+                                    if (config.scriptNames?.onChange) {
+                                        performScript("onChange", {
+                                            result: JSON.parse(config.answerData || '{}'),
+                                            hasErrors: false,
+                                        });
+                                    }
+                                    setViewingChanges(false);
+                                    setAnswerData(null);
+                                    setHistoryOpen(false);
+                                    setActiveIndex(null);
+                                }}
+                            >
+                                {config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
+                            </button>
+                        </>
+                    )}
+                </div>
                 <ul>
                     {sortedHistory.map((h: any, index: number) => (
                         <li
+                            className={(activeIndex === index) ? 'active' : ''}
                             key={index}
                             onClick={() => {
                                 !answerData && setAnswerData(config.answerData || null);
@@ -147,6 +153,7 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
                                     answerData: h.answer,
                                 }));
                                 setViewingChanges(true);
+                                setActiveIndex(index);
                             }}
                         >
                             <div className="meta">

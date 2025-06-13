@@ -21,8 +21,28 @@
             background: var(--background-color); 
         }
 
+        &__buttons {
+            margin: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2px;
+        }
+
+        &__button {
+            padding: 4px 8px;
+            border-radius: 5px;
+            background: var(--background-color-secondary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+
+            &:hover {
+                background: var(--background-color);
+            }
+        }
+
         &__panel {
-            width: 18rem;
+            width: 21rem;
             background: var(--background-color-secondary);
             border: 1px solid var(--border-color);
             z-index: 10;
@@ -38,8 +58,13 @@
                 gap: 0.5rem;
                 padding: 0.5rem 0.75rem;
                 cursor: pointer;
+                border-top: 1px solid var(--border-color);
 
                 &:hover {
+                    background: var(--background-color);
+                }
+
+                &.active {
                     background: var(--background-color);
                 }
             }
@@ -223,6 +248,18 @@
                     z-index: 20;
                     border: 1px solid var(--border-color);
                     background-color: var(--background-color-secondary);
+                }
+
+                &__button {
+                    padding: 4px 8px;
+                    border-radius: 5px;
+                    background: var(--background-color-secondary);
+                    border: 1px solid var(--border-color);
+                    cursor: pointer;
+
+                    &:hover {
+                        background: var(--background-color);
+                    }
                 }
 
                 ul {
