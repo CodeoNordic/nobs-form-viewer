@@ -93,14 +93,28 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     if (!config) return null;
+    
+    const resetHistory = (full: boolean = false) => {
+        setViewingChanges(false);
+        setAnswerData(null);
+        setActiveIndex(null);
+
+        if (full) {
+            const newAnswerData = answerData || config.answerData;
+            setConfig((prev): any => ({
+                ...prev,
+                answerData: newAnswerData,
+            }));
+        }
+    }
 
     return (
         <div className="change-history">
             {!historyOpen ? (
                 <button
-                    className="change-history__badge"
+                    className="change-history__button"
                     aria-label="Show change history"
-                    onClick={() => setHistoryOpen(!historyOpen)}
+                    onClick={() => setHistoryOpen(true)}
                 >
                     {config.locale === "no" ? "Endringshistorikk" : "Changes history"} ({sortedHistory.length})
                 </button>
@@ -110,16 +124,8 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
                         <button
                             className="change-history__button"
                             onClick={() => {
+                                resetHistory(true);
                                 setHistoryOpen(false);
-                                setViewingChanges(false);
-                                setAnswerData(null);
-                                setActiveIndex(null);
-
-                                const newAnswerData = answerData || config.answerData;
-                                setConfig((prev): any => ({
-                                    ...prev,
-                                    answerData: newAnswerData,
-                                }));
                             }}
                         >
                             {config.locale === 'no' ? 'Lukk' : 'Close'}
@@ -128,33 +134,22 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
                             <>
                                 <button
                                     className="change-history__button"
-                                    onClick={() => {
-                                        setViewingChanges(false);
-                                        setAnswerData(null);
-                                        setActiveIndex(null);
-
-                                        const newAnswerData = answerData || config.answerData;
-                                        setConfig((prev): any => ({
-                                            ...prev,
-                                            answerData: newAnswerData,
-                                        }));
-                                    }}
+                                    onClick={() => resetHistory(true)}
                                 >
                                     {config.locale === 'no' ? 'Stopp visning av endringer' : 'Stop viewing changes'}
                                 </button>
                                 <button
                                     className="change-history__button"
                                     onClick={() => {
+                                        resetHistory();
+                                        setHistoryOpen(false);
+
                                         if (config.scriptNames?.onChange) {
                                             performScript("onChange", {
                                                 result: JSON.parse(config.answerData || '{}'),
                                                 hasErrors: false,
                                             });
                                         }
-                                        setViewingChanges(false);
-                                        setAnswerData(null);
-                                        setHistoryOpen(false);
-                                        setActiveIndex(null);
                                     }}
                                 >
                                     {config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
@@ -181,10 +176,13 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
                                     <span className="user">{h.user}</span>{' '}
                                     {h.timestamp && (
                                         <span className="timestamp">
-                                            {new Date(h.timestamp).toLocaleString(config.locale || 'en-US', {
-                                                dateStyle: 'short',
-                                                timeStyle: 'short',
-                                            })}
+                                           {new Date(h.timestamp).toLocaleString(
+                                                config?.locale === 'no' ? 'nb-NO' : 'en-US',
+                                                {
+                                                    dateStyle: 'short',
+                                                    timeStyle: 'short',
+                                                }
+                                            )}
                                         </span>
                                     )}
                                 </div>

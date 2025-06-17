@@ -38,8 +38,11 @@ const Summary: FC = () => {
 
             setSortedAnswerHistory(answerHistoryFull);
             setSortedHistory(sortedHistory);
+        } else {
+            setSortedHistory([]);
+            setSortedAnswerHistory([]);
         }
-    }, [config]);
+    }, [config?.answers]);
 
     if (!config) return null;
 
