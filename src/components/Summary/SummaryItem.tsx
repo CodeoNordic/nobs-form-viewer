@@ -1,5 +1,6 @@
 import { useConfig } from "@context/Config";
 import { HistoryItem } from "./History";
+import { useState } from "react";
 
 interface SummaryItemProps {
     element: any;
@@ -10,6 +11,7 @@ interface SummaryItemProps {
 const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) => {
     const config = useConfig();
     let newElements: any[] = []; 
+    const [answer, setAnswer] = useState(answers[element.name] || "");
 
     element.elements && element.elements.map((subElement: any, index: number) => {
         const nextEl = element.elements[index + 1];
@@ -78,9 +80,19 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 )}
                 {(element.inputType == "color" && answers[element.name]) && <div className="color-box" style={{ backgroundColor: answers[element.name] }}></div>}
                 {(element.inputType == "range" && answers[element.name]) && <p className="question-answer">{answers[element.name]}%</p>}
+                {element.type == "text" && <input
+                    type="text"
+                    value={answer}
+                    className="question-answer"
+                    onChange={(e) => {
+                        setAnswer(e.target.value);
+                        // TODO: Change config and send script call
+                    }}
+                />}
                 {(element.inputType !== "color" 
                     && element.inputType !== "range" 
                     && element.type !== "imagepicker"
+                    && element.type !== "text"
                     && typeof answers[element.name] !== "object" 
                     && answers[element.name] != undefined
                 ) && <p className="question-answer">{
