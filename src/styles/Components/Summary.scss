@@ -315,6 +315,19 @@
             background-color: var(--background-color-secondary);
         }
 
+        .multipletext-container {
+            .multipletext-item {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                margin: 1px 0;
+
+                .question-title {
+                    font-weight: normal;
+                }
+            }
+        }
+
         .matrix,
         .matrixdropdown,
         .matrixdynamic {

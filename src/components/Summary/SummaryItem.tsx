@@ -1,6 +1,7 @@
-import { useConfig } from "@context/Config";
+import { useConfig, useConfigState } from "@context/Config";
 import { HistoryItem } from "./History";
 import { useState } from "react";
+import performScript from "@utils/performScript";
 
 interface SummaryItemProps {
     element: any;
@@ -9,7 +10,7 @@ interface SummaryItemProps {
 }
 
 const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) => {
-    const config = useConfig();
+    const [config, setConfig] = useConfigState();
     let newElements: any[] = []; 
     const [answer, setAnswer] = useState(answers[element.name] || "");
 
@@ -65,6 +66,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         return null;
     }
 
+    console.log(element.inputType, answer)
+
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div className="question-content">
@@ -80,19 +83,45 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 )}
                 {(element.inputType == "color" && answers[element.name]) && <div className="color-box" style={{ backgroundColor: answers[element.name] }}></div>}
                 {(element.inputType == "range" && answers[element.name]) && <p className="question-answer">{answers[element.name]}%</p>}
-                {element.type == "text" && <input
+                {(
+                    (element.type == "text" 
+                        || element.type == "comment"
+                    ) && element.inputType == undefined
+                ) && <input
                     type="text"
                     value={answer}
                     className="question-answer"
                     onChange={(e) => {
                         setAnswer(e.target.value);
-                        // TODO: Change config and send script call
+
+                        const answerData = JSON.parse(config?.answerData || "{}");
+                        const newAnswerData = {
+                            ...(answerData),
+                            [element.name]: e.target.value
+                        };
+                        
+                        setConfig({
+                            ...config!,
+                            answerData: JSON.stringify(newAnswerData)
+                        });
+
+                        if (config!.scriptNames?.onChange) {
+                            performScript("onChange", { 
+                                result: newAnswerData,
+                                hasErrors: false
+                            });
+                        }
+                    }}
+                    onBlur={() => {
+                        console.log("Blur");
+                        // TODO: Move save to here
                     }}
                 />}
                 {(element.inputType !== "color" 
                     && element.inputType !== "range" 
                     && element.type !== "imagepicker"
                     && element.type !== "text"
+                    && element.type !== "comment"
                     && typeof answers[element.name] !== "object" 
                     && answers[element.name] != undefined
                 ) && <p className="question-answer">{
@@ -105,9 +134,48 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
             {(element.type == "file" && answers[element.name] != undefined) && answers[element.name].map((answer: any) =>
                 <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
             )}
-            {element.type == "multipletext" && <div className="multipletext">
-                {answers[element.name]?.map((answer: any, index: number) => 
-                    <p key={index} className="multipletext-item">{answer.name}: {answer.value}</p>
+            {element.type == "multipletext" && <div className="multipletext-container">
+                {answers[element.name]?.map((a: any, index: number) => // TODO: make all visible no matter answers
+                    <div key={index} className="multipletext-item">
+                        <p className="question-title">{a.name}:</p> {
+                            true ? <input
+                                type="text"
+                                value={answer[index].value || ""}
+                                className="question-answer"
+                                onChange={(e) => {
+                                    setAnswer((prev: any) => {
+                                        const newAnswers = [...prev];
+                                        newAnswers[index].value = e.target.value;
+                                        return newAnswers;
+                                    });
+
+                                    const answerData = JSON.parse(config?.answerData || "{}");
+                                    const newAnswerData = {
+                                        ...(answerData),
+                                        [element.name]: {
+                                            ...(answerData[element.name] || {}),
+                                            [a.name]: e.target.value
+                                        }
+                                    };
+                                    
+                                    setConfig({
+                                        ...config!,
+                                        answerData: JSON.stringify(newAnswerData)
+                                    });
+
+                                    if (config!.scriptNames?.onChange) {
+                                        performScript("onChange", { 
+                                            result: newAnswerData,
+                                            hasErrors: false
+                                        });
+                                    }
+                                }}
+                                onBlur={() => {
+                                    console.log("Blur");
+                                }}
+                            /> : <p className="question-answer">{a.value}</p>
+                        }
+                    </div>
                 )}
             </div>}
             {element.type == "matrixdynamic" && <div>
