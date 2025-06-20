@@ -12,7 +12,7 @@ interface SummaryItemProps {
 const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) => {
     const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always available in summary
     let newElements: any[] = []; 
-    const [answer, setAnswer] = useState(answers[element.name] || "");
+    const [answer, setAnswer] = useState(answers[element.name]);
 
     element.elements && element.elements.map((subElement: any, index: number) => {
         const nextEl = element.elements[index + 1];
@@ -35,7 +35,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         }
     });
 
-    if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config.hideUnanswered == true) return null;
+    if ((element.choices || element.type == "text" || element.type == "matrix") && !answer && config.hideUnanswered == true) return null;
 
     const checkForAnswers = (elements: any) => {
         return elements.some((subElement: any) => {
