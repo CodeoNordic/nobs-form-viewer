@@ -10,7 +10,7 @@ interface SummaryItemProps {
 }
 
 const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) => {
-    const [config, setConfig] = useConfigState();
+    const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always available in summary
     let newElements: any[] = []; 
     const [answer, setAnswer] = useState(answers[element.name] || "");
 
@@ -35,7 +35,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         }
     });
 
-    if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config?.hideUnanswered == true) return null;
+    if ((element.choices || element.type == "text" || element.type == "matrix") && !answers[element.name] && config.hideUnanswered == true) return null;
 
     const checkForAnswers = (elements: any) => {
         return elements.some((subElement: any) => {
@@ -50,7 +50,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     }
 
     // Check if any subelements of the panel or page have answers
-    if (newElements.length > 0 && config?.hideUnanswered) {
+    if (newElements.length > 0 && config.hideUnanswered) {
         const hasAnswers = checkForAnswers(newElements);
         if (!hasAnswers) return null;
     }
@@ -94,27 +94,24 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                     onChange={(e) => {
                         setAnswer(e.target.value);
 
-                        const answerData = JSON.parse(config?.answerData || "{}");
+                        const answerData = JSON.parse(config.answerData || "{}");
                         const newAnswerData = {
                             ...(answerData),
                             [element.name]: e.target.value
                         };
                         
                         setConfig({
-                            ...config!,
+                            ...config,
                             answerData: JSON.stringify(newAnswerData)
                         });
-
-                        if (config!.scriptNames?.onChange) {
+                    }}
+                    onBlur={() => {
+                        if (config.scriptNames?.onChange) {
                             performScript("onChange", { 
-                                result: newAnswerData,
+                                result: JSON.parse(config.answerData || "{}"),
                                 hasErrors: false
                             });
                         }
-                    }}
-                    onBlur={() => {
-                        console.log("Blur");
-                        // TODO: Move save to here
                     }}
                 />}
                 {(element.inputType !== "color" 
@@ -149,7 +146,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                         return newAnswers;
                                     });
 
-                                    const answerData = JSON.parse(config?.answerData || "{}");
+                                    const answerData = JSON.parse(config.answerData || "{}");
                                     const newAnswerData = {
                                         ...(answerData),
                                         [element.name]: {
@@ -159,19 +156,17 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                     };
                                     
                                     setConfig({
-                                        ...config!,
+                                        ...config,
                                         answerData: JSON.stringify(newAnswerData)
                                     });
-
-                                    if (config!.scriptNames?.onChange) {
+                                }}
+                                onBlur={() => {
+                                    if (config.scriptNames?.onChange) {
                                         performScript("onChange", { 
-                                            result: newAnswerData,
+                                            result: JSON.parse(config.answerData || "{}"),
                                             hasErrors: false
                                         });
                                     }
-                                }}
-                                onBlur={() => {
-                                    console.log("Blur");
                                 }}
                             /> : <p className="question-answer">{a.value}</p>
                         }
