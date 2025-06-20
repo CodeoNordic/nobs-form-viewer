@@ -62,11 +62,9 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         );
 
     // If there are no answers, no title and no sub-elements, return null
-    if (!answers[element.name] && newElements.length == 0 && !hasTitle) {
+    if (!answer && newElements.length == 0 && !hasTitle) {
         return null;
     }
-
-    console.log(element.inputType, answer)
 
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
@@ -81,36 +79,38 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                         ) : element.title ?? element.title
                     }</p>
                 )}
-                {(element.inputType == "color" && answers[element.name]) && <div className="color-box" style={{ backgroundColor: answers[element.name] }}></div>}
-                {(element.inputType == "range" && answers[element.name]) && <p className="question-answer">{answers[element.name]}%</p>}
+                {(element.inputType == "color" && answer) && <div className="color-box" style={{ backgroundColor: answer }}></div>}
+                {(element.inputType == "range" && answer) && <p className="question-answer">{answer}%</p>}
                 {(
                     (element.type == "text" 
                         || element.type == "comment"
                     ) && element.inputType == undefined
                 ) && <input
                     type="text"
-                    value={answer}
+                    value={answer || ""}
                     className="question-answer"
                     onChange={(e) => {
                         setAnswer(e.target.value);
-
-                        const answerData = JSON.parse(config.answerData || "{}");
-                        const newAnswerData = {
-                            ...(answerData),
-                            [element.name]: e.target.value
-                        };
-                        
-                        setConfig({
-                            ...config,
-                            answerData: JSON.stringify(newAnswerData)
-                        });
                     }}
                     onBlur={() => {
-                        if (config.scriptNames?.onChange) {
-                            performScript("onChange", { 
-                                result: JSON.parse(config.answerData || "{}"),
-                                hasErrors: false
+                        if (answer !== answers[element.name]) {
+                            const answerData = JSON.parse(config.answerData || "{}");
+                            const newAnswerData = {
+                                ...(answerData),
+                                [element.name]: answer
+                            };
+                            
+                            setConfig({
+                                ...config,
+                                answerData: JSON.stringify(newAnswerData)
                             });
+                            
+                            if (config.scriptNames?.onChange) {
+                                performScript("onChange", { 
+                                    result: newAnswerData,
+                                    hasErrors: false
+                                });
+                            }
                         }
                     }}
                 />}
@@ -119,20 +119,20 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                     && element.type !== "imagepicker"
                     && element.type !== "text"
                     && element.type !== "comment"
-                    && typeof answers[element.name] !== "object" 
-                    && answers[element.name] != undefined
+                    && typeof answer !== "object" 
+                    && answer != undefined
                 ) && <p className="question-answer">{
-                    answers[element.name]
+                    answer
                 }</p>}
             </div>
-            {element.type == "imagepicker" && answers[element.name] && 
-                <img src={answers[element.name]} alt={answers[element.name]} className="image" />
+            {element.type == "imagepicker" && answer && 
+                <img src={answer} alt={answer} className="image" />
             }
-            {(element.type == "file" && answers[element.name] != undefined) && answers[element.name].map((answer: any) =>
+            {(element.type == "file" && answer != undefined) && answer.map((answer: any) =>
                 <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
             )}
             {element.type == "multipletext" && <div className="multipletext-container">
-                {answers[element.name]?.map((a: any, index: number) => // TODO: make all visible no matter answers
+                {answer?.map((a: any, index: number) => // TODO: make all visible no matter answers
                     <div key={index} className="multipletext-item">
                         <p className="question-title">{a.name}:</p> {
                             true ? <input
@@ -145,27 +145,29 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                         newAnswers[index].value = e.target.value;
                                         return newAnswers;
                                     });
-
-                                    const answerData = JSON.parse(config.answerData || "{}");
-                                    const newAnswerData = {
-                                        ...(answerData),
-                                        [element.name]: {
-                                            ...(answerData[element.name] || {}),
-                                            [a.name]: e.target.value
-                                        }
-                                    };
-                                    
-                                    setConfig({
-                                        ...config,
-                                        answerData: JSON.stringify(newAnswerData)
-                                    });
                                 }}
                                 onBlur={() => {
-                                    if (config.scriptNames?.onChange) {
-                                        performScript("onChange", { 
-                                            result: JSON.parse(config.answerData || "{}"),
-                                            hasErrors: false
+                                    if (answer !== answers[element.name]) {
+                                        const answerData = JSON.parse(config.answerData || "{}");
+                                        const newAnswerData = {
+                                            ...(answerData),
+                                            [element.name]: {
+                                                ...(answerData[element.name] || {}),
+                                                [a.name]: answer[index].value
+                                            }
+                                        };
+                                        
+                                        setConfig({
+                                            ...config,
+                                            answerData: JSON.stringify(newAnswerData)
                                         });
+
+                                        if (config.scriptNames?.onChange) {
+                                            performScript("onChange", { 
+                                                result: newAnswerData,
+                                                hasErrors: false
+                                            });
+                                        }
                                     }
                                 }}
                             /> : <p className="question-answer">{a.value}</p>
@@ -180,7 +182,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                         <div key={index}><p>{column.text ?? column.title ?? column.name ?? column}</p></div>
                     )}
                 </div>
-                {answers[element.name]?.map((row: any, index: number) => {
+                {answer?.map((row: any, index: number) => {
                     return <div key={index} className="row">
                         <div className="row-header">
                             <p>{index + 1}</p>
@@ -224,7 +226,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                         </div>
                         {element.columns.map((column: any, index: number) => {
                             const colName = column.name ?? column.value ?? column;
-                            const ans = answers[element.name]?.[rowName]?.[colName];
+                            const ans = answer?.[rowName]?.[colName];
 
                             return <div key={index} className="column">
                                 <p className={typeof ans === "boolean" ? "crossmark" : ""}>{ans 
@@ -237,7 +239,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                     </div>
                 })}
             </div>}
-            {(answerHistory.some((item: any) => item.answers[element.name] != undefined)) &&
+            {(answerHistory.some((item: any) => item.answer != undefined)) &&
                 <HistoryItem 
                     answerHistory={answerHistory} 
                     elementName={element.name}
