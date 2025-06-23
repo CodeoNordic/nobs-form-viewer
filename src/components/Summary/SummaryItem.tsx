@@ -15,6 +15,23 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     const [answer, setAnswer] = useState(answers[element.name]);
     const answerRef = useRef(null); // Used for textareas to adjust height
 
+    
+    const updateHeight = () => {
+        const el = answerRef.current as HTMLTextAreaElement | null;
+        if (!el) return;
+
+        el.style.height = "auto";
+        el.style.height = (el.scrollHeight - 4) + "px";
+    }
+
+    useEffect(() => {
+        updateHeight();
+    }, [answerRef, answer]);   
+
+    useEffect(() => {
+        setAnswer(answers[element.name]);
+    }, [answers, element.name]);
+    
     element.elements && element.elements.map((subElement: any, index: number) => {
         const nextEl = element.elements[index + 1];
         if (
@@ -67,14 +84,6 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         return null;
     }
 
-    useEffect(() => {
-        const el = answerRef.current as HTMLTextAreaElement | null;
-        if (!el) return;
-
-        el.style.height = "auto";
-        el.style.height = (el.scrollHeight - 4) + "px";
-    }, [answerRef]);   
-
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div className="question-content">
@@ -90,11 +99,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 )}
                 {(element.inputType == "color" && answer) && <div className="color-box" style={{ backgroundColor: answer }}></div>}
                 {(element.inputType == "range" && answer) && <p className="question-answer">{answer}%</p>}
-                {(
-                    (element.type == "text" 
-                        || element.type == "comment"
-                    ) && element.inputType == undefined
-                ) && <textarea
+                {((element.type == "text" || element.type == "comment") && element.inputType == undefined) && <textarea
                     ref={answerRef}
                     rows={1}
                     value={answer || ""}
