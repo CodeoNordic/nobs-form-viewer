@@ -1,6 +1,6 @@
 import { useConfig, useConfigState } from "@context/Config";
 import { HistoryItem } from "./History";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import performScript from "@utils/performScript";
 
 interface SummaryItemProps {
@@ -13,6 +13,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always available in summary
     let newElements: any[] = []; 
     const [answer, setAnswer] = useState(answers[element.name]);
+    const answerRef = useRef(null); // Used for textareas to adjust height
 
     element.elements && element.elements.map((subElement: any, index: number) => {
         const nextEl = element.elements[index + 1];
@@ -66,6 +67,14 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         return null;
     }
 
+    useEffect(() => {
+        const el = answerRef.current as HTMLTextAreaElement | null;
+        if (!el) return;
+
+        el.style.height = "auto";
+        el.style.height = (el.scrollHeight - 4) + "px";
+    }, [answerRef]);   
+
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div className="question-content">
@@ -86,6 +95,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                         || element.type == "comment"
                     ) && element.inputType == undefined
                 ) && <textarea
+                    ref={answerRef}
                     rows={1}
                     value={answer || ""}
                     className="question-answer text-input"
