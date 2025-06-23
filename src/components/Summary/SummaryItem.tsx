@@ -85,12 +85,14 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                     (element.type == "text" 
                         || element.type == "comment"
                     ) && element.inputType == undefined
-                ) && <input
-                    type="text"
+                ) && <textarea
+                    rows={1}
                     value={answer || ""}
-                    className="question-answer"
+                    className="question-answer text-input"
                     onChange={(e) => {
                         setAnswer(e.target.value);
+                        e.target.style.height = "auto";
+                        e.target.style.height = `${e.target.scrollHeight - 4}px`;
                     }}
                     onBlur={() => {
                         if (answer !== answers[element.name]) {
@@ -117,10 +119,12 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 {(element.inputType !== "color" 
                     && element.inputType !== "range" 
                     && element.type !== "imagepicker"
-                    && element.type !== "text"
                     && element.type !== "comment"
                     && typeof answer !== "object" 
                     && answer != undefined
+                    && !((element.type == "text" 
+                        || element.type == "comment"
+                    ) && element.inputType == undefined)
                 ) && <p className="question-answer">{
                     answer
                 }</p>}

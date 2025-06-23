@@ -181,13 +181,14 @@
     }
 
     .color-box {
-        border: 1px solid;
-        padding: 0 20px;
+        margin: 0 4px;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        padding: 10px 20px;
     }
 
     .question-content {
         display: flex;
-        align-items: center;
         gap: 10px;
     }
 
@@ -285,7 +286,6 @@
 
         }
 
-
         .title{
             font-weight: bold;
             font-size: large;
@@ -307,6 +307,15 @@
             height: min-content;
             flex-grow: 1;
             border: 1px solid var(--border-color);
+        }
+
+        .text-input {
+            font: inherit;
+            color: inherit;
+            resize: none;
+            overflow-wrap: break-word;
+            line-height: 1;
+            min-height: 16px;
         }
     
         .sub-elements {
