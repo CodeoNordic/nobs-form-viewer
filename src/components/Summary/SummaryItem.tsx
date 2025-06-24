@@ -13,15 +13,6 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always available in summary
     let newElements: any[] = []; 
     const [answer, setAnswer] = useState(answers[element.name]);
-    const answerRef = useRef(null); // Used for textareas to adjust height
-    
-    useEffect(() => {
-        const el = answerRef.current as HTMLTextAreaElement | null;
-        if (!el) return;
-
-        el.style.height = "auto";
-        el.style.height = (el.scrollHeight - 4) + "px";
-    }, [answerRef, answer]);   
 
     useEffect(() => {
         setAnswer(answers[element.name]);
@@ -97,7 +88,12 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 {(element.inputType == "color" && answer) && <div className="color-box" style={{ backgroundColor: answer }}></div>}
                 {(element.inputType == "range" && answer) && <p className="question-answer">{answer}%</p>}
                 {((element.type == "text" || element.type == "comment") && element.inputType == undefined) && (config.summaryEditable ? <textarea
-                    ref={answerRef}
+                    ref={el => {
+                        if (el) {
+                            el.style.height = "auto";
+                            el.style.height = (el.scrollHeight - 4) + "px";
+                        }
+                    }}
                     rows={1}
                     value={answer || ""}
                     className="question-answer text-input"
@@ -148,11 +144,16 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
             )}
             {element.type == "multipletext" && <div className="multipletext-container">
-                {element.items?.map((item: any, index: number) => // TODO: make all visible no matter answers
+                {element.items?.map((item: any, index: number) =>
                     <div key={index} className="multipletext-item">
                         <p className="question-title">{item.name}:</p> {
                             config.summaryEditable ? <textarea
-                                ref={answerRef}
+                                ref={el => {
+                                    if (el) {
+                                        el.style.height = "auto";
+                                        el.style.height = (el.scrollHeight - 4) + "px";
+                                    }
+                                }}
                                 rows={1}
                                 value={answer?.[index]?.value || ""}
                                 className="question-answer text-input"
