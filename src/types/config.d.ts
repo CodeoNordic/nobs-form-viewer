@@ -18,6 +18,9 @@ declare global {
             // Use to continue where the user left off 
             answerData?: string; 
 
+            // If answers should be editable in the summary view
+            summaryEditable?: boolean;
+
             // The version of the form
             type: 'viewer'|'summary';
 

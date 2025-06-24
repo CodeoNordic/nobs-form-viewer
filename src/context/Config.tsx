@@ -8,6 +8,7 @@ const defaultConfig: Partial<Form.Config> = {
     compact: false,
     style: 'default',
     hideUnanswered: false,
+    summaryEditable: true,
 };
 
 // Parses the JSON from FileMaker into a readable config

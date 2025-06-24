@@ -96,7 +96,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 )}
                 {(element.inputType == "color" && answer) && <div className="color-box" style={{ backgroundColor: answer }}></div>}
                 {(element.inputType == "range" && answer) && <p className="question-answer">{answer}%</p>}
-                {((element.type == "text" || element.type == "comment") && element.inputType == undefined) && <textarea
+                {((element.type == "text" || element.type == "comment") && element.inputType == undefined) && (config.summaryEditable ? <textarea
                     ref={answerRef}
                     rows={1}
                     value={answer || ""}
@@ -127,7 +127,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                             }
                         }
                     }}
-                />}
+                /> : <p className="question-answer">{answer || " "}</p>)}
                 {(element.inputType !== "color" 
                     && element.inputType !== "range" 
                     && element.type !== "imagepicker"
@@ -151,10 +151,11 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 {element.items?.map((item: any, index: number) => // TODO: make all visible no matter answers
                     <div key={index} className="multipletext-item">
                         <p className="question-title">{item.name}:</p> {
-                            true ? <input
-                                type="text"
+                            config.summaryEditable ? <textarea
+                                ref={answerRef}
+                                rows={1}
                                 value={answer?.[index]?.value || ""}
-                                className="question-answer"
+                                className="question-answer text-input"
                                 onChange={(e) => {
                                     setAnswer((prev: any[]|undefined) => {
                                         console.log(prev, index, e.target.value);
@@ -162,6 +163,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                         newAnswers[index].value = e.target.value;
                                         return newAnswers;
                                     });
+                                    e.target.style.height = "auto";
+                                    e.target.style.height = `${e.target.scrollHeight - 4}px`;
                                 }}
                                 onBlur={() => {
                                     if (answer !== answers[element.name]) {
@@ -187,7 +190,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                         }
                                     }
                                 }}
-                            /> : <p className="question-answer">{answer?.[index]?.value || ""}</p>
+                            /> : <p className="question-answer">{answer?.[index]?.value || " "}</p>
                         }
                     </div>
                 )}

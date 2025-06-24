@@ -307,6 +307,7 @@
             height: min-content;
             flex-grow: 1;
             border: 1px solid var(--border-color);
+            min-height: 16px;
         }
 
         .text-input {
@@ -315,7 +316,6 @@
             resize: none;
             overflow-wrap: break-word;
             line-height: 1;
-            min-height: 16px;
         }
     
         .sub-elements {
@@ -328,7 +328,6 @@
             .multipletext-item {
                 display: flex;
                 gap: 10px;
-                align-items: center;
                 margin: 1px 0;
 
                 .question-title {
