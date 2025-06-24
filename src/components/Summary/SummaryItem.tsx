@@ -14,18 +14,13 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     let newElements: any[] = []; 
     const [answer, setAnswer] = useState(answers[element.name]);
     const answerRef = useRef(null); // Used for textareas to adjust height
-
     
-    const updateHeight = () => {
+    useEffect(() => {
         const el = answerRef.current as HTMLTextAreaElement | null;
         if (!el) return;
 
         el.style.height = "auto";
         el.style.height = (el.scrollHeight - 4) + "px";
-    }
-
-    useEffect(() => {
-        updateHeight();
     }, [answerRef, answer]);   
 
     useEffect(() => {
@@ -83,6 +78,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     if (!answer && newElements.length == 0 && !hasTitle) {
         return null;
     }
+
+    element.type == "multipletext" && console.log(element)
 
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
@@ -151,16 +148,17 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 <img key={answer.name} src={answer.content} alt={answer.name} className="image" />
             )}
             {element.type == "multipletext" && <div className="multipletext-container">
-                {answer?.map((a: any, index: number) => // TODO: make all visible no matter answers
+                {element.items?.map((item: any, index: number) => // TODO: make all visible no matter answers
                     <div key={index} className="multipletext-item">
-                        <p className="question-title">{a.name}:</p> {
+                        <p className="question-title">{item.name}:</p> {
                             true ? <input
                                 type="text"
-                                value={answer[index].value || ""}
+                                value={answer?.[index]?.value || ""}
                                 className="question-answer"
                                 onChange={(e) => {
-                                    setAnswer((prev: any) => {
-                                        const newAnswers = [...prev];
+                                    setAnswer((prev: any[]|undefined) => {
+                                        console.log(prev, index, e.target.value);
+                                        const newAnswers = [...(prev ?? element.items.map(() => ({ value: "" })))];
                                         newAnswers[index].value = e.target.value;
                                         return newAnswers;
                                     });
@@ -172,7 +170,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                             ...(answerData),
                                             [element.name]: {
                                                 ...(answerData[element.name] || {}),
-                                                [a.name]: answer[index].value
+                                                [item.name]: answer?.[index]?.value
                                             }
                                         };
                                         
@@ -189,7 +187,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                         }
                                     }
                                 }}
-                            /> : <p className="question-answer">{a.value}</p>
+                            /> : <p className="question-answer">{answer?.[index]?.value || ""}</p>
                         }
                     </div>
                 )}
