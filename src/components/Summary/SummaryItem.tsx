@@ -102,7 +102,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                         if (answer !== answers[element.name]) {
                             const answerData = JSON.parse(config.answerData || "{}");
                             const newAnswerData = {
-                                ...(answerData),
+                                ...answerData,
                                 [element.name]: answer
                             };
                             
@@ -155,7 +155,6 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                 className="question-answer text-input"
                                 onChange={(e) => {
                                     setAnswer((prev: any[]|undefined) => {
-                                        console.log(prev, index, e.target.value);
                                         const newAnswers = [...(prev ?? element.items.map(() => ({ value: "" })))];
                                         newAnswers[index].value = e.target.value;
                                         return newAnswers;
@@ -167,7 +166,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                     if (answer !== answers[element.name]) {
                                         const answerData = JSON.parse(config.answerData || "{}");
                                         const newAnswerData = {
-                                            ...(answerData),
+                                            ...answerData,
                                             [element.name]: {
                                                 ...(answerData[element.name] || {}),
                                                 [item.name]: answer?.[index]?.value
