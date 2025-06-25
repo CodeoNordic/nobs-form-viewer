@@ -41,7 +41,7 @@ export default function extractAnswers(answers: any, survey: any, config: any) {
 
             newAnswers[question.name] = answer;
         } else if (question.type == "matrixdynamic") { // Different from normal matrix
-            let answer: { [key: string]: any }[] = []; // TODO: Empty answer looking weird
+            let answer: { [key: string]: any }[] = [];
 
             answers[question.name].map((ans: any, index: number) => {
                 answer.push({});

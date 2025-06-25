@@ -66,11 +66,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         );
 
     // If there are no answers, no title and no sub-elements, return null
-    if (!answer && newElements.length == 0 && !hasTitle) {
-        return null;
-    }
-
-    element.type == "multipletext" && console.log(element)
+    if (!answer && newElements.length == 0 && !hasTitle) return null;
 
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
