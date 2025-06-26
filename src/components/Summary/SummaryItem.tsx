@@ -1,6 +1,6 @@
-import { useConfig, useConfigState } from "@context/Config";
+import { useConfigState } from "@context/Config";
 import { HistoryItem } from "./History";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import performScript from "@utils/performScript";
 
 interface SummaryItemProps {
