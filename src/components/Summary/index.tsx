@@ -14,6 +14,7 @@ const Summary: FC = () => {
     // Used for each summary item
     const [sortedAnswerHistory, setSortedAnswerHistory] = useState<any>([]);
 
+    // Sort answer history by timestamp and extract answers
     useEffect(() => {
         if (config && config.answers && config.answers.length > 0) {
             const sortedHistory = [...config.answers].sort((a, b) => {
@@ -38,7 +39,7 @@ const Summary: FC = () => {
 
             setSortedAnswerHistory(answerHistoryFull);
             setSortedHistory(sortedHistory);
-        } else {
+        } else { // Clear history if no answers, in case the config changes
             setSortedHistory([]);
             setSortedAnswerHistory([]);
         }
