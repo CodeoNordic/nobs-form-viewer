@@ -75,10 +75,6 @@ const Summary: FC = () => {
         </div>
         <Footer />
     </div>
-
-    /**
-     * source pro font
-    */
 }
 
 export default Summary;
