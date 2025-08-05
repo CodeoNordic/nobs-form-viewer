@@ -194,7 +194,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
             {element.type == "matrixdynamic" && <div>
                 <div className="column-header">
                     <div className="row-header"></div> {/* Empty div for the first column */}
-                    {element.columns.map((column: any, index: number) =>
+                    {element.columns.map((column: any, index: number) => 
                         <div key={index}><p>{column.text ?? column.title ?? column.name ?? column}</p></div>
                     )}
                 </div>
@@ -229,7 +229,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 <div className="column-header">
                     <div className="row-header"></div> {/* Empty div for the first column */}
                     {element.columns.map((column: any, index: number) =>
-                        <div key={index}><p>{column.text ?? column.name ?? column}</p></div>
+                        <div key={index}><p>{column.text ?? column.title ?? column.name ?? column}</p></div>
                     )}
                 </div>
                 {element.rows.map((row: any, index: number) => {
