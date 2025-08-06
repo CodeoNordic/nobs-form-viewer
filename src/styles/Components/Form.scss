@@ -116,7 +116,27 @@
 
     .sd-row.sd-clearfix.sd-page__row {
         margin-top: 4px !important;
+
+        width: 100% !important;
+    
+        .sd-table-wrapper {
+            width: 100% !important;
+            margin: 0 !important;
+            min-width: 0 !important;
+            display: block !important;
+        }
+
+        .sd-table-wrapper:before {
+            width: 0 !important;
+        }
+        
+        .sd-dropdown_clean-button {
+            z-index: 10 !important;    
+            margin-left: -24px !important;
+            padding: 0 !important;
+        }
     }
+
 
     .sd-rating__item {
         min-width: 32px !important;
@@ -128,6 +148,9 @@
         padding: 0 !important;
         border: 0 !important;
         padding-left: 8px !important;
+
+        // fix for matrix going out of bounds
+        min-width: 0 !important;
     }
 
     .sd-boolean__label, .sd-boolean__thumb {

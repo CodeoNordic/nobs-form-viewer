@@ -68,6 +68,10 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     // If there are no answers, no title and no sub-elements, return null
     if (!answer && newElements.length == 0 && !hasTitle) return null;
 
+    if (element.visibleIf) {
+        console.log(element.visibleIf);
+    }
+
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div className="question-content">
