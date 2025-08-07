@@ -10,6 +10,9 @@ declare global {
             /** Script to run when form is submitted */
             onSubmit?: string;
 
+            /** Script to run when base64 PDF data is ready */
+            onPDF?: string;
+
             /** Only used if the script result shall be returned to JS */
             onJsRequest?: string;
             onJsError?: string;            

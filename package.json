@@ -17,8 +17,8 @@
   },
   "scripts": {
     "start": "parcel --no-cache --no-source-maps",
-    "build": "rimraf .parcel-cache dist && parcel build --no-cache --no-scope-hoist",
-    "b:build": "rm -rf .parcel-cache dist && parcel build --no-cache --no-scope-hoist",
+    "build": "rimraf .parcel-cache dist && parcel build --no-cache --no-scope-hoist && echo The JS files do not need to be included",
+    "b:build": "rm -rf .parcel-cache dist && parcel build --no-cache --no-scope-hoist && echo The JS files do not need to be included",
     "upload": "node upload.js",
     "b:upload": "bun upload.js",
     "upload:clean": "npm run build && npm run upload",
@@ -30,8 +30,7 @@
     "node": ">=20"
   },
   "browserslist": "> 0.5%, last 2 versions, not IE 9-11, not dead",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@parcel/optimizer-data-url": "^2.12.0",
     "@parcel/transformer-image": "^2.12.0",
@@ -63,11 +62,12 @@
     "posthtml-doctype": "^1.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-to-pdf": "^2.0.1",
     "rimraf": "^5.0.5",
-    "typescript": "^5.7.2",
     "survey-analytics": "^1.12.13",
     "survey-creator-react": "^1.12.13",
     "survey-react-ui": "^1.12.13",
+    "typescript": "^5.7.2",
     "util": "^0.12.5",
     "uuid": "^9.0.1"
   }
