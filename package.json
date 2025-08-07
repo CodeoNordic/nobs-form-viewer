@@ -17,8 +17,8 @@
   },
   "scripts": {
     "start": "parcel --no-cache --no-source-maps",
-    "build": "rimraf .parcel-cache dist && parcel build --no-cache --no-scope-hoist && echo The JS files do not need to be included",
-    "b:build": "rm -rf .parcel-cache dist && parcel build --no-cache --no-scope-hoist && echo The JS files do not need to be included",
+    "build": "rimraf .parcel-cache dist && parcel build --no-cache --no-scope-hoist && echo Files deleted: && rimraf -g -v dist/*.{js,js.map}",
+    "b:build": "rm -rf .parcel-cache dist && parcel build --no-cache --no-scope-hoist && echo Files deleted: && rimraf -g -v dist/*.{js,js.map}",
     "upload": "node upload.js",
     "b:upload": "bun upload.js",
     "upload:clean": "npm run build && npm run upload",
@@ -70,5 +70,9 @@
     "typescript": "^5.7.2",
     "util": "^0.12.5",
     "uuid": "^9.0.1"
+  },
+  "optionalDependencies": {
+    "dompurify": "^3.2.4",
+    "stackblur-canvas": "^2.0.0"
   }
 }
