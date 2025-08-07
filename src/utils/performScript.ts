@@ -16,7 +16,7 @@ export const loadCallbacks: VoidFunction[] = [];
  * ```
  */
 export default function performScript(
-    key: string & keyof Form.Config['scriptNames'] | (string & {}),
+    key: (string & keyof Form.ScriptNames) | (string & { _v?: any }),
     param?: any,
     option?: Parameters<typeof window['FileMaker']['PerformScriptWithOption']>[2],
     directScriptName: boolean = false

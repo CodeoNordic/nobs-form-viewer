@@ -7,6 +7,9 @@ declare global {
 
         /** Set a specific value in the config */
         setConfigValue<K extends string & keyof Form.Config>(k: K, prop: Form.Config[K], type?: number): void;
+
+        /** Generate a PDF from the survey */
+        generatePDF();
     }
 }
 

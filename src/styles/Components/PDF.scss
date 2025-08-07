@@ -1,0 +1,12 @@
+.pdf-root {
+    z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    .summary {
+        border: none !important;
+        width: 210mm !important;
+        min-height: calc(297mm - 1px) !important;
+    }
+}
