@@ -69,7 +69,31 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     if (!answer && newElements.length == 0 && !hasTitle) return null;
 
     if (element.visibleIf) {
-        console.log(element.visibleIf);
+        console.log(element);
+
+        const condition = element.visibleIf;
+        const conditionQuestion = condition.split("{")[1].split("}")[0];
+        const [conditionOperator, conditionValue] = condition.split("} ")[1].split(" ");
+        const conAnswerValue = answers[conditionQuestion];
+
+        console.log(conditionQuestion, conditionOperator, conditionValue, conAnswerValue);
+    
+        switch (conditionOperator) {
+            case "=":
+                if (conAnswerValue != conditionValue) return null;
+                break;
+            case "<>": // Not equal
+                if (conAnswerValue == conditionValue) return null;
+                break;
+            case "notempty":
+                if (conAnswerValue == undefined || conAnswerValue == "") return null;
+                break;
+            case "empty":
+                if (conAnswerValue != undefined && conAnswerValue != "") return null;
+                break;
+            default:
+                return null; // Unsupported operator
+        }
     }
 
     return (
