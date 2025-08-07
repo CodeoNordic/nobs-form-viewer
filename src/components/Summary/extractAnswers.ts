@@ -21,7 +21,7 @@ export default function extractAnswers(answers: any, survey: any, config: any) {
     });
 
     questions.forEach((question: any) => {
-        if (!answers[question.name]) { // No answer
+        if (answers[question.name] === null || answers[question.name] === undefined || answers[question.name] === "") { // No answer
         } else if (question.type == "matrix" || question.type == "matrixdropdown") { // Matrix question, with rows and columns
             let answer: { [key: string]: any } = {};
 
