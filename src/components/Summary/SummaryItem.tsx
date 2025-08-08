@@ -66,7 +66,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         );
 
     // If there are no answers, no title and no sub-elements, return null
-    if (!answer && newElements.length == 0 && !hasTitle) return null;
+    // Disabled for now, needs testing if needed
+    // if (!answer && newElements.length == 0 && !hasTitle) return null;
 
     if (element.visibleIf) {
         console.log(element);
@@ -80,6 +81,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     
         switch (conditionOperator) {
             case "=":
+                console.log("Checking equality", conAnswerValue, conditionValue);
                 if (conAnswerValue != conditionValue) return null;
                 break;
             case "<>": // Not equal
@@ -95,11 +97,11 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 return null; // Unsupported operator
         }
     }
-
+    
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div className="question-content">
-                {hasTitle && (
+                {hasTitle ? (
                     <p className="question-title">{!element.elements 
                         ? (element.titleLocation == "hidden"
                             ? "" 
@@ -107,8 +109,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                 ? element.title + ":" 
                                 : element.name + ":"
                         ) : element.title ?? element.title
-                    }</p>
-                )}
+                    }{element.isRequired && <span className="required">*</span>}</p>
+                ) : (element.isRequired && <span className="required">*</span>)}
                 {(element.inputType == "color" && answer) && <div className="color-box" style={{ backgroundColor: answer }}></div>}
                 {(element.inputType == "range" && answer) && <p className="question-answer">{answer}%</p>}
                 {((element.type == "text" || element.type == "comment") && element.inputType == undefined) && (config.summaryEditable ? <textarea
