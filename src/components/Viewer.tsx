@@ -6,11 +6,23 @@ import { useMemo } from "react";
 import "survey-core/i18n";
 import { Serializer, SurveyError } from "survey-core";
 import fetchFromFileMaker from "@utils/fetchFromFilemaker";
+import { useCreateMethod } from "@utils/createMethod";
 
 const FormViewer: FC = () => {
     const [config, setConfig] = useConfigState();
 
     if (!config) return null;
+
+    useCreateMethod('validateForm', () => {
+        if (!survey) {
+            warn("No survey model available to validate.");
+            return;
+        }
+
+        if (config.scriptNames?.onFinishValidation) {
+            performScript(config.scriptNames.onFinishValidation, survey.validate());
+        }
+    }, []);
 
     // useMemo so you can choose when to re-render
     const survey = useMemo(() => {

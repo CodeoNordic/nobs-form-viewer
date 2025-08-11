@@ -4,6 +4,9 @@ declare global {
             /** Script to be ran to validate a question. Return {status: boolean, message?: string} */
             validate?: string;
 
+            /** Script to be ran when survey is validated from filemaker */
+            onFinishValidation?: string;
+
             /** Script to be ran when a question is answered */
             onChange?: string;
 
