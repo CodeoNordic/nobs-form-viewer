@@ -20,7 +20,7 @@ const FormViewer: FC = () => {
         }
 
         if (config.scriptNames?.onFinishValidation) {
-            performScript(config.scriptNames.onFinishValidation, survey.validate());
+            performScript(config.scriptNames.onFinishValidation, survey.validate(), undefined, true);
         }
     }, []);
 
