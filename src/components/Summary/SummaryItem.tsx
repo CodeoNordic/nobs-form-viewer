@@ -102,22 +102,22 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 };
                 break;
             case ">":
-                if (typeof conAnswerValue === "number" || !isNaN(parseFloat(conAnswerValue))) {
+                if (!isNaN(parseFloat(conAnswerValue)) && !isNaN(parseFloat(parsedConditionValue))) {
                    if (parseFloat(conAnswerValue) <= parseFloat(parsedConditionValue)) return null;  
                 } else return null;
                 break;
             case "<":
-                if (typeof conAnswerValue === "number" || !isNaN(parseFloat(conAnswerValue))) {
+                if (!isNaN(parseFloat(conAnswerValue)) && !isNaN(parseFloat(parsedConditionValue))) {
                     if (parseFloat(conAnswerValue) >= parseFloat(parsedConditionValue)) return null;  
                 } else return null;
                 break;
             case ">=":
-                if (typeof conAnswerValue === "number" || !isNaN(parseFloat(conAnswerValue))) {
+                if (!isNaN(parseFloat(conAnswerValue)) && !isNaN(parseFloat(parsedConditionValue))) {
                     if (parseFloat(conAnswerValue) < parseFloat(parsedConditionValue)) return null;  
                 } else return null;
                 break;
             case "<=":
-                if (typeof conAnswerValue === "number" || !isNaN(parseFloat(conAnswerValue))) {
+                if (!isNaN(parseFloat(conAnswerValue)) && !isNaN(parseFloat(parsedConditionValue))) {
                     if (parseFloat(conAnswerValue) > parseFloat(parsedConditionValue)) return null;  
                 } else return null;
                 break;
