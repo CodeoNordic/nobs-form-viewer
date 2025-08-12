@@ -70,8 +70,6 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     // if (!answer && newElements.length == 0 && !hasTitle) return null;
 
     if (element.visibleIf) {
-        console.log(element);
-
         const condition = element.visibleIf;
         const conditionQuestion = condition.split("{")[1].split("}")[0];
         const [conditionOperator, conditionValue] = condition.split("} ")[1].split(" ");
@@ -80,11 +78,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
             ? conditionValue.slice(1, -1) // Remove quotes
             : conditionValue;
 
-        console.log(conditionQuestion, conditionOperator, parsedConditionValue, conAnswerValue);
-
         switch (conditionOperator) {
             case "=":
-                console.log("Checking equality", conAnswerValue, parsedConditionValue);
                 if (conAnswerValue != parsedConditionValue) return null;
                 break;
             case "<>": // Not equal
@@ -97,7 +92,6 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 if (conAnswerValue == undefined || conAnswerValue == "") return null;
                 break;
             case "contains":
-                console.log("Checking contains", conAnswerValue, parsedConditionValue);
                 if ((typeof conAnswerValue === "string" || Array.isArray(conAnswerValue))) {
                     if (!conAnswerValue.includes(parsedConditionValue)) return null;
                 } else return null;
