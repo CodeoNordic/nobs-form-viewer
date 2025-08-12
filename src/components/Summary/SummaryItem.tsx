@@ -76,25 +76,51 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         const conditionQuestion = condition.split("{")[1].split("}")[0];
         const [conditionOperator, conditionValue] = condition.split("} ")[1].split(" ");
         const conAnswerValue = answers[conditionQuestion];
+        const parsedConditionValue = conditionValue.startsWith("'") && conditionValue.endsWith("'")
+            ? conditionValue.slice(1, -1) // Remove quotes
+            : conditionValue;
 
-        console.log(conditionQuestion, conditionOperator, conditionValue, conAnswerValue);
-    
+        console.log(conditionQuestion, conditionOperator, parsedConditionValue, conAnswerValue);
+
         switch (conditionOperator) {
             case "=":
-                console.log("Checking equality", conAnswerValue, conditionValue);
-                if (conAnswerValue != conditionValue) return null;
+                console.log("Checking equality", conAnswerValue, parsedConditionValue);
+                if (conAnswerValue != parsedConditionValue) return null;
                 break;
             case "<>": // Not equal
-                if (conAnswerValue == conditionValue) return null;
-                break;
-            case "notempty":
-                if (conAnswerValue == undefined || conAnswerValue == "") return null;
+                if (conAnswerValue == parsedConditionValue) return null;
                 break;
             case "empty":
                 if (conAnswerValue != undefined && conAnswerValue != "") return null;
                 break;
+            case "notempty":
+                if (conAnswerValue == undefined || conAnswerValue == "") return null;
+                break;
+            case "contains":
+                console.log("Checking contains", conAnswerValue, parsedConditionValue);
+                if ((typeof conAnswerValue === "string" || Array.isArray(conAnswerValue))) {
+                    if (!conAnswerValue.includes(parsedConditionValue)) return null;
+                } else return null;
+                break;
+            case "notcontains":
+                if ((typeof conAnswerValue === "string" || Array.isArray(conAnswerValue))) {
+                    if (conAnswerValue.includes(parsedConditionValue)) return null;
+                };
+                break;
+            case ">":
+                if (typeof conAnswerValue === "number" && conAnswerValue < parseFloat(parsedConditionValue)) return null;
+                break;
+            case "<":
+                if (typeof conAnswerValue === "number" && conAnswerValue > parseFloat(parsedConditionValue)) return null;
+                break;
+            case ">=":
+                if (typeof conAnswerValue === "number" && conAnswerValue <= parseFloat(parsedConditionValue)) return null;
+                break;
+            case "<=":
+                if (typeof conAnswerValue === "number" && conAnswerValue >= parseFloat(parsedConditionValue)) return null;
+                break;
             default:
-                return null; // Unsupported operator
+                break; // Unsupported operator, dont filter out element
         }
     }
     
