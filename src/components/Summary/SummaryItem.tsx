@@ -2,6 +2,7 @@ import { useConfigState } from "@context/Config";
 import { HistoryItem } from "./History";
 import { useEffect, useState } from "react";
 import performScript from "@utils/performScript";
+import { evaluateVisibleIf } from "./evaluateLogic";
 
 interface SummaryItemProps {
     element: any;
@@ -70,59 +71,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     // if (!answer && newElements.length == 0 && !hasTitle) return null;
 
     if (element.visibleIf) {
-        const condition = element.visibleIf;
-        const conditionQuestion = condition.split("{")[1].split("}")[0];
-        const [conditionOperator, conditionValue] = condition.split("} ")[1].split(" ");
-        const conAnswerValue = answers[conditionQuestion];
-        const parsedConditionValue = conditionValue.startsWith("'") && conditionValue.endsWith("'")
-            ? conditionValue.slice(1, -1) // Remove quotes
-            : conditionValue;
-
-        switch (conditionOperator) {
-            case "=":
-                if (conAnswerValue != parsedConditionValue) return null;
-                break;
-            case "<>": // Not equal
-                if (conAnswerValue == parsedConditionValue) return null;
-                break;
-            case "empty":
-                if (conAnswerValue != undefined && conAnswerValue != "") return null;
-                break;
-            case "notempty":
-                if (conAnswerValue == undefined || conAnswerValue == "") return null;
-                break;
-            case "contains":
-                if ((typeof conAnswerValue === "string" || Array.isArray(conAnswerValue))) {
-                    if (!conAnswerValue.includes(parsedConditionValue)) return null;
-                } else return null;
-                break;
-            case "notcontains":
-                if ((typeof conAnswerValue === "string" || Array.isArray(conAnswerValue))) {
-                    if (conAnswerValue.includes(parsedConditionValue)) return null;
-                };
-                break;
-            case ">":
-                if (!isNaN(parseFloat(conAnswerValue)) && !isNaN(parseFloat(parsedConditionValue))) {
-                   if (parseFloat(conAnswerValue) <= parseFloat(parsedConditionValue)) return null;  
-                } else return null;
-                break;
-            case "<":
-                if (!isNaN(parseFloat(conAnswerValue)) && !isNaN(parseFloat(parsedConditionValue))) {
-                    if (parseFloat(conAnswerValue) >= parseFloat(parsedConditionValue)) return null;  
-                } else return null;
-                break;
-            case ">=":
-                if (!isNaN(parseFloat(conAnswerValue)) && !isNaN(parseFloat(parsedConditionValue))) {
-                    if (parseFloat(conAnswerValue) < parseFloat(parsedConditionValue)) return null;  
-                } else return null;
-                break;
-            case "<=":
-                if (!isNaN(parseFloat(conAnswerValue)) && !isNaN(parseFloat(parsedConditionValue))) {
-                    if (parseFloat(conAnswerValue) > parseFloat(parsedConditionValue)) return null;  
-                } else return null;
-                break;
-            default:
-                break; // Unsupported operator, dont filter out element
+        if (!evaluateVisibleIf(element.visibleIf, answers)) {
+            return null; // If the element is not visible, return null
         }
     }
     
