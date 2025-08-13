@@ -1,7 +1,7 @@
 export function evaluateVisibleIf(expr: string, answers: Record<string, any>): boolean {
     if (!expr || typeof expr !== "string") return true; // fail-open
 
-    const m = expr.match(/^\s*\{([^}]+)\}\s*(=|<>|>=|<=|>|<|contains|notcontains|empty|notempty)\s*(.*)?$/i);
+    const m = expr.match(/^\s*\{([^}]+)\}\s*(=|<>|>=|<=|>|<|contains|notcontains|empty|notempty|anyof|allof)\s*(.*)?$/i);
     if (!m) return true; // can't parse, don't hide
 
     const [, leftKeyRaw, opRaw, rhsRaw = ""] = m;
@@ -11,7 +11,6 @@ export function evaluateVisibleIf(expr: string, answers: Record<string, any>): b
 
     const lhs = getByPath(answers, leftKey);
 
-    // Operators without RHS
     if (op === "empty") {
         return lhs === undefined || lhs === null || (Array.isArray(lhs) ? lhs.length === 0 : String(lhs).trim() === "");
     }
@@ -36,12 +35,20 @@ export function evaluateVisibleIf(expr: string, answers: Record<string, any>): b
             if (typeof lhs === "string" || typeof lhs === "number" || typeof lhs === "boolean")
                 return !String(lhs).includes(String(rhs));
             return true;
+        case "anyof":
+            if (!Array.isArray(rhs)) return false;
+            if (!Array.isArray(lhs)) return false;
+            return rhs.some(r => lhs.some(l => looselyEqual(l, r)));
+        case "allof":
+            if (!Array.isArray(rhs)) return false;
+            if (!Array.isArray(lhs)) return false;
+            return rhs.every(r => lhs.some(l => looselyEqual(l, r)));
         case ">":
         case ">=":
         case "<":
         case "<=": {
             const a = toNumber(lhs), b = toNumber(rhs);
-            if (a === null || b === null) return false; // can't compare non-numeric values
+            if (a === null || b === null) return false;
             if (op === ">")  return a > b;
             if (op === ">=") return a >= b;
             if (op === "<")  return a < b;

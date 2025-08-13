@@ -71,7 +71,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     // if (!answer && newElements.length == 0 && !hasTitle) return null;
 
     if (element.visibleIf) {
-        if (!evaluateVisibleIf(element.visibleIf, answers)) return null;
+        // Answers from config.answerData, because other answers are parsed
+        if (!evaluateVisibleIf(element.visibleIf, JSON.parse(config.answerData || "{}"))) return null;
     }
     
     return (
