@@ -101,8 +101,6 @@ export default function extractAnswers(answers: any, survey: any, config: any) {
             } else {
                 newAnswers[question.name] = answers[question.name];
             }
-        } else if (question.type == "boolean") {
-            newAnswers[question.name] = answers[question.name] ? (config?.locale == "no" ? "Ja" : "Yes") : (config?.locale == "no" ? "Nei" : "No");
         } else if (question.type == "multipletext") {
             let answer: { [key: string]: any }[] = [];
 

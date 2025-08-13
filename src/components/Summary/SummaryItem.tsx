@@ -71,9 +71,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     // if (!answer && newElements.length == 0 && !hasTitle) return null;
 
     if (element.visibleIf) {
-        if (!evaluateVisibleIf(element.visibleIf, answers)) {
-            return null; // If the element is not visible, return null
-        }
+        if (!evaluateVisibleIf(element.visibleIf, answers)) return null;
     }
     
     return (
@@ -91,6 +89,9 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 ) : (element.isRequired && <span className="required">*</span>)}
                 {(element.inputType == "color" && answer) && <div className="color-box" style={{ backgroundColor: answer }}></div>}
                 {(element.inputType == "range" && answer) && <p className="question-answer">{answer}%</p>}
+                {element.type == "boolean" && <p className="question-answer">
+                    {answer ? (config.locale == "no" ? "Ja" : "Yes") : (config.locale == "no" ? "Nei" : "No")}
+                </p>}
                 {((element.type == "text" || element.type == "comment") && element.inputType == undefined) && (config.summaryEditable ? <textarea
                     ref={el => {
                         if (el) {
@@ -129,7 +130,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                     }}
                 /> : <p className="question-answer">{answer || " "}</p>)}
                 {(element.inputType !== "color" 
-                    && element.inputType !== "range" 
+                    && element.inputType !== "range"
+                    && element.type !== "boolean" 
                     && element.type !== "imagepicker"
                     && element.type !== "comment"
                     && typeof answer !== "object" 
