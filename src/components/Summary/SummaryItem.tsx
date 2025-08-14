@@ -70,16 +70,21 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     // Disabled for now, needs testing if needed
     // if (!answer && newElements.length == 0 && !hasTitle) return null;
 
+    const answerDataObj = JSON.parse(config.answerData || "{}");
+    
     if (element.visibleIf) {
-        if (!evaluateLogic(element.visibleIf, JSON.parse(config.answerData || "{}"))) return null;
+        if (!evaluateLogic(element.visibleIf, answerDataObj)) return null;
     }
 
-    const answerDataObj = JSON.parse(config.answerData || "{}");
     const canEdit = config.summaryEditable && (
         !!element.enableIf ?
         evaluateLogic(element.enableIf, answerDataObj) :
         true
     );
+
+    const isRequired = !!element.requiredIf ? (
+        evaluateLogic(element.requiredIf, answerDataObj)
+    ) : !!element.isRequired;
 
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
@@ -92,8 +97,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                                 ? element.title + ":" 
                                 : element.name + ":"
                         ) : element.title ?? element.title
-                    }{element.isRequired && <span className="required">*</span>}</p>
-                ) : (element.isRequired && <span className="required">*</span>)}
+                    }{isRequired && <span className="required">*</span>}</p>
+                ) : (isRequired && <span className="required">*</span>)}
                 {(element.inputType == "color" && answer) && <div className="color-box" style={{ backgroundColor: answer }}></div>}
                 {(element.inputType == "range" && answer) && <p className="question-answer">{answer}%</p>}
                 {element.type == "boolean" && <p className="question-answer">
