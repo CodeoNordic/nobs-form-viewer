@@ -86,6 +86,10 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
         evaluateLogic(element.requiredIf, answerDataObj)
     ) : !!element.isRequired;
 
+    const triggers = JSON.parse(config.value || "{}").triggers || {};
+
+    console.log(triggers)
+
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div className="question-content">
