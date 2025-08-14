@@ -2,7 +2,7 @@ import { useConfigState } from "@context/Config";
 import { HistoryItem } from "./History";
 import { useEffect, useState } from "react";
 import performScript from "@utils/performScript";
-import { evaluateVisibleIf } from "./evaluateLogic";
+import { evaluateLogic } from "./evaluateLogic";
 
 interface SummaryItemProps {
     element: any;
@@ -71,10 +71,16 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     // if (!answer && newElements.length == 0 && !hasTitle) return null;
 
     if (element.visibleIf) {
-        // Answers from config.answerData, because other answers are parsed
-        if (!evaluateVisibleIf(element.visibleIf, JSON.parse(config.answerData || "{}"))) return null;
+        if (!evaluateLogic(element.visibleIf, JSON.parse(config.answerData || "{}"))) return null;
     }
-    
+
+    const answerDataObj = JSON.parse(config.answerData || "{}");
+    const canEdit = config.summaryEditable && (
+        !!element.enableIf ?
+        evaluateLogic(element.enableIf, answerDataObj) :
+        true
+    );
+
     return (
         <div className={`question${element.type ? " " + element.type : ""}`}>
             <div className="question-content">
@@ -93,7 +99,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 {element.type == "boolean" && <p className="question-answer">
                     {answer ? (config.locale == "no" ? "Ja" : "Yes") : (config.locale == "no" ? "Nei" : "No")}
                 </p>}
-                {((element.type == "text" || element.type == "comment") && element.inputType == undefined) && (config.summaryEditable ? <textarea
+                {((element.type == "text" || element.type == "comment") && element.inputType == undefined) && (canEdit ? <textarea
                     ref={el => {
                         if (el) {
                             el.style.height = "auto";
@@ -154,7 +160,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                 {element.items?.map((item: any, index: number) =>
                     <div key={index} className="multipletext-item">
                         <p className="question-title">{item.name}:</p> {
-                            config.summaryEditable ? <textarea
+                            canEdit ? <textarea
                                 ref={el => {
                                     if (el) {
                                         el.style.height = "auto";

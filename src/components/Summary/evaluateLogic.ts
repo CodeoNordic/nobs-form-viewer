@@ -1,5 +1,5 @@
-export function evaluateVisibleIf(expr: string, answers: Record<string, any>): boolean {
-    if (!expr || typeof expr !== "string") return true; // fail-open
+export function evaluateLogic(expr: string, answers: Record<string, any>): boolean {
+    if (!expr || typeof expr !== "string") return true;
 
     const m = expr.match(/^\s*\{([^}]+)\}\s*(=|<>|>=|<=|>|<|contains|notcontains|empty|notempty|anyof|allof)\s*(.*)?$/i);
     if (!m) return true; // can't parse, don't hide
