@@ -1,4 +1,4 @@
-export function evaluateLogic(expr: string, answers: Record<string, any>): boolean {
+export function evaluateLogic(expr: string, answers: Record<string, any>, timeType?: "date" | "datetime-local" | "month" | "week" | "time"): boolean {
     if (!expr || typeof expr !== "string") return true;
 
     const m = expr.match(/^\s*\{([^}]+)\}\s*(=|<>|>=|<=|>|<|contains|notcontains|empty|notempty|anyof|allof)\s*(.*)?$/i);
@@ -19,6 +19,10 @@ export function evaluateLogic(expr: string, answers: Record<string, any>): boole
     }
 
     const rhs = parseRhs(rhsRaw, answers);
+
+    if (timeType && [">", ">=", "<", "<="].includes(op)) {
+        return compareTemporal(lhs, rhs, op as ">"|">="|"<"|"<=", timeType);
+    } 
 
     switch (op) {
         case "=":
@@ -49,10 +53,7 @@ export function evaluateLogic(expr: string, answers: Record<string, any>): boole
         case "<=": {
             const a = toNumber(lhs), b = toNumber(rhs);
             if (a === null || b === null) return false;
-            if (op === ">")  return a > b;
-            if (op === ">=") return a >= b;
-            if (op === "<")  return a < b;
-            if (op === "<=") return a <= b;
+            return OPS[op](a, b);
         }
     }
     return true; // unknown operator, don't hide
@@ -100,4 +101,68 @@ function looselyEqual(a: any, b: any): boolean {
 function toNumber(x: any): number | null {
     const n = Number(x);
     return Number.isFinite(n) ? n : null;
+}
+
+const OPS = {
+    ">": (a: number, b: number) => a > b,
+    ">=": (a: number, b: number) => a >= b,
+    "<": (a: number, b: number) => a < b,
+    "<=": (a: number, b: number) => a <= b,
+};
+
+function parseDateOnly(s: string): number {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    if (!m) return NaN;
+
+    const y = +m[1], mon = +m[2], d = +m[3];
+    return Date.UTC(y, mon - 1, d);
+}
+
+function parseMonth(s: string): number {
+    const m = /^(\d{4})-(\d{2})$/.exec(s);
+    if (!m) return NaN;
+
+    const y = +m[1], mon = +m[2];
+    return y * 12 + (mon - 1);
+}
+
+function parseWeek(s: string): number {
+    const m = /^(\d{4})-W(\d{2})$/.exec(s);
+    if (!m) return NaN;
+
+    const y = +m[1], w = +m[2];
+    return y * 100 + w;
+}
+
+function parseTimeOfDay(s: string): number {
+    const m = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(s);
+    if (!m) return NaN;
+    
+    const h = +m[1], min = +m[2], sec = m[3] ? +m[3] : 0;
+    if (h > 23 || min > 59 || sec > 59) return NaN;
+    return h * 3600 + min * 60 + sec;
+}
+
+function compareTemporal(lhs: string, rhs: string, op: ">"|">="|"<"|"<=", timeType: "date" | "datetime-local" | "month" | "week" | "time") {
+    let a: number, b: number;
+
+    switch (timeType) {
+        case "date":
+            a = parseDateOnly(lhs); b = parseDateOnly(rhs); break;
+        case "datetime-local":
+            a = new Date(lhs).getTime(); 
+            b = new Date(rhs).getTime(); 
+            break;
+        case "month":
+            a = parseMonth(lhs); b = parseMonth(rhs); break;
+        case "week":
+            a = parseWeek(lhs); b = parseWeek(rhs); break;
+        case "time":
+            a = parseTimeOfDay(lhs); b = parseTimeOfDay(rhs); break;
+        default:
+            return false;
+    }
+
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return false;
+    return OPS[op](a, b);
 }

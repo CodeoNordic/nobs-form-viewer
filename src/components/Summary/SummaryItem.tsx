@@ -71,19 +71,20 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
     // if (!answer && newElements.length == 0 && !hasTitle) return null;
 
     const answerDataObj = JSON.parse(config.answerData || "{}");
-    
+    const timeType = !!element.inputType ? ["time", "date", "datetime-local", "week", "month"].includes(element.inputType as string) ? element.inputType : undefined : undefined; 
+
     if (element.visibleIf) {
-        if (!evaluateLogic(element.visibleIf, answerDataObj)) return null;
+        if (!evaluateLogic(element.visibleIf, answerDataObj, timeType)) return null;
     }
 
     const canEdit = config.summaryEditable && (
         !!element.enableIf ?
-        evaluateLogic(element.enableIf, answerDataObj) :
+        evaluateLogic(element.enableIf, answerDataObj, timeType) :
         true
     );
 
     const isRequired = !!element.requiredIf ? (
-        evaluateLogic(element.requiredIf, answerDataObj)
+        evaluateLogic(element.requiredIf, answerDataObj, timeType)
     ) : !!element.isRequired;
 
     return (
