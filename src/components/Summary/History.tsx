@@ -25,6 +25,8 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
         return () => document.removeEventListener("mousedown", handleClick);
     }, [answerHistoryOpen]);
 
+    console.log("test", answerHistory, elementName);
+
     if (answerHistory.every((item: any) => item.answers[elementName] == undefined)) return null;
 
     return ( 

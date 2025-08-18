@@ -278,12 +278,12 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
                     </div>
                 })}
             </div>}
-            {(answerHistory.some((item: any) => item.answer != undefined)) &&
+            {(answerHistory.some((item: any) => item.answers != undefined)) && (
                 <HistoryItem 
                     answerHistory={answerHistory} 
                     elementName={element.name}
                 />
-            }
+            )}
             {newElements.length > 0 && <div className={`sub-elements${element.noNewLine ? " no-new-line" : ""}`}> {
                 newElements.map((subElement: any, index: number) => 
                     <SummaryItem 
