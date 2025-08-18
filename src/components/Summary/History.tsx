@@ -1,12 +1,19 @@
-import { useConfig, useConfigState } from "@context/Config";
+import { useConfigState } from "@context/Config";
 import { useEffect, useRef, useState } from "react";
 import History from 'jsx:@svg/history.svg';
 import performScript from "@utils/performScript";
 
 export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ answerHistory, elementName }) => {
-    const config = useConfig();
+    const [config, setConfig] = useConfigState();
     const [answerHistoryOpen, setAnswerHistoryOpen] = useState(false);
     const itemRef = useRef<HTMLDivElement>(null);
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const [answerData, setAnswerData] = useState<any>(null);
+
+    const answerDataRef = useRef<any>(answerData);
+    useEffect(() => {
+        answerDataRef.current = answerData;
+    }, [answerData]);
 
     useEffect(() => {
         if (!answerHistoryOpen) return;
@@ -17,7 +24,18 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
                 itemRef.current &&
                 !itemRef.current.contains(target)
             ) {
+                console.log(config?.answerData, answerDataRef, elementName);
+
+                setConfig((prev): any => ({
+                    ...prev,
+                    answerData: JSON.stringify({
+                        ...JSON.parse(prev!.answerData || '{}'),
+                        [elementName]: answerDataRef.current,
+                    }),
+                }));
                 setAnswerHistoryOpen(false);
+                setActiveIndex(null);
+                setAnswerData(null);
             }
         };
 
@@ -25,7 +43,7 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
         return () => document.removeEventListener("mousedown", handleClick);
     }, [answerHistoryOpen]);
 
-    console.log("test", answerHistory, elementName);
+    // console.log("test", answerHistory, elementName);
 
     if (answerHistory.every((item: any) => item.answers[elementName] == undefined)) return null;
 
@@ -42,7 +60,35 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
                     <History />
                 </button>
             ) : (
-                <div className="answer-history__panel">
+                (activeIndex !== null ? <div> 
+                    {/* todo: z-index */}
+                    <button 
+                        className="answer-history__button" 
+                        onClick={() => {
+                            setActiveIndex(null);
+                            setAnswerData(null);
+                            setConfig((prev): any => ({
+                                ...prev,
+                                answerData: JSON.stringify({
+                                    ...JSON.parse(prev!.answerData || '{}'),
+                                    [elementName]: answerData,
+                                }),
+                            }));
+                        }}
+                    >
+                        {config?.locale === "no" ? "Tilbake" : "Back"}
+                    </button>
+                    <button
+                        className="answer-history__button"
+                        onClick={() => {
+                            setActiveIndex(null);
+                            setAnswerData(null);
+                            setAnswerHistoryOpen(false);
+                        }}
+                    >
+                        {config?.locale === "no" ? "Lagre" : "Save"}
+                    </button>
+                </div> : <div className="answer-history__panel">
                     <button 
                         className="answer-history__button" 
                         onClick={() => setAnswerHistoryOpen(false)}
@@ -51,17 +97,36 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
                     </button>
                     <ul>
                         {answerHistory.map((history: any, index: number) => {
+                            console.log("history", history.answers[elementName], elementName);
+
                             const answer = history.answers[elementName];
                             const next = answerHistory[index + 1]?.answers[elementName];
                             
                             if (answer === next) return null;
 
                             return (
-                                <li key={index}>
+                                <li 
+                                    key={index}
+                                    onClick={() => {
+                                        setActiveIndex(index);
+                                        activeIndex === null && setAnswerData(JSON.parse(config?.answerData || '{}')[elementName] || null);
+
+                                        console.log("set answerData", JSON.parse(config?.answerData || '{}')[elementName] || null);
+                                        console.log("test 2", answer, history)
+                                            
+                                        setConfig((prev): any => ({
+                                            ...prev,
+                                            answerData: JSON.stringify({
+                                                ...JSON.parse(prev!.answerData || '{}'),
+                                                [elementName]: answer,
+                                            }),
+                                        }));
+                                    }}
+                                >
                                     <span>{history.user}</span>
                                     <span>•</span>
                                     <span>
-                                        {answer ?? (config?.locale === 'no' ? 'slettet svaret' : 'deleted answer')}
+                                        {answer && typeof answer == "string" ? (answer ?? (config?.locale === 'no' ? 'slettet svaret' : 'deleted answer')) : ""}
                                     </span>
                                     {history.timestamp && (
                                         <>
@@ -82,6 +147,7 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
                         })}
                     </ul>
                 </div>
+                )
             )}
         </div>
     );

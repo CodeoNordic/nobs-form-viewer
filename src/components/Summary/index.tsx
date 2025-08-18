@@ -24,9 +24,11 @@ const Summary: FC = () => {
             });
 
             const answers = sortedHistory.map((h) => {
+                console.log("h", h);
                 const jsonAnswers = JSON.parse(h.answer || '{}');
-
-                return extractAnswers(jsonAnswers, JSON.parse(config.value!), config);
+                
+                return jsonAnswers;
+                // return extractAnswers(jsonAnswers, JSON.parse(config.value!), config);
             });
 
             let answerHistoryFull = answers.map((answer, index) => {
