@@ -345,7 +345,6 @@ export const HistoryList: FC<{
 							</>
 						)}
 					</div>
-
 					<ul>
 						{filtered.map((h, index) => (
 							<li
@@ -360,20 +359,18 @@ export const HistoryList: FC<{
 									setActiveIndex(index);
 								}}
 							>
-								<div className="meta">
-									<span className="user">{h.user}</span>{' '}
-									{h.timestamp && (
-										<span className="timestamp">
-											{new Date(h.timestamp).toLocaleString(
-												config?.locale === 'no' ? 'nb-NO' : 'en-US',
-												{
-													dateStyle: 'short',
-													timeStyle: 'short',
-												}
-											)}
-										</span>
-									)}
-								</div>
+								<span className="user">{h.user}</span> <span>•</span>
+								{h.timestamp && (
+									<span className="timestamp">
+										{new Date(h.timestamp).toLocaleString(
+											config?.locale === 'no' ? 'nb-NO' : 'en-US',
+											{
+												dateStyle: 'short',
+												timeStyle: 'short',
+											}
+										)}
+									</span>
+								)}
 							</li>
 						))}
 					</ul>
