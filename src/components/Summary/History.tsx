@@ -1,142 +1,244 @@
-import { useConfigState } from "@context/Config";
-import { useEffect, useRef, useState } from "react";
+import React, {
+    FC,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
+import { useConfigState } from '@context/Config';
 import History from 'jsx:@svg/history.svg';
-import performScript from "@utils/performScript";
+import performScript from '@utils/performScript';
 
-export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ answerHistory, elementName }) => {
-    const [config, setConfig] = useConfigState();
-    const [answerHistoryOpen, setAnswerHistoryOpen] = useState(false);
-    const itemRef = useRef<HTMLDivElement>(null);
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
-    const [answerData, setAnswerData] = useState<any>(null);
+function safeParse<T = any>(raw?: string | null): T {
+    if (!raw) return {} as T;
+    try {
+        return JSON.parse(raw) as T;
+    } catch {
+        return {} as T;
+    }
+}
 
-    const answerDataRef = useRef<any>(answerData);
+function writeAnswerForElement(
+    prev: any,
+    elementName: string,
+    value: any
+): string {
+    const obj = safeParse<Record<string, any>>(prev?.answerData);
+    return JSON.stringify({ ...obj, [elementName]: value });
+}
+
+function readAnswerForElement(config: any, elementName: string) {
+    const obj = safeParse<Record<string, any>>(config?.answerData);
+    return obj[elementName] ?? null;
+}
+
+function useOnClickOutside(
+    ref: React.RefObject<HTMLElement>,
+    handler: (e: MouseEvent) => void
+) {
     useEffect(() => {
-        answerDataRef.current = answerData;
-    }, [answerData]);
-
-    const activeIndexRef = useRef<number | null>(activeIndex);
-    useEffect(() => {
-        activeIndexRef.current = activeIndex;
-    }, [activeIndex]);
-
-    useEffect(() => {
-        if (!answerHistoryOpen) return;
-
-        const handleClick = (e: MouseEvent) => {
-            const target = e.target as Node;
-            if (
-                itemRef.current &&
-                !itemRef.current.contains(target)
-            ) {
-                if (activeIndexRef.current !== null) { 
-                    setConfig((prev): any => ({
-                        ...prev,
-                        answerData: JSON.stringify({
-                            ...JSON.parse(prev!.answerData || '{}'),
-                            [elementName]: answerDataRef.current,
-                        }),
-                    }));
-                    
-                    setActiveIndex(null);
-                };
-
-                setAnswerHistoryOpen(false);
-                setAnswerData(null);
-            }
+        const listener = (e: MouseEvent) => {
+            if (!ref.current || ref.current.contains(e.target as Node)) return;
+            handler(e);
         };
+        document.addEventListener('mousedown', listener);
+        return () => document.removeEventListener('mousedown', listener);
+    }, [ref, handler]);
+}
 
-        document.addEventListener("mousedown", handleClick);
-        return () => document.removeEventListener("mousedown", handleClick);
-    }, [answerHistoryOpen]);
+function useAnswerPreview(elementName: string) {
+    const [config, setConfig] = useConfigState();
+    const originalRef = useRef<any>(null);
+    const [isPreviewing, setIsPreviewing] = useState(false);
 
-    if (answerHistory.every((item: any) => item.answers[elementName] == undefined)) return null;
+    const preview = useCallback(
+        (value: any) => {
+            if (!isPreviewing) {
+                originalRef.current = readAnswerForElement(config, elementName);
+            }
+            setConfig((prev: any) => ({
+                ...prev,
+                answerData: writeAnswerForElement(prev, elementName, value),
+            }));
+            setIsPreviewing(true);
+        },
+        [config, elementName, isPreviewing, setConfig]
+    );
 
-    return ( 
-        <div 
-            className={"answer-history" + (answerHistoryOpen ? " open" : "")} 
-            ref={itemRef}
-        >
-            {!answerHistoryOpen ? (
-                <button 
-                    className="answer-history__open" 
-                    onClick={() => setAnswerHistoryOpen(true)}
+    const save = useCallback(() => {
+        originalRef.current = null;
+        setIsPreviewing(false);
+    }, []);
+
+    const cancel = useCallback(() => {
+        if (isPreviewing) {
+            setConfig((prev: any) => ({
+                ...prev,
+                answerData: writeAnswerForElement(
+                    prev,
+                    elementName,
+                    originalRef.current
+                ),
+            }));
+        }
+        originalRef.current = null;
+        setIsPreviewing(false);
+    }, [elementName, isPreviewing, setConfig]);
+
+    const current = useMemo(
+        () => readAnswerForElement(config, elementName),
+        [config?.answerData, elementName]
+    );
+
+    return { current, preview, save, cancel, isPreviewing } as const;
+}
+function useConfigStringPreview(key: 'answerData') {
+    const [config, setConfig] = useConfigState();
+    const originalRef = useRef<string | null>(null);
+    const [isPreviewing, setIsPreviewing] = useState(false);
+
+    const preview = useCallback(
+        (value: string) => {
+            if (!isPreviewing)
+                originalRef.current = (config as any)?.[key] ?? null;
+            setConfig((prev: any) => ({ ...prev, [key]: value }));
+            setIsPreviewing(true);
+        },
+        [config, isPreviewing, key, setConfig]
+    );
+
+    const save = useCallback(() => {
+        originalRef.current = null;
+        setIsPreviewing(false);
+    }, []);
+
+    const cancel = useCallback(() => {
+        if (isPreviewing) {
+            setConfig((prev: any) => ({ ...prev, [key]: originalRef.current }));
+        }
+        originalRef.current = null;
+        setIsPreviewing(false);
+    }, [isPreviewing, key, setConfig]);
+
+    return { isPreviewing, preview, save, cancel } as const;
+}
+
+type HistoryItemProps = {
+    answerHistory: Array<{
+        user: string;
+        timestamp?: number | string;
+        answers: Record<string, any>;
+    }>;
+    elementName: string;
+};
+
+export const HistoryItem: FC<HistoryItemProps> = ({
+    answerHistory,
+    elementName,
+}) => {
+    const [config] = useConfigState();
+    const [open, setOpen] = useState(false);
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const { preview, cancel, save, isPreviewing } =
+        useAnswerPreview(elementName);
+    const boxRef = useRef<HTMLDivElement>(null);
+
+    useOnClickOutside(boxRef, () => {
+        if (!open) return;
+        if (isPreviewing) cancel();
+        setActiveIndex(null);
+        setOpen(false);
+    });
+
+    const hasAny = useMemo(
+        () => answerHistory.some((h) => h.answers[elementName] !== undefined),
+        [answerHistory, elementName]
+    );
+    if (!hasAny) return null;
+
+    const filtered = useMemo(() => {
+        const out: typeof answerHistory = [];
+        for (let i = 0; i < answerHistory.length; i++) {
+            const curr = answerHistory[i]?.answers[elementName];
+            const next = answerHistory[i + 1]?.answers[elementName];
+            if (curr === next) continue;
+            out.push(answerHistory[i]);
+        }
+        return out;
+    }, [answerHistory, elementName]);
+
+    return (
+        <div className={'answer-history' + (open ? ' open' : '')} ref={boxRef}>
+            {!open ? (
+                <button
+                    className="answer-history__open"
+                    onClick={() => setOpen(true)}
+                    aria-label="Open answer history"
                 >
                     <History />
                 </button>
-            ) : (
-                (activeIndex !== null ? <div> 
-                    {/* todo: z-index */}
-                    <button 
-                        className="answer-history__button" 
+            ) : activeIndex !== null ? (
+                <div className="answer-history__toolbar">
+                    <button
+                        className="answer-history__button"
                         onClick={() => {
+                            cancel();
                             setActiveIndex(null);
-                            setAnswerData(null);
-                            setConfig((prev): any => ({
-                                ...prev,
-                                answerData: JSON.stringify({
-                                    ...JSON.parse(prev!.answerData || '{}'),
-                                    [elementName]: answerData,
-                                }),
-                            }));
                         }}
                     >
-                        {config?.locale === "no" ? "Tilbake" : "Back"}
+                        {config?.locale === 'no' ? 'Tilbake' : 'Back'}
                     </button>
                     <button
                         className="answer-history__button"
                         onClick={() => {
+                            save();
                             setActiveIndex(null);
-                            setAnswerData(null);
-                            setAnswerHistoryOpen(false);
+                            setOpen(false);
                         }}
                     >
-                        {config?.locale === "no" ? "Lagre" : "Save"}
+                        {config?.locale === 'no' ? 'Lagre' : 'Save'}
                     </button>
-                </div> : <div className="answer-history__panel">
-                    <button 
-                        className="answer-history__button" 
-                        onClick={() => setAnswerHistoryOpen(false)}
+                </div>
+            ) : (
+                <div className="answer-history__panel">
+                    <button
+                        className="answer-history__button"
+                        onClick={() => setOpen(false)}
                     >
-                        {config?.locale === "no" ? "Lukk" : "Close"}
+                        {config?.locale === 'no' ? 'Lukk' : 'Close'}
                     </button>
                     <ul>
-                        {answerHistory.map((history: any, index: number) => {
-                            const answer = history.answers[elementName];
-                            const next = answerHistory[index + 1]?.answers[elementName];
-                            
-                            if (answer === next) return null;
-
+                        {filtered.map((h, i) => {
+                            const answer = h.answers[elementName];
                             return (
-                                <li 
-                                    key={index}
+                                <li
+                                    key={i}
                                     onClick={() => {
-                                        setActiveIndex(index);
-                                        activeIndex === null && setAnswerData(JSON.parse(config?.answerData || '{}')[elementName] || null);
-
-                                        console.log("set answerData", JSON.parse(config?.answerData || '{}')[elementName] || null);
-                                        console.log("test 2", answer, history)
-                                            
-                                        setConfig((prev): any => ({
-                                            ...prev,
-                                            answerData: JSON.stringify({
-                                                ...JSON.parse(prev!.answerData || '{}'),
-                                                [elementName]: answer,
-                                            }),
-                                        }));
+                                        setActiveIndex(i);
+                                        preview(answer);
                                     }}
                                 >
-                                    <span>{history.user}</span>
-                                    <span>•</span>
+                                    <span>{h.user}</span>
+                                    {/* <span>•</span> TODO: Check if needed
                                     <span>
-                                        {answer && typeof answer == "string" ? (answer ?? (config?.locale === 'no' ? 'slettet svaret' : 'deleted answer')) : ""}
-                                    </span>
-                                    {history.timestamp && (
+                                        {typeof answer === 'string'
+                                            ? answer ||
+                                              (config?.locale === 'no'
+                                                  ? 'slettet svaret'
+                                                  : 'deleted answer')
+                                            : ''}
+                                    </span> */}
+                                    {h.timestamp && (
                                         <>
                                             <span>•</span>
                                             <span className="time-ago">
-                                                {new Date(history.timestamp).toLocaleString(
-                                                    config?.locale === 'no' ? 'nb-NO' : 'en-US',
+                                                {new Date(
+                                                    h.timestamp
+                                                ).toLocaleString(
+                                                    config?.locale === 'no'
+                                                        ? 'nb-NO'
+                                                        : 'en-US',
                                                     {
                                                         dateStyle: 'short',
                                                         timeStyle: 'short',
@@ -150,45 +252,38 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
                         })}
                     </ul>
                 </div>
-                )
             )}
         </div>
     );
-}
+};
 
-export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
-    const [config, setConfig] = useConfigState();
-    const [historyOpen, setHistoryOpen] = useState(false);
-    const [viewingChanges, setViewingChanges] = useState(false);
-    const [answerData, setAnswerData] = useState<any>(null);
+export const HistoryList: FC<{
+    sortedHistory: Array<{
+        user: string;
+        timestamp?: number | string;
+        answer: string;
+    }>;
+}> = ({ sortedHistory }) => {
+    const [config] = useConfigState();
+    const [open, setOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const { isPreviewing, preview, save, cancel } =
+        useConfigStringPreview('answerData');
 
     if (!config) return null;
-    
-    const resetHistory = (full: boolean = false) => {
-        setViewingChanges(false);
-        setAnswerData(null);
-        setActiveIndex(null);
-
-        console.log("resetHistory", activeIndex, answerData);
-
-        if (full) {
-            activeIndex !== null && setConfig((prev): any => ({
-                ...prev,
-                answerData: answerData,
-            }));
-        }
-    }
 
     return (
         <div className="change-history">
-            {!historyOpen ? (
+            {!open ? (
                 <button
                     className="change-history__button"
                     aria-label="Show change history"
-                    onClick={() => setHistoryOpen(true)}
+                    onClick={() => setOpen(true)}
                 >
-                    {config.locale === "no" ? "Endringshistorikk" : "Changes history"} ({sortedHistory.length})
+                    {config.locale === 'no'
+                        ? 'Endringshistorikk'
+                        : 'Changes history'}{' '}
+                    ({sortedHistory.length})
                 </button>
             ) : (
                 <div className="change-history__panel">
@@ -196,51 +291,63 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
                         <button
                             className="change-history__button"
                             onClick={() => {
-                                resetHistory(true);
-                                setHistoryOpen(false);
+                                if (isPreviewing) cancel();
+                                setActiveIndex(null);
+                                setOpen(false);
                             }}
                         >
                             {config.locale === 'no' ? 'Lukk' : 'Close'}
                         </button>
-                        {viewingChanges && (
+                        {isPreviewing && (
                             <>
                                 <button
                                     className="change-history__button"
-                                    onClick={() => resetHistory(true)}
+                                    onClick={() => {
+                                        cancel();
+                                        setActiveIndex(null);
+                                    }}
                                 >
-                                    {config.locale === 'no' ? 'Stopp visning av endringer' : 'Stop viewing changes'}
+                                    {config.locale === 'no'
+                                        ? 'Stopp visning av endringer'
+                                        : 'Stop viewing changes'}
                                 </button>
                                 <button
                                     className="change-history__button"
                                     onClick={() => {
-                                        resetHistory();
-                                        setHistoryOpen(false);
-
+                                        save();
+                                        setActiveIndex(null);
+                                        setOpen(false);
                                         if (config.scriptNames?.onChange) {
-                                            performScript("onChange", {
-                                                result: JSON.parse(config.answerData || '{}'),
+                                            performScript('onChange', {
+                                                result: safeParse(
+                                                    config.answerData
+                                                ),
                                                 hasErrors: false,
                                             });
                                         }
                                     }}
                                 >
-                                    {config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
+                                    {config.locale === 'no'
+                                        ? 'Lagre versjon'
+                                        : 'Save version'}
                                 </button>
                             </>
                         )}
                     </div>
+
                     <ul>
-                        {sortedHistory.map((h: any, index: number) => (
+                        {sortedHistory.map((h, index) => (
                             <li
-                                className={(activeIndex === index) ? 'active' : ''}
+                                className={
+                                    activeIndex === index ? 'active' : ''
+                                }
                                 key={index}
                                 onClick={() => {
-                                    !activeIndex && setAnswerData(config.answerData || null);
-                                    setConfig((prev): any => ({
-                                        ...prev,
-                                        answerData: h.answer,
-                                    }));
-                                    setViewingChanges(true);
+                                    if (activeIndex === null) {
+                                        preview(h.answer);
+                                    } else {
+                                        preview(h.answer);
+                                    }
                                     setActiveIndex(index);
                                 }}
                             >
@@ -248,8 +355,12 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
                                     <span className="user">{h.user}</span>{' '}
                                     {h.timestamp && (
                                         <span className="timestamp">
-                                           {new Date(h.timestamp).toLocaleString(
-                                                config?.locale === 'no' ? 'nb-NO' : 'en-US',
+                                            {new Date(
+                                                h.timestamp
+                                            ).toLocaleString(
+                                                config?.locale === 'no'
+                                                    ? 'nb-NO'
+                                                    : 'en-US',
                                                 {
                                                     dateStyle: 'short',
                                                     timeStyle: 'short',
@@ -265,4 +376,4 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
             )}
         </div>
     );
-}
+};
