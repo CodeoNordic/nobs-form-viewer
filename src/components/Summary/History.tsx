@@ -15,6 +15,11 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
         answerDataRef.current = answerData;
     }, [answerData]);
 
+    const activeIndexRef = useRef<number | null>(activeIndex);
+    useEffect(() => {
+        activeIndexRef.current = activeIndex;
+    }, [activeIndex]);
+
     useEffect(() => {
         if (!answerHistoryOpen) return;
 
@@ -24,17 +29,19 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
                 itemRef.current &&
                 !itemRef.current.contains(target)
             ) {
-                console.log(config?.answerData, answerDataRef, elementName);
+                if (activeIndexRef.current !== null) { 
+                    setConfig((prev): any => ({
+                        ...prev,
+                        answerData: JSON.stringify({
+                            ...JSON.parse(prev!.answerData || '{}'),
+                            [elementName]: answerDataRef.current,
+                        }),
+                    }));
+                    
+                    setActiveIndex(null);
+                };
 
-                setConfig((prev): any => ({
-                    ...prev,
-                    answerData: JSON.stringify({
-                        ...JSON.parse(prev!.answerData || '{}'),
-                        [elementName]: answerDataRef.current,
-                    }),
-                }));
                 setAnswerHistoryOpen(false);
-                setActiveIndex(null);
                 setAnswerData(null);
             }
         };
@@ -42,8 +49,6 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
         document.addEventListener("mousedown", handleClick);
         return () => document.removeEventListener("mousedown", handleClick);
     }, [answerHistoryOpen]);
-
-    // console.log("test", answerHistory, elementName);
 
     if (answerHistory.every((item: any) => item.answers[elementName] == undefined)) return null;
 
@@ -97,8 +102,6 @@ export const HistoryItem: FC<{ answerHistory: any, elementName: string }> = ({ a
                     </button>
                     <ul>
                         {answerHistory.map((history: any, index: number) => {
-                            console.log("history", history.answers[elementName], elementName);
-
                             const answer = history.answers[elementName];
                             const next = answerHistory[index + 1]?.answers[elementName];
                             
@@ -167,11 +170,12 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
         setAnswerData(null);
         setActiveIndex(null);
 
+        console.log("resetHistory", activeIndex, answerData);
+
         if (full) {
-            const newAnswerData = answerData || config.answerData;
-            setConfig((prev): any => ({
+            activeIndex !== null && setConfig((prev): any => ({
                 ...prev,
-                answerData: newAnswerData,
+                answerData: answerData,
             }));
         }
     }
@@ -231,7 +235,7 @@ export const HistoryList: FC<{ sortedHistory: any }> = ({ sortedHistory }) => {
                                 className={(activeIndex === index) ? 'active' : ''}
                                 key={index}
                                 onClick={() => {
-                                    !answerData && setAnswerData(config.answerData || null);
+                                    !activeIndex && setAnswerData(config.answerData || null);
                                     setConfig((prev): any => ({
                                         ...prev,
                                         answerData: h.answer,

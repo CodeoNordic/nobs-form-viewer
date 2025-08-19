@@ -245,6 +245,7 @@
                 position: absolute;
                 top: 0;
                 right: 0;
+                z-index: 20;
                 
                 &.open {
                     display: block;
@@ -252,7 +253,6 @@
 
                 &__panel {
                     position: relative;
-                    z-index: 20;
                     border: 1px solid var(--border-color);
                     background-color: var(--background-color-secondary);
                 }
@@ -281,6 +281,11 @@
                     gap: 0.5rem;
                     padding: 0.5rem 0.75rem;
                     border-top: 1px solid var(--border-color);
+
+                    cursor: pointer;
+                    &:hover {
+                        background: var(--background-color);
+                    }
                 }
             }
 
