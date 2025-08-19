@@ -276,6 +276,19 @@ export const HistoryList: FC<{
 
 	if (!config) return null;
 
+	// TODO: Is needed?
+	const filtered = useMemo(() => {
+		const out: typeof sortedHistory = [];
+		for (let i = 0; i < sortedHistory.length; i++) {
+			const curr = sortedHistory[i].answer;
+			const next = sortedHistory[i + 1]?.answer;
+
+			if (deepEqual(curr, next)) continue;
+			out.push(sortedHistory[i]);
+		}
+		return out;
+	}, [sortedHistory]);
+
 	return (
 		<div className="change-history">
 			{!open ? (
@@ -285,7 +298,7 @@ export const HistoryList: FC<{
 					onClick={() => setOpen(true)}
 				>
 					{config.locale === 'no' ? 'Endringshistorikk' : 'Changes history'} (
-					{sortedHistory.length})
+					{filtered.length})
 				</button>
 			) : (
 				<div className="change-history__panel">
@@ -334,7 +347,7 @@ export const HistoryList: FC<{
 					</div>
 
 					<ul>
-						{sortedHistory.map((h, index) => (
+						{filtered.map((h, index) => (
 							<li
 								className={activeIndex === index ? 'active' : ''}
 								key={index}
