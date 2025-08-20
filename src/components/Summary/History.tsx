@@ -142,7 +142,7 @@ function useConfigStringPreview(key: 'answerData') {
 type HistoryItemProps = {
 	answerHistory: Array<{
 		user: string;
-		timestamp?: number | string;
+		timestamp?: string;
 		answers: Record<string, any>;
 	}>;
 	elementName: string;
@@ -179,6 +179,63 @@ function deepEqual(a: any, b: any): boolean {
 	}
 
 	return false;
+}
+
+function getTime(timestamp: string | undefined, locale: string) {
+	if (!timestamp) return null;
+
+	const testDate = new Date(timestamp);
+
+	if (!isNaN(testDate.getTime())) {
+		return testDate.toLocaleString(locale === 'no' ? 'nb-NO' : 'en-US', {
+			dateStyle: 'short',
+			timeStyle: 'short',
+		});
+	}
+
+	const [strDate, strTime] = timestamp.split(' ') as [string, string | undefined];
+
+	const getParts = (str: string) => {
+		if (str.includes('/')) {
+			const [m, d, y] = str.split('/');
+			return [d, m, y];
+		}
+		if (str.includes('-')) {
+			const [m, d, y] = str.split('-');
+			return [d, m, y];
+		}
+		if (str.includes('.')) return str.split('.');
+		if (str.includes(' ')) return str.split(' ');
+		return [str];
+	};
+
+	const parts = getParts(strDate);
+	if (parts.length !== 3) return null;
+
+	const [day, month, year] = parts.map(Number);
+
+	// null matches both undefined and null
+	if (year == null || month == null || day == null) return null;
+
+	let result = new Date(year, month - 1, day);
+	if (isNaN(result.getTime())) return null;
+
+	console.log(strTime, strDate, parts, year, month, day);
+
+	if (strTime) {
+		// Add time if it exists
+		const time = strTime.match(/^(\d{1,2}):?(\d{2})?:?(\d{2})?/);
+		if (time) {
+			result.setHours(Number(time[1]) || 0, Number(time[2]) || 0, Number(time[3]) || 0);
+		}
+	}
+
+	if (!result) return null;
+
+	return result.toLocaleString(locale === 'no' ? 'nb-NO' : 'en-US', {
+		dateStyle: 'short',
+		timeStyle: 'short',
+	});
 }
 
 export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }) => {
@@ -258,6 +315,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 					<ul ref={scrollRef}>
 						{filtered.map((h, i) => {
 							const answer = h.answers[elementName];
+
 							return (
 								<li
 									key={i}
@@ -277,17 +335,11 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
                                                   : 'deleted answer')
                                             : ''}
                                     </span> */}
-									{h.timestamp && (
+									{getTime(h.timestamp, config?.locale || 'en') && (
 										<>
 											<span>•</span>
 											<span className="time-ago">
-												{new Date(h.timestamp).toLocaleString(
-													config?.locale === 'no' ? 'nb-NO' : 'en-US',
-													{
-														dateStyle: 'short',
-														timeStyle: 'short',
-													}
-												)}
+												{getTime(h.timestamp, config?.locale || 'en')}
 											</span>
 										</>
 									)}
@@ -304,7 +356,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 export const HistoryList: FC<{
 	sortedHistory: Array<{
 		user: string;
-		timestamp?: number | string;
+		timestamp?: string;
 		answer: string;
 	}>;
 }> = ({ sortedHistory }) => {
@@ -404,16 +456,13 @@ export const HistoryList: FC<{
 								}}
 							>
 								<span className="user">{h.user}</span> <span>•</span>
-								{h.timestamp && (
-									<span className="timestamp">
-										{new Date(h.timestamp).toLocaleString(
-											config?.locale === 'no' ? 'nb-NO' : 'en-US',
-											{
-												dateStyle: 'short',
-												timeStyle: 'short',
-											}
-										)}
-									</span>
+								{getTime(h.timestamp, config?.locale || 'en') && (
+									<>
+										<span>•</span>
+										<span className="time-ago">
+											{getTime(h.timestamp, config?.locale || 'en')}
+										</span>
+									</>
 								)}
 							</li>
 						))}
