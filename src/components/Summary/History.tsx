@@ -455,7 +455,7 @@ export const HistoryList: FC<{
 									setActiveIndex(index);
 								}}
 							>
-								<span className="user">{h.user}</span> <span>•</span>
+								<span className="user">{h.user}</span>
 								{getTime(h.timestamp, config?.locale || 'en') && (
 									<>
 										<span>•</span>
