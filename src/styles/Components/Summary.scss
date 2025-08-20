@@ -70,12 +70,15 @@
 				}
 			}
 
+			.scrollbar li {
+				border-right: 1px solid var(--border-color);
+			}
+
 			li {
 				display: flex;
 				gap: 0.5rem;
 				padding: 0.5rem 0.75rem;
 				cursor: pointer;
-				border-right: 1px solid var(--border-color);
 
 				&:hover {
 					background: var(--background-color);

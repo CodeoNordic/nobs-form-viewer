@@ -22,6 +22,39 @@ function readAnswerForElement(config: any, elementName: string) {
 	return obj[elementName] ?? null;
 }
 
+function useCheckScrollbar(
+	ref: React.RefObject<HTMLUListElement>,
+	setHasScrollbar: (has: boolean) => void,
+	deps: any[] = []
+) {
+	useEffect(() => {
+		const el = ref.current;
+		if (!el) return;
+
+		const checkScrollbar = () => {
+			setHasScrollbar(el.scrollHeight > el.clientHeight);
+		};
+
+		checkScrollbar();
+		// If fonts change size
+		(document as any).fonts?.ready?.then(checkScrollbar).catch(() => {});
+
+		// Observers to handle dynamic content changes
+		const ro = new ResizeObserver(checkScrollbar);
+		ro.observe(el);
+
+		const mo = new MutationObserver(checkScrollbar);
+		mo.observe(el, { childList: true, subtree: true, characterData: true });
+
+		window.addEventListener('resize', checkScrollbar);
+		return () => {
+			ro.disconnect();
+			mo.disconnect();
+			window.removeEventListener('resize', checkScrollbar);
+		};
+	}, [ref, setHasScrollbar, ...deps]);
+}
+
 function useOnClickOutside(ref: React.RefObject<HTMLElement>, handler: (e: MouseEvent) => void) {
 	useEffect(() => {
 		const listener = (e: MouseEvent) => {
@@ -155,6 +188,9 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 	const { preview, cancel, save, isPreviewing } = useAnswerPreview(elementName);
 	const boxRef = useRef<HTMLDivElement>(null);
 
+	const scrollRef = useRef<HTMLUListElement>(null);
+	const [hasScrollbar, setHasScrollbar] = useState(false);
+
 	useOnClickOutside(boxRef, () => {
 		if (!open) return;
 		if (isPreviewing) cancel();
@@ -179,6 +215,8 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 		}
 		return out;
 	}, [answerHistory, elementName]);
+
+	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length]);
 
 	return (
 		<div className={'answer-history' + (open ? ' open' : '')} ref={boxRef}>
@@ -217,7 +255,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 					<button className="answer-history__button" onClick={() => setOpen(false)}>
 						{config?.locale === 'no' ? 'Lukk' : 'Close'}
 					</button>
-					<ul>
+					<ul ref={scrollRef}>
 						{filtered.map((h, i) => {
 							const answer = h.answers[elementName];
 							return (
@@ -227,6 +265,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 										setActiveIndex(i);
 										preview(answer);
 									}}
+									className={hasScrollbar ? 'has-scrollbar' : ''}
 								>
 									<span>{h.user}</span>
 									{/* <span>•</span> TODO: Check if needed
@@ -274,6 +313,9 @@ export const HistoryList: FC<{
 	const [activeIndex, setActiveIndex] = useState<number | null>(null);
 	const { isPreviewing, preview, save, cancel } = useConfigStringPreview('answerData');
 
+	const scrollRef = useRef<HTMLUListElement>(null);
+	const [hasScrollbar, setHasScrollbar] = useState(false);
+
 	if (!config) return null;
 
 	// TODO: Is needed?
@@ -288,6 +330,8 @@ export const HistoryList: FC<{
 		}
 		return out;
 	}, [sortedHistory]);
+
+	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length]);
 
 	return (
 		<div className="change-history">
@@ -345,7 +389,7 @@ export const HistoryList: FC<{
 							</>
 						)}
 					</div>
-					<ul>
+					<ul ref={scrollRef} className={hasScrollbar ? 'scrollbar' : ''}>
 						{filtered.map((h, index) => (
 							<li
 								className={activeIndex === index ? 'active' : ''}
