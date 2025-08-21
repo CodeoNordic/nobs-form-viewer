@@ -220,8 +220,6 @@ function getTime(timestamp: string | undefined, locale: string) {
 	let result = new Date(year, month - 1, day);
 	if (isNaN(result.getTime())) return null;
 
-	console.log(strTime, strDate, parts, year, month, day);
-
 	if (strTime) {
 		// Add time if it exists
 		const time = strTime.match(/^(\d{1,2}):?(\d{2})?:?(\d{2})?/);
@@ -432,6 +430,7 @@ export const HistoryList: FC<{
 											performScript('onChange', {
 												result: safeParse(config.answerData),
 												hasErrors: false,
+												type: config.type,
 											});
 										}
 									}}

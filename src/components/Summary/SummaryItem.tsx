@@ -169,6 +169,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 										performScript('onChange', {
 											result: newAnswerData,
 											hasErrors: false,
+											type: config.type,
 										});
 									}
 								}
@@ -252,6 +253,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 												performScript('onChange', {
 													result: newAnswerData,
 													hasErrors: false,
+													type: config.type,
 												});
 											}
 										}
