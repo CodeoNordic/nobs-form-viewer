@@ -94,14 +94,6 @@ function useAnswerPreview(elementName: string) {
 	);
 
 	const save = useCallback(() => {
-		if (config?.scriptNames?.onChange) {
-			performScript('onChange', {
-				result: safeParse(config.answerData),
-				hasErrors: false,
-				type: config.type,
-			});
-		}
-
 		originalRef.current = null;
 		setIsPreviewing(false);
 	}, []);
@@ -420,6 +412,13 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 							save();
 							setActiveIndex(null);
 							setOpen(false);
+							if (config?.scriptNames?.onChange) {
+								performScript('onChange', {
+									result: safeParse(config.answerData),
+									hasErrors: false,
+									type: config.type,
+								});
+							}
 						}}
 					>
 						{config?.locale === 'no' ? 'Lagre' : 'Save'}
@@ -535,6 +534,13 @@ export const HistoryList: FC<{
 							save();
 							setActiveIndex(null);
 							setOpen(false);
+							if (config?.scriptNames?.onChange) {
+								performScript('onChange', {
+									result: safeParse(config.answerData),
+									hasErrors: false,
+									type: config.type,
+								});
+							}
 						}}
 					>
 						{config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
