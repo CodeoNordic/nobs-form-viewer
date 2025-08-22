@@ -39,8 +39,6 @@ function useCheckScrollbar(
 		const el = ref.current;
 		if (!el) return;
 
-		console.log('test');
-
 		const checkScrollbar = () => {
 			setHasScrollbar(el.scrollHeight > el.clientHeight);
 		};
@@ -246,25 +244,25 @@ function getTime(timestamp: string | undefined, locale: string) {
 	});
 }
 
-type Coords = { top?: number; right?: number; maxHeight?: number };
+type Coords = { top?: number; maxHeight?: number };
+type Opts = { margin?: number; gap?: number };
 
-export function useDownThenUpStable(
+export function useDownThenUpAbsolutePage(
 	anchorRef: React.RefObject<HTMLElement>,
 	panelRef: React.RefObject<HTMLElement>,
 	open: boolean,
 	deps: any[] = [],
-	opts: { margin?: number; gap?: number } = {}
+	opts: Opts = {}
 ) {
 	const MARGIN = opts.margin ?? 8;
 
 	const [coords, setCoords] = useState<Coords>({});
-	const rafId = useRef<number | null>(null);
+	const raf = useRef<number | null>(null);
 
 	const applyIfChanged = (next: Coords) => {
 		setCoords((prev) => {
 			const same =
 				Math.abs((prev.top ?? 0) - (next.top ?? 0)) < 1 &&
-				Math.abs((prev.right ?? 0) - (next.right ?? 0)) < 1 &&
 				Math.abs((prev.maxHeight ?? 0) - (next.maxHeight ?? 0)) < 1;
 			return same ? prev : next;
 		});
@@ -272,32 +270,51 @@ export function useDownThenUpStable(
 
 	const compute = () => {
 		if (!open || !anchorRef.current || !panelRef.current) return;
+		const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
 
-		const r = anchorRef.current.getBoundingClientRect();
-		const vh = window.innerHeight;
+		const docEl = document.documentElement;
+		const body = document.body;
+		const docH = Math.max(
+			docEl.scrollHeight,
+			body.scrollHeight,
+			docEl.offsetHeight,
+			body.offsetHeight,
+			docEl.clientHeight
+		);
+
+		const pageTop = MARGIN;
+		const pageBottom = docH - MARGIN;
+
+		const aRect = anchorRef.current.getBoundingClientRect();
+		const anchorBottomDoc = aRect.bottom + scrollY;
+		const offsetParent = panelRef.current.offsetParent as HTMLElement | null;
+		const parentRect = offsetParent
+			? offsetParent.getBoundingClientRect()
+			: ({ top: 0 } as DOMRect);
+		const parentTopDoc = parentRect.top + scrollY;
 
 		const contentH = panelRef.current.scrollHeight;
 
-		const spaceBelow = Math.max(0, vh - r.bottom - MARGIN);
-		const totalAvail = Math.max(0, vh - 2 * MARGIN);
+		const spaceBelowPage = Math.max(0, pageBottom - anchorBottomDoc);
 
-		const desired = Math.min(contentH, totalAvail);
+		const totalAvailPage = Math.max(0, pageBottom - pageTop);
+		const desired = Math.min(contentH, totalAvailPage);
 
-		const deficit = Math.max(0, desired - spaceBelow);
-		const top = Math.max(MARGIN, r.bottom - deficit);
+		const deficit = Math.max(0, desired - spaceBelowPage);
 
-		const maxHeight = Math.max(0, vh - top - MARGIN);
+		const desiredTopDoc = Math.max(pageTop, anchorBottomDoc - deficit);
 
-		applyIfChanged({
-			top,
-			maxHeight,
-		});
+		const topInParent = desiredTopDoc - parentTopDoc;
+
+		const maxHeight = Math.max(0, pageBottom - desiredTopDoc);
+
+		applyIfChanged({ top: topInParent, maxHeight });
 	};
 
 	const schedule = () => {
-		if (rafId.current != null) return;
-		rafId.current = requestAnimationFrame(() => {
-			rafId.current = null;
+		if (raf.current != null) return;
+		raf.current = requestAnimationFrame(() => {
+			raf.current = null;
 			compute();
 		});
 	};
@@ -306,19 +323,19 @@ export function useDownThenUpStable(
 		if (!open) return;
 		schedule();
 
-		const onScrollOrResize = () => schedule();
-		window.addEventListener('resize', onScrollOrResize);
-		window.addEventListener('scroll', onScrollOrResize, true);
+		const on = () => schedule();
+		window.addEventListener('resize', on);
+		window.addEventListener('scroll', on, true);
 
-		const ro = new ResizeObserver(onScrollOrResize);
+		const ro = new ResizeObserver(on);
 		if (anchorRef.current) ro.observe(anchorRef.current);
 
 		return () => {
-			window.removeEventListener('resize', onScrollOrResize);
-			window.removeEventListener('scroll', onScrollOrResize, true);
+			window.removeEventListener('resize', on);
+			window.removeEventListener('scroll', on, true);
 			ro.disconnect();
-			if (rafId.current != null) cancelAnimationFrame(rafId.current);
-			rafId.current = null;
+			if (raf.current != null) cancelAnimationFrame(raf.current);
+			raf.current = null;
 		};
 	}, [open, anchorRef, panelRef, ...deps]);
 
@@ -362,7 +379,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 
 	const panelRef = useRef<HTMLDivElement>(null);
 
-	const coords = useDownThenUpStable(boxRef, panelRef, open && activeIndex === null, [
+	const coords = useDownThenUpAbsolutePage(boxRef, panelRef, open && activeIndex === null, [
 		filtered.length,
 	]);
 
@@ -405,10 +422,10 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 					ref={panelRef}
 					className="answer-history__panel"
 					style={{
-						position: 'fixed',
-						right: '8px',
+						position: 'absolute',
+						right: 0,
 						top: coords.top,
-						maxHeight: coords.maxHeight ? `${coords.maxHeight}px` : undefined,
+						maxHeight: coords.maxHeight && `${coords.maxHeight}px`,
 					}}
 				>
 					<div className="answer-history__header">
@@ -416,17 +433,18 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 							{config?.locale === 'no' ? 'Lukk' : 'Close'}
 						</button>
 					</div>
+
 					<ul ref={scrollRef} className="answer-history__list">
 						{filtered.map((h, i) => {
 							const answer = h.answers[elementName];
 							return (
 								<li
+									className={hasScrollbar ? 'has-scrollbar' : ''}
 									key={i}
 									onClick={() => {
 										setActiveIndex(i);
 										preview(answer);
 									}}
-									className={hasScrollbar ? 'has-scrollbar' : ''}
 								>
 									<span>{h.user}</span>
 									{getTime(h.timestamp, config?.locale || 'en') && (
