@@ -1,4 +1,12 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	FC,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import { useConfigState } from '@context/Config';
 import History from 'jsx:@svg/history.svg';
 import performScript from '@utils/performScript';
@@ -30,6 +38,8 @@ function useCheckScrollbar(
 	useEffect(() => {
 		const el = ref.current;
 		if (!el) return;
+
+		console.log('test');
 
 		const checkScrollbar = () => {
 			setHasScrollbar(el.scrollHeight > el.clientHeight);
@@ -236,6 +246,85 @@ function getTime(timestamp: string | undefined, locale: string) {
 	});
 }
 
+type Coords = { top?: number; right?: number; maxHeight?: number };
+
+export function useDownThenUpStable(
+	anchorRef: React.RefObject<HTMLElement>,
+	panelRef: React.RefObject<HTMLElement>,
+	open: boolean,
+	deps: any[] = [],
+	opts: { margin?: number; gap?: number } = {}
+) {
+	const MARGIN = opts.margin ?? 8;
+
+	const [coords, setCoords] = useState<Coords>({});
+	const rafId = useRef<number | null>(null);
+
+	const applyIfChanged = (next: Coords) => {
+		setCoords((prev) => {
+			const same =
+				Math.abs((prev.top ?? 0) - (next.top ?? 0)) < 1 &&
+				Math.abs((prev.right ?? 0) - (next.right ?? 0)) < 1 &&
+				Math.abs((prev.maxHeight ?? 0) - (next.maxHeight ?? 0)) < 1;
+			return same ? prev : next;
+		});
+	};
+
+	const compute = () => {
+		if (!open || !anchorRef.current || !panelRef.current) return;
+
+		const r = anchorRef.current.getBoundingClientRect();
+		const vh = window.innerHeight;
+
+		const contentH = panelRef.current.scrollHeight;
+
+		const spaceBelow = Math.max(0, vh - r.bottom - MARGIN);
+		const totalAvail = Math.max(0, vh - 2 * MARGIN);
+
+		const desired = Math.min(contentH, totalAvail);
+
+		const deficit = Math.max(0, desired - spaceBelow);
+		const top = Math.max(MARGIN, r.bottom - deficit);
+
+		const maxHeight = Math.max(0, vh - top - MARGIN);
+
+		applyIfChanged({
+			top,
+			maxHeight,
+		});
+	};
+
+	const schedule = () => {
+		if (rafId.current != null) return;
+		rafId.current = requestAnimationFrame(() => {
+			rafId.current = null;
+			compute();
+		});
+	};
+
+	useLayoutEffect(() => {
+		if (!open) return;
+		schedule();
+
+		const onScrollOrResize = () => schedule();
+		window.addEventListener('resize', onScrollOrResize);
+		window.addEventListener('scroll', onScrollOrResize, true);
+
+		const ro = new ResizeObserver(onScrollOrResize);
+		if (anchorRef.current) ro.observe(anchorRef.current);
+
+		return () => {
+			window.removeEventListener('resize', onScrollOrResize);
+			window.removeEventListener('scroll', onScrollOrResize, true);
+			ro.disconnect();
+			if (rafId.current != null) cancelAnimationFrame(rafId.current);
+			rafId.current = null;
+		};
+	}, [open, anchorRef, panelRef, ...deps]);
+
+	return coords;
+}
+
 export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }) => {
 	const [config] = useConfigState();
 	const [open, setOpen] = useState(false);
@@ -271,7 +360,13 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 		return out;
 	}, [answerHistory, elementName]);
 
-	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length]);
+	const panelRef = useRef<HTMLDivElement>(null);
+
+	const coords = useDownThenUpStable(boxRef, panelRef, open && activeIndex === null, [
+		filtered.length,
+	]);
+
+	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length, coords]);
 
 	return (
 		<div className={'answer-history' + (open ? ' open' : '')} ref={boxRef}>
@@ -306,14 +401,24 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 					</button>
 				</div>
 			) : (
-				<div className="answer-history__panel">
-					<button className="answer-history__button" onClick={() => setOpen(false)}>
-						{config?.locale === 'no' ? 'Lukk' : 'Close'}
-					</button>
-					<ul ref={scrollRef}>
+				<div
+					ref={panelRef}
+					className="answer-history__panel"
+					style={{
+						position: 'fixed',
+						right: '8px',
+						top: coords.top,
+						maxHeight: coords.maxHeight ? `${coords.maxHeight}px` : undefined,
+					}}
+				>
+					<div className="answer-history__header">
+						<button className="answer-history__button" onClick={() => setOpen(false)}>
+							{config?.locale === 'no' ? 'Lukk' : 'Close'}
+						</button>
+					</div>
+					<ul ref={scrollRef} className="answer-history__list">
 						{filtered.map((h, i) => {
 							const answer = h.answers[elementName];
-
 							return (
 								<li
 									key={i}
@@ -324,15 +429,6 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 									className={hasScrollbar ? 'has-scrollbar' : ''}
 								>
 									<span>{h.user}</span>
-									{/* <span>•</span> TODO: Check if needed
-                                    <span>
-                                        {typeof answer === 'string'
-                                            ? answer ||
-                                              (config?.locale === 'no'
-                                                  ? 'slettet svaret'
-                                                  : 'deleted answer')
-                                            : ''}
-                                    </span> */}
 									{getTime(h.timestamp, config?.locale || 'en') && (
 										<>
 											<span>•</span>
@@ -394,6 +490,37 @@ export const HistoryList: FC<{
 					{config.locale === 'no' ? 'Endringshistorikk' : 'Changes history'} (
 					{filtered.length})
 				</button>
+			) : isPreviewing ? (
+				<div>
+					<button
+						className="change-history__button"
+						onClick={() => {
+							cancel();
+							setActiveIndex(null);
+						}}
+					>
+						{config.locale === 'no'
+							? 'Stopp visning av endringer'
+							: 'Stop viewing changes'}
+					</button>
+					<button
+						className="change-history__button"
+						onClick={() => {
+							save();
+							setActiveIndex(null);
+							setOpen(false);
+							if (config.scriptNames?.onChange) {
+								performScript('onChange', {
+									result: safeParse(config.answerData),
+									hasErrors: false,
+									type: config.type,
+								});
+							}
+						}}
+					>
+						{config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
+					</button>
+				</div>
 			) : (
 				<div className="change-history__panel">
 					<div className="change-history__buttons">
@@ -407,38 +534,6 @@ export const HistoryList: FC<{
 						>
 							{config.locale === 'no' ? 'Lukk' : 'Close'}
 						</button>
-						{isPreviewing && (
-							<>
-								<button
-									className="change-history__button"
-									onClick={() => {
-										cancel();
-										setActiveIndex(null);
-									}}
-								>
-									{config.locale === 'no'
-										? 'Stopp visning av endringer'
-										: 'Stop viewing changes'}
-								</button>
-								<button
-									className="change-history__button"
-									onClick={() => {
-										save();
-										setActiveIndex(null);
-										setOpen(false);
-										if (config.scriptNames?.onChange) {
-											performScript('onChange', {
-												result: safeParse(config.answerData),
-												hasErrors: false,
-												type: config.type,
-											});
-										}
-									}}
-								>
-									{config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
-								</button>
-							</>
-						)}
 					</div>
 					<ul ref={scrollRef} className={hasScrollbar ? 'scrollbar' : ''}>
 						{filtered.map((h, index) => (

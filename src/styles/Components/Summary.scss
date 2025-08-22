@@ -104,9 +104,17 @@
 			}
 
 			&__panel {
-				position: relative;
 				border: 1px solid var(--border-color);
 				background-color: var(--background-color-secondary);
+				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+				min-width: 220px;
+
+				display: flex;
+				flex-direction: column;
+			}
+
+			&__header {
+				border-bottom: 1px solid var(--border-color);
 			}
 
 			&__button {
@@ -122,17 +130,29 @@
 				}
 			}
 
-			ul {
+			&__list {
 				margin: 0;
 				padding: 0;
 				list-style: none;
+
+				overflow-y: auto;
+
+				min-height: 0px;
+				flex: 1;
+
+				> :not(:first-child) {
+					border-top: 1px solid var(--border-color);
+				}
+
+				> .has-scrollbar {
+					border-right: 1px solid var(--border-color);
+				}
 			}
 
 			li {
 				display: flex;
 				gap: 0.5rem;
 				padding: 0.5rem 0.75rem;
-				border-top: 1px solid var(--border-color);
 
 				cursor: pointer;
 				&:hover {
