@@ -147,6 +147,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 							rows={1}
 							value={answer || ''}
 							className="question-answer text-input"
+							onClick={(e) => (e.target as HTMLTextAreaElement).focus()} // For Mac, doesnt normally focus on click
 							onChange={(e) => {
 								setAnswer(e.target.value);
 								e.target.style.height = 'auto';
@@ -219,6 +220,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 									rows={1}
 									value={answer?.[index]?.value || ''}
 									className="question-answer text-input"
+									onClick={(e) => (e.target as HTMLTextAreaElement).focus()} // For Mac, doesnt normally focus on click
 									onChange={(e) => {
 										setAnswer((prev: any[] | undefined) => {
 											const newAnswers = [

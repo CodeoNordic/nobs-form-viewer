@@ -245,9 +245,9 @@ function getTime(timestamp: string | undefined, locale: string) {
 }
 
 type Coords = { top?: number; maxHeight?: number };
-type Opts = { margin?: number; gap?: number };
+type Opts = { margin?: number };
 
-export function useDownThenUpAbsolutePage(
+export function useGrowCalc(
 	anchorRef: React.RefObject<HTMLElement>,
 	panelRef: React.RefObject<HTMLElement>,
 	open: boolean,
@@ -282,7 +282,6 @@ export function useDownThenUpAbsolutePage(
 			docEl.clientHeight
 		);
 
-		const pageTop = MARGIN;
 		const pageBottom = docH - MARGIN;
 
 		const aRect = anchorRef.current.getBoundingClientRect();
@@ -297,12 +296,12 @@ export function useDownThenUpAbsolutePage(
 
 		const spaceBelowPage = Math.max(0, pageBottom - anchorBottomDoc);
 
-		const totalAvailPage = Math.max(0, pageBottom - pageTop);
+		const totalAvailPage = Math.max(0, pageBottom - MARGIN);
 		const desired = Math.min(contentH, totalAvailPage);
 
 		const deficit = Math.max(0, desired - spaceBelowPage);
 
-		const desiredTopDoc = Math.max(pageTop, anchorBottomDoc - deficit);
+		const desiredTopDoc = Math.max(MARGIN, anchorBottomDoc - deficit);
 
 		const topInParent = desiredTopDoc - parentTopDoc;
 
@@ -323,16 +322,15 @@ export function useDownThenUpAbsolutePage(
 		if (!open) return;
 		schedule();
 
-		const on = () => schedule();
-		window.addEventListener('resize', on);
-		window.addEventListener('scroll', on, true);
+		window.addEventListener('resize', schedule);
+		window.addEventListener('scroll', schedule, true);
 
-		const ro = new ResizeObserver(on);
+		const ro = new ResizeObserver(schedule);
 		if (anchorRef.current) ro.observe(anchorRef.current);
 
 		return () => {
-			window.removeEventListener('resize', on);
-			window.removeEventListener('scroll', on, true);
+			window.removeEventListener('resize', schedule);
+			window.removeEventListener('scroll', schedule, true);
 			ro.disconnect();
 			if (raf.current != null) cancelAnimationFrame(raf.current);
 			raf.current = null;
@@ -379,9 +377,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 
 	const panelRef = useRef<HTMLDivElement>(null);
 
-	const coords = useDownThenUpAbsolutePage(boxRef, panelRef, open && activeIndex === null, [
-		filtered.length,
-	]);
+	const coords = useGrowCalc(boxRef, panelRef, open && activeIndex === null, [filtered.length]);
 
 	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length, coords]);
 
