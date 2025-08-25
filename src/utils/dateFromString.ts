@@ -1,29 +1,11 @@
-/**
- * Create a date object from a string
- * @param str The string to convert to a date
- * @returns The date object or undefined if the string is invalid
- * @example
- * ```ts
- * dateFromString('2021-01-01T00:00:00Z'); // Date('2021-01-01T00:00:00Z')
- * dateFromString('2024-08-25'); // Date('2024-08-25T00:00:00Z')
- * dateFromString('Hello World!'); // undefined
- * ```
- */
-export default function dateFromString(str?: string) {
-	if (!str) return;
-	str = str.trim();
+export default function dateFromString(timestamp: string | undefined) {
+	if (!timestamp) return null;
 
-	// ISO 8601 check
-	if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})?$/.test(str)) {
-		return new Date(str);
-	}
+	const testDate = new Date(timestamp);
 
-	// Date without time (YYYY-MM-DD)
-	if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-		return new Date(str + 'T00:00:00Z');
-	}
+	if (!isNaN(testDate.getTime())) return testDate;
 
-	const [strDate, strTime] = str.split('T') as [string, string | undefined];
+	const [strDate, strTime] = timestamp.split(' ') as [string, string | undefined];
 
 	const getParts = (str: string) => {
 		if (str.includes('/')) {
@@ -40,28 +22,15 @@ export default function dateFromString(str?: string) {
 	};
 
 	const parts = getParts(strDate);
-	if (parts.length !== 3) return undefined;
+	if (parts.length !== 3) return null;
 
-	const [part1, part2, part3] = parts.map(Number);
-	let year, month, day;
-
-	if (part1 > 31) {
-		// YYYY-MM-DD
-		year = part1;
-		month = part2 - 1;
-		day = part3;
-	} else if (part3 > 31) {
-		// DD-MM-YYYY
-		year = part3;
-		month = part2 - 1;
-		day = part1;
-	}
+	const [day, month, year] = parts.map(Number);
 
 	// null matches both undefined and null
-	if (year == null || month == null || day == null) return undefined;
+	if (year == null || month == null || day == null) return null;
 
-	let result = new Date(year, month, day);
-	if (isNaN(result.getTime())) return undefined;
+	let result = new Date(year, month - 1, day);
+	if (isNaN(result.getTime())) return null;
 
 	if (strTime) {
 		// Add time if it exists
@@ -71,5 +40,6 @@ export default function dateFromString(str?: string) {
 		}
 	}
 
+	if (!result) return null;
 	return result;
 }

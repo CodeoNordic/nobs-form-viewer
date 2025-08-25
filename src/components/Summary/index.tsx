@@ -5,6 +5,7 @@ import extractAnswers from './extractAnswers';
 import Footer from './Footer';
 import Header from './Header';
 import { HistoryList } from './History';
+import dateFromString from '@utils/dateFromString';
 
 const Summary: FC = () => {
 	const config = useConfig();
@@ -18,8 +19,9 @@ const Summary: FC = () => {
 	useEffect(() => {
 		if (config && config.answers && config.answers.length > 0) {
 			const sortedHistory = [...config.answers].sort((a, b) => {
-				const dateA = new Date(a.timestamp || 0);
-				const dateB = new Date(b.timestamp || 0);
+				const dateA = dateFromString(a.timestamp);
+				const dateB = dateFromString(b.timestamp);
+				if (!dateA || !dateB) return 0;
 				return dateB.getTime() - dateA.getTime();
 			});
 

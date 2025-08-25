@@ -10,6 +10,7 @@ import React, {
 import { useConfigState } from '@context/Config';
 import History from 'jsx:@svg/history.svg';
 import performScript from '@utils/performScript';
+import dateFromString from '@utils/dateFromString';
 
 function safeParse<T = any>(raw?: string | null): T {
 	if (!raw) return {} as T;
@@ -189,72 +190,15 @@ function deepEqual(a: any, b: any): boolean {
 	return false;
 }
 
-function getTime(timestamp: string | undefined, locale: string) {
-	if (!timestamp) return null;
-
-	const testDate = new Date(timestamp);
-
-	if (!isNaN(testDate.getTime())) {
-		return testDate.toLocaleString(locale === 'no' ? 'nb-NO' : 'en-US', {
-			dateStyle: 'short',
-			timeStyle: 'short',
-		});
-	}
-
-	const [strDate, strTime] = timestamp.split(' ') as [string, string | undefined];
-
-	const getParts = (str: string) => {
-		if (str.includes('/')) {
-			const [m, d, y] = str.split('/');
-			return [d, m, y];
-		}
-		if (str.includes('-')) {
-			const [m, d, y] = str.split('-');
-			return [d, m, y];
-		}
-		if (str.includes('.')) return str.split('.');
-		if (str.includes(' ')) return str.split(' ');
-		return [str];
-	};
-
-	const parts = getParts(strDate);
-	if (parts.length !== 3) return null;
-
-	const [day, month, year] = parts.map(Number);
-
-	// null matches both undefined and null
-	if (year == null || month == null || day == null) return null;
-
-	let result = new Date(year, month - 1, day);
-	if (isNaN(result.getTime())) return null;
-
-	if (strTime) {
-		// Add time if it exists
-		const time = strTime.match(/^(\d{1,2}):?(\d{2})?:?(\d{2})?/);
-		if (time) {
-			result.setHours(Number(time[1]) || 0, Number(time[2]) || 0, Number(time[3]) || 0);
-		}
-	}
-
-	if (!result) return null;
-
-	return result.toLocaleString(locale === 'no' ? 'nb-NO' : 'en-US', {
-		dateStyle: 'short',
-		timeStyle: 'short',
-	});
-}
-
 type Coords = { top?: number; maxHeight?: number };
-type Opts = { margin?: number };
 
 export function useGrowCalc(
 	anchorRef: React.RefObject<HTMLElement>,
 	panelRef: React.RefObject<HTMLElement>,
 	open: boolean,
-	deps: any[] = [],
-	opts: Opts = {}
+	deps: any[] = []
 ) {
-	const MARGIN = opts.margin ?? 8;
+	const MARGIN = 8;
 
 	const [coords, setCoords] = useState<Coords>({});
 	const raf = useRef<number | null>(null);
@@ -450,11 +394,17 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 									}}
 								>
 									<span>{h.user}</span>
-									{getTime(h.timestamp, config?.locale || 'en') && (
+									{dateFromString(h.timestamp) && (
 										<>
 											<span>•</span>
 											<span className="time-ago">
-												{getTime(h.timestamp, config?.locale || 'en')}
+												{dateFromString(h.timestamp)?.toLocaleString(
+													config?.locale === 'no' ? 'nb-NO' : 'en-US',
+													{
+														dateStyle: 'short',
+														timeStyle: 'short',
+													}
+												)}
 											</span>
 										</>
 									)}
@@ -571,11 +521,17 @@ export const HistoryList: FC<{
 								}}
 							>
 								<span className="user">{h.user}</span>
-								{getTime(h.timestamp, config?.locale || 'en') && (
+								{dateFromString(h.timestamp) && (
 									<>
 										<span>•</span>
 										<span className="time-ago">
-											{getTime(h.timestamp, config?.locale || 'en')}
+											{dateFromString(h.timestamp)?.toLocaleString(
+												config.locale === 'no' ? 'nb-NO' : 'en-US',
+												{
+													dateStyle: 'short',
+													timeStyle: 'short',
+												}
+											)}
 										</span>
 									</>
 								)}
