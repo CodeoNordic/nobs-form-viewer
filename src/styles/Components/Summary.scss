@@ -16,7 +16,10 @@
 		position: absolute;
 		bottom: 8px;
 		right: 8px;
-		width: min(21rem, calc(100% - 16px));
+
+		&.open {
+			width: min(21rem, calc(100% - 16px));
+		}
 
 		max-height: calc(100% - 16px);
 		overflow: hidden;

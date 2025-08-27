@@ -1,8 +1,65 @@
 import { useConfigState } from '@context/Config';
 import { HistoryItem } from './History';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import performScript from '@utils/performScript';
 import { evaluateLogic } from './evaluateLogic';
+
+function useConsistentBlur(ref: any, onBlur: () => void) {
+	useEffect(() => {
+		if (!ref.current) return;
+
+		const handleWindowBlur = () => {
+			if (document.activeElement === ref.current) onBlur();
+		};
+
+		const handleInputBlur = () => onBlur();
+
+		const inputEl = ref.current;
+
+		inputEl.addEventListener('blur', handleInputBlur);
+		window.addEventListener('blur', handleWindowBlur);
+
+		return () => {
+			inputEl.removeEventListener('blur', handleInputBlur);
+			window.removeEventListener('blur', handleWindowBlur);
+		};
+	}, [ref, onBlur]);
+}
+
+function EditableTextarea(props: {
+	value: string;
+	onChangeValue: (v: string) => void;
+	onCommit: () => void;
+}) {
+	const { value, onChangeValue, onCommit } = props;
+	const inputRef = useRef<HTMLTextAreaElement>(null);
+
+	useConsistentBlur(inputRef, onCommit);
+
+	// TODO: Needed?
+	useEffect(() => {
+		const el = inputRef.current;
+		if (!el) return;
+		el.style.height = 'auto';
+		el.style.height = `${el.scrollHeight - 4}px`;
+	}, [value]);
+
+	return (
+		<textarea
+			ref={inputRef}
+			rows={1}
+			value={value}
+			className="question-answer text-input"
+			onClick={(e) => (e.target as HTMLTextAreaElement).focus()}
+			onChange={(e) => {
+				onChangeValue(e.target.value);
+				// grow as user types
+				e.target.style.height = 'auto';
+				e.target.style.height = `${e.target.scrollHeight - 4}px`;
+			}}
+		/>
+	);
+}
 
 interface SummaryItemProps {
 	element: any;
@@ -98,6 +155,21 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 		? evaluateLogic(element.requiredIf, answerDataObj, timeType)
 		: !!element.isRequired;
 
+	const saveAnswers = (newAnswers: string) => {
+		setConfig({
+			...config,
+			answerData: newAnswers,
+		});
+
+		if (config.scriptNames?.onChange) {
+			performScript('onChange', {
+				result: newAnswers,
+				hasErrors: false,
+				type: config.type,
+			});
+		}
+	};
+
 	return (
 		<div className={`question${element.type ? ' ' + element.type : ''}`}>
 			<div className="question-content">
@@ -137,23 +209,10 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 				{(element.type == 'text' || element.type == 'comment') &&
 					element.inputType == undefined &&
 					(canEdit ? (
-						<textarea
-							ref={(el) => {
-								if (el) {
-									el.style.height = 'auto';
-									el.style.height = el.scrollHeight - 4 + 'px';
-								}
-							}}
-							rows={1}
+						<EditableTextarea
 							value={answer || ''}
-							className="question-answer text-input"
-							onClick={(e) => (e.target as HTMLTextAreaElement).focus()} // For Mac, doesnt normally focus on click
-							onChange={(e) => {
-								setAnswer(e.target.value);
-								e.target.style.height = 'auto';
-								e.target.style.height = `${e.target.scrollHeight - 4}px`;
-							}}
-							onBlur={() => {
+							onChangeValue={(v) => setAnswer(v)}
+							onCommit={() => {
 								if (answer !== answers[element.name]) {
 									const answerData = JSON.parse(config.answerData || '{}');
 									const newAnswerData = {
@@ -161,18 +220,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 										[element.name]: answer,
 									};
 
-									setConfig({
-										...config,
-										answerData: JSON.stringify(newAnswerData),
-									});
-
-									if (config.scriptNames?.onChange) {
-										performScript('onChange', {
-											result: newAnswerData,
-											hasErrors: false,
-											type: config.type,
-										});
-									}
+									saveAnswers(JSON.stringify(newAnswerData));
 								}
 							}}
 						/>
@@ -206,66 +254,51 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 				))}
 			{element.type == 'multipletext' && (
 				<div className="multipletext-container">
-					{element.items?.map((item: any, index: number) => (
-						<div key={index} className="multipletext-item">
-							<p className="question-title">{item.name}:</p>{' '}
-							{canEdit ? (
-								<textarea
-									ref={(el) => {
-										if (el) {
-											el.style.height = 'auto';
-											el.style.height = el.scrollHeight - 4 + 'px';
-										}
-									}}
-									rows={1}
-									value={answer?.[index]?.value || ''}
-									className="question-answer text-input"
-									onClick={(e) => (e.target as HTMLTextAreaElement).focus()} // For Mac, doesnt normally focus on click
-									onChange={(e) => {
-										setAnswer((prev: any[] | undefined) => {
-											const newAnswers = [
-												...(prev ??
-													element.items.map(() => ({ value: '' }))),
-											];
-											newAnswers[index].value = e.target.value;
-											return newAnswers;
-										});
-										e.target.style.height = 'auto';
-										e.target.style.height = `${e.target.scrollHeight - 4}px`;
-									}}
-									onBlur={() => {
-										if (answer !== answers[element.name]) {
-											const answerData = JSON.parse(
-												config.answerData || '{}'
-											);
-											const newAnswerData = {
-												...answerData,
-												[element.name]: {
-													...(answerData[element.name] || {}),
-													[item.name]: answer?.[index]?.value,
-												},
-											};
+					{element.items?.map((item: any, index: number) => {
+						const value = answer?.[index]?.value ?? '';
 
-											setConfig({
-												...config,
-												answerData: JSON.stringify(newAnswerData),
+						return (
+							<div key={item.name ?? index} className="multipletext-item">
+								<p className="question-title">{item.name}:</p>
+								{canEdit ? (
+									<EditableTextarea
+										value={value}
+										onChangeValue={(v) => {
+											setAnswer((prev: any[] | undefined) => {
+												const base =
+													prev ??
+													element.items.map(() => ({ value: '' }));
+												const next = [...base];
+												next[index] = {
+													...(next[index] ?? { value: '' }),
+													value: v,
+												};
+												return next;
 											});
+										}}
+										onCommit={() => {
+											if (answer !== answers[element.name]) {
+												const answerData = JSON.parse(
+													config.answerData || '{}'
+												);
+												const newAnswerData = {
+													...answerData,
+													[element.name]: {
+														...(answerData[element.name] || {}),
+														[item.name]: answer?.[index]?.value,
+													},
+												};
 
-											if (config.scriptNames?.onChange) {
-												performScript('onChange', {
-													result: newAnswerData,
-													hasErrors: false,
-													type: config.type,
-												});
+												saveAnswers(JSON.stringify(newAnswerData));
 											}
-										}
-									}}
-								/>
-							) : (
-								<p className="question-answer">{answer?.[index]?.value || ' '}</p>
-							)}
-						</div>
-					))}
+										}}
+									/>
+								) : (
+									<p className="question-answer">{value || ' '}</p>
+								)}
+							</div>
+						);
+					})}
 				</div>
 			)}
 			{element.type == 'matrixdynamic' && (

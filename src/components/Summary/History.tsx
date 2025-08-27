@@ -36,32 +36,35 @@ function useCheckScrollbar(
 	setHasScrollbar: (has: boolean) => void,
 	deps: any[] = []
 ) {
+	const check = useCallback(() => {
+		const el = ref.current;
+		if (el) setHasScrollbar(el.scrollHeight > el.clientHeight);
+	}, [ref, setHasScrollbar]);
+
 	useEffect(() => {
 		const el = ref.current;
 		if (!el) return;
 
-		const checkScrollbar = () => {
-			setHasScrollbar(el.scrollHeight > el.clientHeight);
-		};
-
-		checkScrollbar();
+		check();
 		// If fonts change size
-		(document as any).fonts?.ready?.then(checkScrollbar).catch(() => {});
+		(document as any).fonts?.ready?.then(check).catch(() => {});
 
 		// Observers to handle dynamic content changes
-		const ro = new ResizeObserver(checkScrollbar);
+		const ro = new ResizeObserver(check);
 		ro.observe(el);
 
-		const mo = new MutationObserver(checkScrollbar);
-		mo.observe(el, { childList: true, subtree: true, characterData: true });
+		const mo = new MutationObserver(check);
+		mo.observe(el, { childList: true });
 
-		window.addEventListener('resize', checkScrollbar);
+		window.addEventListener('resize', check);
 		return () => {
 			ro.disconnect();
 			mo.disconnect();
-			window.removeEventListener('resize', checkScrollbar);
+			window.removeEventListener('resize', check);
 		};
-	}, [ref, setHasScrollbar, ...deps]);
+	}, [ref, check]);
+
+	useEffect(check, deps);
 }
 
 function useOnClickOutside(ref: React.RefObject<HTMLElement>, handler: (e: MouseEvent) => void) {
@@ -157,38 +160,7 @@ type HistoryItemProps = {
 	elementName: string;
 };
 
-function deepEqual(a: any, b: any): boolean {
-	if (a === b) return true;
-	if (a == null || b == null) return a === b;
-
-	// Dates
-	if (a instanceof Date && b instanceof Date) {
-		return a.getTime() === b.getTime();
-	}
-
-	// Arrays
-	if (Array.isArray(a) && Array.isArray(b)) {
-		if (a.length !== b.length) return false;
-		for (let i = 0; i < a.length; i++) {
-			if (!deepEqual(a[i], b[i])) return false;
-		}
-		return true;
-	}
-
-	// Plain objects
-	if (typeof a === 'object' && typeof b === 'object') {
-		const aKeys = Object.keys(a);
-		const bKeys = Object.keys(b);
-		if (aKeys.length !== bKeys.length) return false;
-		for (const k of aKeys) {
-			if (!Object.prototype.hasOwnProperty.call(b, k)) return false;
-			if (!deepEqual(a[k], b[k])) return false;
-		}
-		return true;
-	}
-
-	return false;
-}
+const deepEqual = (a: any, b: any) => a === b || JSON.stringify(a) === JSON.stringify(b);
 
 type Coords = { top?: number; maxHeight?: number };
 
@@ -271,6 +243,7 @@ export function useGrowCalc(
 
 		const ro = new ResizeObserver(schedule);
 		if (anchorRef.current) ro.observe(anchorRef.current);
+		if (panelRef.current) ro.observe(panelRef.current);
 
 		return () => {
 			window.removeEventListener('resize', schedule);
@@ -323,7 +296,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 
 	const coords = useGrowCalc(boxRef, panelRef, open && activeIndex === null, [filtered.length]);
 
-	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length, coords]);
+	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length]);
 
 	return (
 		<div className={'answer-history' + (open ? ' open' : '')} ref={boxRef}>
@@ -451,14 +424,14 @@ export const HistoryList: FC<{
 	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length]);
 
 	return (
-		<div className="change-history">
+		<div className={'change-history' + (open ? ' open' : '')}>
 			{!open ? (
 				<button
 					className="change-history__button"
 					aria-label="Show change history"
 					onClick={() => setOpen(true)}
 				>
-					{config.locale === 'no' ? 'Endringshistorikk' : 'Changes history'} (
+					{config.locale === 'no' ? 'Endringshistorikk' : 'Change history'} (
 					{filtered.length})
 				</button>
 			) : isPreviewing ? (
