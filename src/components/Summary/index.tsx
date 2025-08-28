@@ -64,23 +64,6 @@ const Summary: FC = () => {
 		return newAnswers;
 	}, [config.answerData, survey]);
 
-	useEffect(() => {
-		const onBlur = () => {
-			const active = document.activeElement;
-			if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
-				(active as HTMLElement).blur();
-			}
-		};
-
-		if (config.summaryEditable) {
-			window.addEventListener('blur', onBlur);
-		}
-
-		return () => {
-			window.removeEventListener('blur', onBlur);
-		};
-	}, [config.summaryEditable]);
-
 	return (
 		<div className={'summary' + (config.style ? ' ' + config.style : '')}>
 			<Header />
