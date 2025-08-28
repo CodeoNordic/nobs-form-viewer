@@ -383,21 +383,69 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 										preview(answer);
 									}}
 								>
-									<span>{h.user}</span>
-									{dateFromString(h.timestamp) && (
-										<>
-											<span>•</span>
-											<span className="time-ago">
-												{dateFromString(h.timestamp)?.toLocaleString(
-													config?.locale === 'no' ? 'nb-NO' : 'en-US',
-													{
-														dateStyle: 'short',
-														timeStyle: 'short',
-													}
-												)}
-											</span>
-										</>
-									)}
+									<div
+										style={{
+											display: 'flex',
+											flexDirection: 'column',
+										}}
+									>
+										<div
+											style={{
+												display: 'flex',
+												borderBottom: '1px solid #ccc',
+												justifyContent: 'space-between',
+											}}
+										>
+											<p className="user">{h.user}</p>
+											{dateFromString(h.timestamp) && (
+												<p>
+													<span>Redigert:</span>
+													<span className="time-ago">
+														{dateFromString(
+															h.timestamp
+														)?.toLocaleString(
+															config?.locale === 'no'
+																? 'nb-NO'
+																: 'en-US',
+															{
+																dateStyle: 'short',
+																timeStyle: 'short',
+															}
+														)}
+													</span>
+												</p>
+											)}
+										</div>
+										<div
+											style={{
+												display: 'flex',
+											}}
+										>
+											<div
+												style={{
+													width: '100%',
+													overflowWrap: 'break-word',
+												}}
+											>
+												<p>fra</p>
+											</div>
+											<div
+												style={{
+													backgroundColor: '#f0f0f0',
+												}}
+											>
+												<p>→</p>
+											</div>
+											<div
+												style={{
+													width: '100%',
+													overflowWrap: 'break-word',
+												}}
+											>
+												<p>til</p>
+											</div>
+										</div>
+									</div>
 								</li>
 							);
 						})}
@@ -442,108 +490,110 @@ export const HistoryList: FC<{
 
 	return (
 		<div className={'change-history' + (open ? ' open' : '')}>
-			{!open ? (
-				<button
-					className="change-history__button"
-					aria-label="Show change history"
-					onClick={() => setOpen(true)}
-				>
-					{config.locale === 'no' ? 'Endringshistorikk' : 'Change history'} (
-					{filtered.length})
-				</button>
-			) : isPreviewing ? (
-				<div>
+			<div className="change-history__header">
+				{!open ? (
 					<button
 						className="change-history__button"
-						onClick={() => {
-							cancel();
-							setActiveIndex(null);
-						}}
+						aria-label="Show change history"
+						onClick={() => setOpen(true)}
 					>
-						{config.locale === 'no'
-							? 'Stopp visning av endringer'
-							: 'Stop viewing changes'}
+						{config.locale === 'no' ? 'Endringshistorikk' : 'Change history'} (
+						{filtered.length})
 					</button>
-					<button
-						className="change-history__button"
-						onClick={() => {
-							save();
-							setActiveIndex(null);
-							setOpen(false);
-							if (config?.addToAnswers && config.addToAnswers.trim() != '') {
-								const answersArray = config.answers || [];
-								const now = new Date();
-								const timestamp = now.toISOString();
-								const newAnswerEntry = {
-									answer: config.answerData || '',
-									user: config.addToAnswers,
-									timestamp: timestamp,
-								};
-								setConfig({
-									...config,
-									answers: [...answersArray, newAnswerEntry],
-								});
-							}
-							if (config?.scriptNames?.onChange) {
-								performScript('onChange', {
-									result: safeParse(config.answerData),
-									hasErrors: false,
-									type: config.type,
-								});
-							}
-						}}
-					>
-						{config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
-					</button>
-				</div>
-			) : (
-				<div className="change-history__panel">
-					<div className="change-history__buttons">
+				) : isPreviewing ? (
+					<div>
 						<button
 							className="change-history__button"
 							onClick={() => {
-								if (isPreviewing) cancel();
+								cancel();
 								setActiveIndex(null);
-								setOpen(false);
 							}}
 						>
-							{config.locale === 'no' ? 'Lukk' : 'Close'}
+							{config.locale === 'no'
+								? 'Stopp visning av endringer'
+								: 'Stop viewing changes'}
+						</button>
+						<button
+							className="change-history__button"
+							onClick={() => {
+								save();
+								setActiveIndex(null);
+								setOpen(false);
+								if (config?.addToAnswers && config.addToAnswers.trim() != '') {
+									const answersArray = config.answers || [];
+									const now = new Date();
+									const timestamp = now.toISOString();
+									const newAnswerEntry = {
+										answer: config.answerData || '',
+										user: config.addToAnswers,
+										timestamp: timestamp,
+									};
+									setConfig({
+										...config,
+										answers: [...answersArray, newAnswerEntry],
+									});
+								}
+								if (config?.scriptNames?.onChange) {
+									performScript('onChange', {
+										result: safeParse(config.answerData),
+										hasErrors: false,
+										type: config.type,
+									});
+								}
+							}}
+						>
+							{config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
 						</button>
 					</div>
-					<ul ref={scrollRef} className={hasScrollbar ? 'scrollbar' : ''}>
-						{filtered.map((h, index) => (
-							<li
-								className={activeIndex === index ? 'active' : ''}
-								key={index}
+				) : (
+					<div className="change-history__panel">
+						<div className="change-history__buttons">
+							<button
+								className="change-history__button"
 								onClick={() => {
-									if (activeIndex === null) {
-										preview(h.answer);
-									} else {
-										preview(h.answer);
-									}
-									setActiveIndex(index);
+									if (isPreviewing) cancel();
+									setActiveIndex(null);
+									setOpen(false);
 								}}
 							>
-								<span className="user">{h.user}</span>
-								{dateFromString(h.timestamp) && (
-									<>
-										<span>•</span>
-										<span className="time-ago">
-											{dateFromString(h.timestamp)?.toLocaleString(
-												config.locale === 'no' ? 'nb-NO' : 'en-US',
-												{
-													dateStyle: 'short',
-													timeStyle: 'short',
-												}
-											)}
-										</span>
-									</>
-								)}
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
+								{config.locale === 'no' ? 'Lukk' : 'Close'}
+							</button>
+						</div>
+						<ul ref={scrollRef} className={hasScrollbar ? 'scrollbar' : ''}>
+							{filtered.map((h, index) => (
+								<li
+									className={activeIndex === index ? 'active' : ''}
+									key={index}
+									onClick={() => {
+										if (activeIndex === null) {
+											preview(h.answer);
+										} else {
+											preview(h.answer);
+										}
+										setActiveIndex(index);
+									}}
+								>
+									<span className="user">{h.user}</span>
+									{dateFromString(h.timestamp) && (
+										<>
+											<span>•</span>
+											<span className="time-ago">
+												{dateFromString(h.timestamp)?.toLocaleString(
+													config.locale === 'no' ? 'nb-NO' : 'en-US',
+													{
+														dateStyle: 'short',
+														timeStyle: 'short',
+													}
+												)}
+											</span>
+										</>
+									)}
+								</li>
+							))}
+						</ul>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };

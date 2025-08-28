@@ -67,6 +67,7 @@ const Summary: FC = () => {
 	return (
 		<div className={'summary' + (config.style ? ' ' + config.style : '')}>
 			<Header />
+			{sortedHitory.length > 0 && <HistoryList sortedHistory={sortedHitory} />}
 			<div className="summary__content">
 				{survey.title && survey.showTitle !== false && (
 					<p className="title">{survey.title}</p>
@@ -82,7 +83,6 @@ const Summary: FC = () => {
 						answerHistory={sortedAnswerHistory}
 					/>
 				))}
-				{sortedHitory.length > 0 && <HistoryList sortedHistory={sortedHitory} />}
 			</div>
 			<Footer />
 		</div>
