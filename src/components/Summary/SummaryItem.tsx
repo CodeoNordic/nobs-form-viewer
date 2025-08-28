@@ -36,13 +36,18 @@ function EditableTextarea(props: {
 
 	useConsistentBlur(inputRef, onCommit);
 
-	// TODO: Needed?
-	useEffect(() => {
+	const resize = () => {
 		const el = inputRef.current;
 		if (!el) return;
 		el.style.height = 'auto';
 		el.style.height = `${el.scrollHeight - 4}px`;
-	}, [value]);
+	};
+
+	useEffect(() => {
+		const ro = new ResizeObserver(resize);
+		ro.observe(inputRef.current!);
+		return () => ro.disconnect();
+	}, []);
 
 	return (
 		<textarea
@@ -53,9 +58,7 @@ function EditableTextarea(props: {
 			onClick={(e) => (e.target as HTMLTextAreaElement).focus()}
 			onChange={(e) => {
 				onChangeValue(e.target.value);
-				// grow as user types
-				e.target.style.height = 'auto';
-				e.target.style.height = `${e.target.scrollHeight - 4}px`;
+				resize();
 			}}
 		/>
 	);
