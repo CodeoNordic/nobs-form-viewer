@@ -21,7 +21,9 @@ const Summary: FC = () => {
 			const sortedHistory = [...config.answers].sort((a, b) => {
 				const dateA = dateFromString(a.timestamp);
 				const dateB = dateFromString(b.timestamp);
-				if (!dateA || !dateB) return 0;
+				if (!dateA && !dateB) return 0;
+				if (!dateA) return 1;
+				if (!dateB) return -1;
 				return dateB.getTime() - dateA.getTime();
 			});
 

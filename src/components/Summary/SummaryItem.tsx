@@ -159,10 +159,26 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 		: !!element.isRequired;
 
 	const saveAnswers = (newAnswers: string) => {
-		setConfig({
-			...config,
-			answerData: newAnswers,
-		});
+		if (config.addToAnswers && config.addToAnswers.trim() != '') {
+			const answersArray = config.answers || [];
+			const now = new Date();
+			const timestamp = now.toISOString();
+			const newAnswerEntry = {
+				answer: newAnswers,
+				user: config.addToAnswers,
+				timestamp: timestamp,
+			};
+			setConfig({
+				...config,
+				answerData: newAnswers,
+				answers: [...answersArray, newAnswerEntry],
+			});
+		} else {
+			setConfig({
+				...config,
+				answerData: newAnswers,
+			});
+		}
 
 		if (config.scriptNames?.onChange) {
 			performScript('onChange', {

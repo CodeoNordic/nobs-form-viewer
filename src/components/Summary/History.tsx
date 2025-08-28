@@ -258,7 +258,7 @@ export function useGrowCalc(
 }
 
 export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }) => {
-	const [config] = useConfigState();
+	const [config, setConfig] = useConfigState();
 	const [open, setOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState<number | null>(null);
 	const { preview, cancel, save, isPreviewing } = useAnswerPreview(elementName);
@@ -325,6 +325,23 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 							save();
 							setActiveIndex(null);
 							setOpen(false);
+							if (
+								typeof config?.addToAnswers === 'string' &&
+								config.addToAnswers.trim() != ''
+							) {
+								const answersArray = config.answers || [];
+								const now = new Date();
+								const timestamp = now.toISOString();
+								const newAnswerEntry = {
+									answer: config.answerData || '',
+									user: config.addToAnswers,
+									timestamp: timestamp,
+								};
+								setConfig({
+									...config,
+									answers: [...answersArray, newAnswerEntry],
+								});
+							}
 							if (config?.scriptNames?.onChange) {
 								performScript('onChange', {
 									result: safeParse(config.answerData),
@@ -398,7 +415,7 @@ export const HistoryList: FC<{
 		answer: string;
 	}>;
 }> = ({ sortedHistory }) => {
-	const [config] = useConfigState();
+	const [config, setConfig] = useConfigState();
 	const [open, setOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState<number | null>(null);
 	const { isPreviewing, preview, save, cancel } = useConfigStringPreview('answerData');
@@ -453,6 +470,20 @@ export const HistoryList: FC<{
 							save();
 							setActiveIndex(null);
 							setOpen(false);
+							if (config?.addToAnswers && config.addToAnswers.trim() != '') {
+								const answersArray = config.answers || [];
+								const now = new Date();
+								const timestamp = now.toISOString();
+								const newAnswerEntry = {
+									answer: config.answerData || '',
+									user: config.addToAnswers,
+									timestamp: timestamp,
+								};
+								setConfig({
+									...config,
+									answers: [...answersArray, newAnswerEntry],
+								});
+							}
 							if (config?.scriptNames?.onChange) {
 								performScript('onChange', {
 									result: safeParse(config.answerData),
