@@ -11,6 +11,8 @@ import { useConfigState } from '@context/Config';
 import History from 'jsx:@svg/history.svg';
 import performScript from '@utils/performScript';
 import dateFromString from '@utils/dateFromString';
+import Crossmark from 'jsx:@svg/crossmark.svg';
+import ArrowDown from 'jsx:@svg/arrow-down.svg';
 
 function safeParse<T = any>(raw?: string | null): T {
 	if (!raw) return {} as T;
@@ -308,52 +310,6 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 				>
 					<History />
 				</button>
-			) : activeIndex !== null ? (
-				<div className="answer-history__toolbar">
-					<button
-						className="answer-history__button"
-						onClick={() => {
-							cancel();
-							setActiveIndex(null);
-						}}
-					>
-						{config?.locale === 'no' ? 'Tilbake' : 'Back'}
-					</button>
-					<button
-						className="answer-history__button"
-						onClick={() => {
-							save();
-							setActiveIndex(null);
-							setOpen(false);
-							if (
-								typeof config?.addToAnswers === 'string' &&
-								config.addToAnswers.trim() != ''
-							) {
-								const answersArray = config.answers || [];
-								const now = new Date();
-								const timestamp = now.toISOString();
-								const newAnswerEntry = {
-									answer: config.answerData || '',
-									user: config.addToAnswers,
-									timestamp: timestamp,
-								};
-								setConfig({
-									...config,
-									answers: [...answersArray, newAnswerEntry],
-								});
-							}
-							if (config?.scriptNames?.onChange) {
-								performScript('onChange', {
-									result: safeParse(config.answerData),
-									hasErrors: false,
-									type: config.type,
-								});
-							}
-						}}
-					>
-						{config?.locale === 'no' ? 'Lagre' : 'Save'}
-					</button>
-				</div>
 			) : (
 				<div
 					ref={panelRef}
@@ -366,86 +322,110 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 					}}
 				>
 					<div className="answer-history__header">
-						<button className="answer-history__button" onClick={() => setOpen(false)}>
-							{config?.locale === 'no' ? 'Lukk' : 'Close'}
-						</button>
+						<Crossmark
+							className="answer-history__close"
+							onClick={() => setOpen(false)}
+						/>
 					</div>
 
 					<ul ref={scrollRef} className="answer-history__list">
 						{filtered.map((h, i) => {
 							const answer = h.answers[elementName];
+							const prev = filtered[i + 1]?.answers[elementName];
 							return (
 								<li
 									className={hasScrollbar ? 'has-scrollbar' : ''}
 									key={i}
 									onClick={() => {
-										setActiveIndex(i);
-										preview(answer);
+										if (activeIndex === i) {
+											cancel();
+											setActiveIndex(null);
+										} else {
+											setActiveIndex(i);
+											preview(answer);
+										}
 									}}
 								>
-									<div
-										style={{
-											display: 'flex',
-											flexDirection: 'column',
-										}}
-									>
-										<div
-											style={{
-												display: 'flex',
-												borderBottom: '1px solid #ccc',
-												justifyContent: 'space-between',
-											}}
-										>
-											<p className="user">{h.user}</p>
-											{dateFromString(h.timestamp) && (
+									<div className="user-time">
+										<p className="user">{h.user}</p>
+										{dateFromString(h.timestamp) && (
+											<div className="time-ago">
+												<p>Redigert:</p>
 												<p>
-													<span>Redigert:</span>
-													<span className="time-ago">
-														{dateFromString(
-															h.timestamp
-														)?.toLocaleString(
-															config?.locale === 'no'
-																? 'nb-NO'
-																: 'en-US',
-															{
-																dateStyle: 'short',
-																timeStyle: 'short',
-															}
-														)}
-													</span>
+													{dateFromString(h.timestamp)?.toLocaleString(
+														config?.locale === 'no' ? 'nb-NO' : 'en-US',
+														{
+															dateStyle: 'short',
+															timeStyle: 'short',
+														}
+													)}
 												</p>
-											)}
+											</div>
+										)}
+									</div>
+									<div className="from-to">
+										<div className="from">
+											<p>{typeof prev === 'string' && prev}</p>
 										</div>
-										<div
-											style={{
-												display: 'flex',
-											}}
-										>
-											<div
-												style={{
-													width: '100%',
-													overflowWrap: 'break-word',
-												}}
-											>
-												<p>fra</p>
-											</div>
-											<div
-												style={{
-													backgroundColor: '#f0f0f0',
-												}}
-											>
-												<p>→</p>
-											</div>
-											<div
-												style={{
-													width: '100%',
-													overflowWrap: 'break-word',
-												}}
-											>
-												<p>til</p>
-											</div>
+										<div className="divider">
+											<ArrowDown className="divider__arrow" />
+										</div>
+										<div className="to">
+											<p>{typeof answer === 'string' && answer}</p>
 										</div>
 									</div>
+									{activeIndex === i && (
+										<div className="answer-history__toolbar">
+											<button
+												className="answer-history__button"
+												onClick={(e) => {
+													e.stopPropagation();
+													save();
+													// setActiveIndex(null);
+													// setOpen(false);
+													if (
+														typeof config?.addToAnswers === 'string' &&
+														config.addToAnswers.trim() != ''
+													) {
+														const answersArray = config.answers || [];
+														const now = new Date();
+														const timestamp = now.toISOString();
+														const newAnswerEntry = {
+															answer: config.answerData || '',
+															user: config.addToAnswers,
+															timestamp: timestamp,
+														};
+														setConfig({
+															...config,
+															answers: [
+																...answersArray,
+																newAnswerEntry,
+															],
+														});
+													}
+													if (config?.scriptNames?.onChange) {
+														performScript('onChange', {
+															result: safeParse(config.answerData),
+															hasErrors: false,
+															type: config.type,
+														});
+													}
+												}}
+											>
+												{config?.locale === 'no' ? 'Bruk' : 'Save'}
+											</button>
+											<button
+												className="answer-history__button"
+												onClick={(e) => {
+													e.stopPropagation();
+													cancel();
+													setActiveIndex(null);
+												}}
+											>
+												{config?.locale === 'no' ? 'Avbryt' : 'Cancel'}
+											</button>
+										</div>
+									)}
 								</li>
 							);
 						})}

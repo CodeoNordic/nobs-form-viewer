@@ -115,22 +115,20 @@
 				border: 1px solid var(--border-color);
 				background-color: var(--background-color-secondary);
 				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-				min-width: 220px;
+				// min-width: 220px;
+				width: max-content;
+				max-width: calc(100vw - 16px);
 
 				display: flex;
 				flex-direction: column;
 			}
 
-			&__header {
-				border-bottom: 1px solid var(--border-color);
-			}
-
-			&__button {
-				margin: 2px;
-				padding: 4px 8px;
-				border-radius: 5px;
+			&__close {
+				width: 20px;
+				height: 20px;
+				padding: 2px;
+				border-radius: 999px;
 				background: var(--background-color-secondary);
-				border: 1px solid var(--border-color);
 				cursor: pointer;
 
 				&:hover {
@@ -148,7 +146,7 @@
 				min-height: 0px;
 				flex: 1;
 
-				max-width: calc(100vw - 16px);
+				// max-width: calc(100vw - 16px);
 				width: max-content;
 
 				> :not(:first-child) {
@@ -162,12 +160,74 @@
 
 			li {
 				display: flex;
-				gap: 0.5rem;
-				padding: 0.5rem 0.75rem;
+				flex-direction: column;
+				margin: 1px;
+				border: 1px solid var(--border-color);
 
 				cursor: pointer;
 				&:hover {
 					background: var(--background-color);
+				}
+
+				.user-time {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					gap: 8px;
+
+					color: var(--text-secondary);
+					padding: 2px;
+					border-bottom: 1px solid var(--border-color);
+
+					.user {
+						flex: 1 1 auto;
+						min-width: 0;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+						// width: 100%;
+					}
+
+					.time-ago {
+						flex: 0 0 auto;
+
+						// width: 100%;
+						display: flex;
+						gap: 4px;
+						flex-wrap: nowrap;
+						white-space: nowrap;
+
+						p {
+							margin: 0;
+						}
+					}
+				}
+
+				.from-to {
+					display: flex;
+					padding: 2px;
+
+					.from {
+						width: 100%;
+						font-style: italic;
+						color: var(--text-secondary);
+					}
+
+					.to {
+						width: 100%;
+					}
+
+					.divider {
+						background-color: var(--background-color);
+						display: flex;
+						align-items: center;
+
+						&__arrow {
+							width: 16px;
+							height: 16px;
+							transform: rotate(-90deg);
+						}
+					}
 				}
 			}
 		}

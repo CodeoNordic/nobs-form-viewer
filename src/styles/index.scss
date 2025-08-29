@@ -1,24 +1,25 @@
 :root {
-    --form-font: Tahoma, Geneva, Verdana, sans-serif;
+	--form-font: Tahoma, Geneva, Verdana, sans-serif;
 
-    // Colors
-    --border-color: #747474;
-    --background-color: #f0f0f0;
-    --background-color-secondary: #fff;
+	// Colors
+	--border-color: #747474;
+	--background-color: #f0f0f0;
+	--background-color-secondary: #fff;
+	--text-secondary: #454545;
 }
 
 body {
-    margin: 0;
-    padding: 0;
+	margin: 0;
+	padding: 0;
 
-    font-family: var(--form-font);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+	font-family: var(--form-font);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 
-    user-select: none;
-    font-size: 0.8rem;
+	user-select: none;
+	font-size: 0.8rem;
 }
 
 #app {
-    height: 100vh;
+	height: 100vh;
 }
