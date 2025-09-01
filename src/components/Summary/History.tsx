@@ -332,9 +332,17 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 						{filtered.map((h, i) => {
 							const answer = h.answers[elementName];
 							const prev = filtered[i + 1]?.answers[elementName];
+
+							let className = '';
+							if (activeIndex === i) className += ' active';
+							if (hasScrollbar) className += ' has-scrollbar';
+							if (i % 2 === 0) className += ' even';
+							else className += ' odd';
+							className = className.trim();
+
 							return (
 								<li
-									className={hasScrollbar ? 'has-scrollbar' : ''}
+									className={className}
 									key={i}
 									onClick={() => {
 										if (activeIndex === i) {
@@ -346,43 +354,70 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 										}
 									}}
 								>
-									<div className="user-time">
-										<p className="user">{h.user}</p>
-										{dateFromString(h.timestamp) && (
-											<div className="time-ago">
-												<p>Redigert:</p>
-												<p>
-													{dateFromString(h.timestamp)?.toLocaleString(
-														config?.locale === 'no' ? 'nb-NO' : 'en-US',
-														{
-															dateStyle: 'short',
-															timeStyle: 'short',
-														}
+									<div className="content">
+										<div className="user-time">
+											<p className="user">{h.user}</p>
+											{dateFromString(h.timestamp) && (
+												<div className="time-ago">
+													<p>Redigert:</p>
+													<p>
+														{dateFromString(
+															h.timestamp
+														)?.toLocaleString(
+															config?.locale === 'no'
+																? 'nb-NO'
+																: 'en-US',
+															{
+																dateStyle: 'short',
+																timeStyle: 'short',
+															}
+														)}
+													</p>
+												</div>
+											)}
+										</div>
+										<div className="from-to">
+											{typeof prev === 'string' ||
+											typeof answer === 'string' ? (
+												<>
+													{typeof prev === 'string' && (
+														<>
+															<div className="from">
+																<p>
+																	{typeof prev === 'string' &&
+																		prev}
+																</p>
+															</div>
+															<div className="divider">
+																<ArrowDown className="divider__arrow" />
+															</div>
+														</>
 													)}
-												</p>
-											</div>
-										)}
-									</div>
-									<div className="from-to">
-										<div className="from">
-											<p>{typeof prev === 'string' && prev}</p>
-										</div>
-										<div className="divider">
-											<ArrowDown className="divider__arrow" />
-										</div>
-										<div className="to">
-											<p>{typeof answer === 'string' && answer}</p>
+													<div className="to">
+														<p>
+															{typeof answer === 'string' && answer}
+														</p>
+													</div>
+												</>
+											) : (
+												<>
+													<p>Vis endringer</p>
+													<div className="divider">
+														<ArrowDown className="divider__arrow" />
+													</div>
+												</>
+											)}
 										</div>
 									</div>
 									{activeIndex === i && (
 										<div className="answer-history__toolbar">
 											<button
-												className="answer-history__button"
+												className="answer-history__button use"
 												onClick={(e) => {
 													e.stopPropagation();
 													save();
-													// setActiveIndex(null);
-													// setOpen(false);
+													setActiveIndex(null);
+													setOpen(false);
 													if (
 														typeof config?.addToAnswers === 'string' &&
 														config.addToAnswers.trim() != ''
@@ -415,7 +450,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 												{config?.locale === 'no' ? 'Bruk' : 'Save'}
 											</button>
 											<button
-												className="answer-history__button"
+												className="answer-history__button cancel"
 												onClick={(e) => {
 													e.stopPropagation();
 													cancel();

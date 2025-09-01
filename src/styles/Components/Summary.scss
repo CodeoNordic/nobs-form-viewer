@@ -108,6 +108,10 @@
 				display: block;
 			}
 
+			&__header {
+				border-bottom: 1px solid var(--border-color);
+			}
+
 			&__panel {
 				position: absolute;
 				right: 0;
@@ -115,12 +119,52 @@
 				border: 1px solid var(--border-color);
 				background-color: var(--background-color-secondary);
 				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-				// min-width: 220px;
+				min-width: 220px;
 				width: max-content;
-				max-width: calc(100vw - 16px);
+				max-width: calc(100vw - 8px);
 
 				display: flex;
 				flex-direction: column;
+			}
+
+			&__toolbar {
+				display: flex;
+				padding: 2px;
+				gap: 2px;
+			}
+
+			&__button {
+				padding: 4px;
+				border-radius: 5px;
+				border: 1px solid #009cc6;
+				background: var(--background-color-secondary);
+				cursor: pointer;
+
+				&.cancel {
+					flex-grow: 1;
+					background: #009cc6;
+					&:hover {
+						background: #3ab2d3;
+						border-color: #3ab2d3;
+					}
+
+					&:active {
+						background: #6fc7df;
+						border-color: #6fc7df;
+					}
+				}
+
+				&.use {
+					&:hover {
+						background: #b3e2ee;
+						border-color: #b3e2ee;
+					}
+
+					&:active {
+						background: #91d4e6;
+						border-color: #91d4e6;
+					}
+				}
 			}
 
 			&__close {
@@ -146,9 +190,6 @@
 				min-height: 0px;
 				flex: 1;
 
-				// max-width: calc(100vw - 16px);
-				width: max-content;
-
 				> :not(:first-child) {
 					border-top: 1px solid var(--border-color);
 				}
@@ -158,15 +199,35 @@
 				}
 			}
 
-			li {
-				display: flex;
-				flex-direction: column;
-				margin: 1px;
-				border: 1px solid var(--border-color);
+			li:has(> .content:hover) {
+				&.even {
+					background: #a0c9e3;
+				}
 
-				cursor: pointer;
-				&:hover {
+				&.odd {
 					background: var(--background-color);
+				}
+			}
+
+			li:has(> .content:active) {
+				&.even {
+					background: #c3d3dc;
+				}
+
+				&.odd {
+					background: #dadada;
+				}
+			}
+
+			li {
+				cursor: pointer;
+
+				&.even {
+					background: #e0f3ff;
+				}
+
+				&.odd {
+					background: var(--background-color-secondary);
 				}
 
 				.user-time {
@@ -174,10 +235,10 @@
 					justify-content: space-between;
 					align-items: center;
 					gap: 8px;
+					font-size: smaller;
 
 					color: var(--text-secondary);
 					padding: 2px;
-					border-bottom: 1px solid var(--border-color);
 
 					.user {
 						flex: 1 1 auto;
@@ -185,13 +246,10 @@
 						overflow: hidden;
 						text-overflow: ellipsis;
 						white-space: nowrap;
-						// width: 100%;
 					}
 
 					.time-ago {
 						flex: 0 0 auto;
-
-						// width: 100%;
 						display: flex;
 						gap: 4px;
 						flex-wrap: nowrap;
@@ -206,6 +264,7 @@
 				.from-to {
 					display: flex;
 					padding: 2px;
+					word-break: break-word;
 
 					.from {
 						width: 100%;
@@ -218,7 +277,9 @@
 					}
 
 					.divider {
-						background-color: var(--background-color);
+						padding: 0 2px;
+						background: var(--background-color-secondary);
+						border-radius: 4px;
 						display: flex;
 						align-items: center;
 
