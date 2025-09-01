@@ -212,19 +212,6 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 				{element.inputType == 'range' && answer && (
 					<p className="question-answer">{answer}%</p>
 				)}
-				{element.type == 'boolean' && (
-					<p className="question-answer">
-						{answer === true
-							? config.locale == 'no'
-								? 'Ja'
-								: 'Yes'
-							: answer === false
-							? config.locale == 'no'
-								? 'Nei'
-								: 'No'
-							: ''}
-					</p>
-				)}
 				{(element.type == 'text' || element.type == 'comment') &&
 					element.inputType == undefined &&
 					(canEdit ? (
@@ -248,7 +235,6 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 					))}
 				{element.inputType !== 'color' &&
 					element.inputType !== 'range' &&
-					element.type !== 'boolean' &&
 					element.type !== 'imagepicker' &&
 					element.type !== 'comment' &&
 					typeof answer !== 'object' &&
@@ -406,8 +392,12 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 					})}
 				</div>
 			)}
-			{answerHistory.some((item: any) => item.answers != undefined) && (
-				<HistoryItem answerHistory={answerHistory} elementName={element.name} />
+			{answerHistory?.some((item: any) => item.answers != undefined) && (
+				<HistoryItem
+					answerHistory={answerHistory}
+					elementName={element.name}
+					element={element}
+				/>
 			)}
 			{newElements.length > 0 && (
 				<div className={`sub-elements${element.noNewLine ? ' no-new-line' : ''}`}>

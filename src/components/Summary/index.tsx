@@ -28,10 +28,14 @@ const Summary: FC = () => {
 			});
 
 			const answers = sortedHistory.map((h) => JSON.parse(h.answer || '{}'));
+			const parsedAnswers = answers.map((a) =>
+				extractAnswers(a, JSON.parse(config.value!), config)
+			);
 
 			let answerHistoryFull = answers.map((answer, index) => {
 				return {
 					answers: answer,
+					parsedAnswers: parsedAnswers[index],
 					user: sortedHistory[index].user,
 					timestamp: sortedHistory[index].timestamp,
 				};

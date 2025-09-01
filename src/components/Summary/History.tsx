@@ -13,6 +13,7 @@ import performScript from '@utils/performScript';
 import dateFromString from '@utils/dateFromString';
 import Crossmark from 'jsx:@svg/crossmark.svg';
 import ArrowDown from 'jsx:@svg/arrow-down.svg';
+import SummaryItem from './SummaryItem';
 
 function safeParse<T = any>(raw?: string | null): T {
 	if (!raw) return {} as T;
@@ -158,8 +159,10 @@ type HistoryItemProps = {
 		user: string;
 		timestamp?: string;
 		answers: Record<string, any>;
+		parsedAnswers: Record<string, any>;
 	}>;
 	elementName: string;
+	element: any;
 };
 
 const deepEqual = (a: any, b: any) => a === b || JSON.stringify(a) === JSON.stringify(b);
@@ -259,7 +262,7 @@ export function useGrowCalc(
 	return coords;
 }
 
-export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }) => {
+export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, element }) => {
 	const [config, setConfig] = useConfigState();
 	const [open, setOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -275,6 +278,8 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 		setActiveIndex(null);
 		setOpen(false);
 	});
+
+	console.log('Rendering history item', elementName, answerHistory);
 
 	const hasAny = useMemo(
 		() => answerHistory.some((h) => h.answers[elementName] !== undefined),
@@ -293,6 +298,8 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 		}
 		return out;
 	}, [answerHistory, elementName]);
+
+	console.log(answerHistory, filtered);
 
 	const panelRef = useRef<HTMLDivElement>(null);
 
@@ -324,14 +331,18 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 					<div className="answer-history__header">
 						<Crossmark
 							className="answer-history__close"
-							onClick={() => setOpen(false)}
+							onClick={() => {
+								setActiveIndex(null);
+								setOpen(false);
+							}}
 						/>
 					</div>
 
 					<ul ref={scrollRef} className="answer-history__list">
 						{filtered.map((h, i) => {
 							const answer = h.answers[elementName];
-							const prev = filtered[i + 1]?.answers[elementName];
+							const parsedAnswer = h.parsedAnswers[elementName];
+							const parsedPrev = filtered[i + 1]?.parsedAnswers[elementName];
 
 							let className = '';
 							if (activeIndex === i) className += ' active';
@@ -377,38 +388,54 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName }
 											)}
 										</div>
 										<div className="from-to">
-											{typeof prev === 'string' ||
-											typeof answer === 'string' ? (
-												<>
-													{typeof prev === 'string' && (
-														<>
-															<div className="from">
-																<p>
-																	{typeof prev === 'string' &&
-																		prev}
-																</p>
-															</div>
-															<div className="divider">
-																<ArrowDown className="divider__arrow" />
-															</div>
-														</>
-													)}
-													<div className="to">
-														<p>
-															{typeof answer === 'string' && answer}
-														</p>
+											{typeof parsedPrev === 'string' ||
+												(typeof parsedAnswer === 'string' ? (
+													<>
+														{typeof parsedPrev === 'string' && (
+															<>
+																<div className="from">
+																	<p>
+																		{typeof parsedPrev ===
+																			'string' && parsedPrev}
+																	</p>
+																</div>
+																<div className="divider">
+																	<ArrowDown className="divider__arrow" />
+																</div>
+															</>
+														)}
+														<div className="to">
+															<p>
+																{typeof parsedAnswer === 'string' &&
+																	parsedAnswer}
+															</p>
+														</div>
+													</>
+												) : (
+													<div
+														className={
+															'show-more' +
+															(activeIndex === i ? ' open' : '')
+														}
+													>
+														<p>Vis endringer</p>
+														<div className="show-more__arrow-box">
+															<ArrowDown className="arrow" />
+														</div>
 													</div>
-												</>
-											) : (
-												<>
-													<p>Vis endringer</p>
-													<div className="divider">
-														<ArrowDown className="divider__arrow" />
-													</div>
-												</>
-											)}
+												))}
 										</div>
 									</div>
+									{typeof parsedPrev !== 'string' &&
+										typeof parsedAnswer !== 'string' &&
+										activeIndex === i && (
+											<>
+												<SummaryItem
+													answers={h.parsedAnswers}
+													element={element}
+												/>
+											</>
+										)}
 									{activeIndex === i && (
 										<div className="answer-history__toolbar">
 											<button

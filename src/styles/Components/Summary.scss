@@ -145,24 +145,20 @@
 					background: #009cc6;
 					&:hover {
 						background: #3ab2d3;
-						border-color: #3ab2d3;
 					}
 
 					&:active {
 						background: #6fc7df;
-						border-color: #6fc7df;
 					}
 				}
 
 				&.use {
 					&:hover {
 						background: #b3e2ee;
-						border-color: #b3e2ee;
 					}
 
 					&:active {
 						background: #91d4e6;
-						border-color: #91d4e6;
 					}
 				}
 			}
@@ -189,10 +185,6 @@
 
 				min-height: 0px;
 				flex: 1;
-
-				> :not(:first-child) {
-					border-top: 1px solid var(--border-color);
-				}
 
 				> .has-scrollbar {
 					border-right: 1px solid var(--border-color);
@@ -287,6 +279,31 @@
 							width: 16px;
 							height: 16px;
 							transform: rotate(-90deg);
+						}
+					}
+				}
+
+				.show-more {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					width: 100%;
+
+					&.open {
+						.arrow {
+							transform: rotate(0deg);
+						}
+					}
+
+					&__arrow-box {
+						padding: 2px;
+						background-color: var(--background-color-secondary);
+						border-radius: 4px;
+
+						.arrow {
+							width: 16px;
+							height: 16px;
+							transform: rotate(180deg);
 						}
 					}
 				}

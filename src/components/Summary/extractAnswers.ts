@@ -142,6 +142,17 @@ export default function extractAnswers(answers: any, survey: any, config: any) {
 			});
 
 			newAnswers[question.name] = answer;
+		} else if (question.type == 'boolean') {
+			newAnswers[question.name] =
+				answers[question.name] === true
+					? config.locale == 'no'
+						? 'Ja'
+						: 'Yes'
+					: answers[question.name] === false
+					? config.locale == 'no'
+						? 'Nei'
+						: 'No'
+					: '';
 		} else {
 			// Questions without choices (comment, number, etc)
 			newAnswers[question.name] = answers[question.name];
