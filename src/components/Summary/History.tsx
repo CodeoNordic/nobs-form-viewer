@@ -389,41 +389,41 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 										</div>
 										<div className="from-to">
 											{typeof parsedPrev === 'string' ||
-												(typeof parsedAnswer === 'string' ? (
-													<>
-														{typeof parsedPrev === 'string' && (
-															<>
-																<div className="from">
-																	<p>
-																		{typeof parsedPrev ===
-																			'string' && parsedPrev}
-																	</p>
-																</div>
-																<div className="divider">
-																	<ArrowDown className="divider__arrow" />
-																</div>
-															</>
-														)}
-														<div className="to">
-															<p>
-																{typeof parsedAnswer === 'string' &&
-																	parsedAnswer}
-															</p>
-														</div>
-													</>
-												) : (
-													<div
-														className={
-															'show-more' +
-															(activeIndex === i ? ' open' : '')
-														}
-													>
-														<p>Vis endringer</p>
-														<div className="show-more__arrow-box">
-															<ArrowDown className="arrow" />
-														</div>
+											typeof parsedAnswer === 'string' ? (
+												<>
+													{typeof parsedPrev === 'string' && (
+														<>
+															<div className="from">
+																<p>
+																	{typeof parsedPrev ===
+																		'string' && parsedPrev}
+																</p>
+															</div>
+															<div className="divider">
+																<ArrowDown className="divider__arrow" />
+															</div>
+														</>
+													)}
+													<div className="to">
+														<p>
+															{typeof parsedAnswer === 'string' &&
+																parsedAnswer}
+														</p>
 													</div>
-												))}
+												</>
+											) : (
+												<div
+													className={
+														'show-more' +
+														(activeIndex === i ? ' open' : '')
+													}
+												>
+													<p>Vis endringer</p>
+													<div className="show-more__arrow-box">
+														<ArrowDown className="arrow" />
+													</div>
+												</div>
+											)}
 										</div>
 									</div>
 									{typeof parsedPrev !== 'string' &&

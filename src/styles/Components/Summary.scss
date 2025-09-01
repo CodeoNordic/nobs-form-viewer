@@ -213,6 +213,8 @@
 
 			li {
 				cursor: pointer;
+				border-radius: 4px;
+				padding: 4px;
 
 				&.even {
 					background: #e0f3ff;
@@ -227,10 +229,10 @@
 					justify-content: space-between;
 					align-items: center;
 					gap: 8px;
+					padding-bottom: 4px;
 					font-size: smaller;
 
 					color: var(--text-secondary);
-					padding: 2px;
 
 					.user {
 						flex: 1 1 auto;
@@ -255,7 +257,6 @@
 
 				.from-to {
 					display: flex;
-					padding: 2px;
 					word-break: break-word;
 
 					.from {
