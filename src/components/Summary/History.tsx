@@ -81,49 +81,6 @@ function useOnClickOutside(ref: React.RefObject<HTMLElement>, handler: (e: Mouse
 	}, [ref, handler]);
 }
 
-function useAnswerPreview(elementName: string) {
-	const [config, setConfig] = useConfigState();
-	const originalRef = useRef<any>(null);
-	const [isPreviewing, setIsPreviewing] = useState(false);
-
-	const preview = useCallback(
-		(value: any) => {
-			// if (!isPreviewing) {
-			// 	originalRef.current = readAnswerForElement(config, elementName);
-			// }
-			// setConfig((prev: any) => ({
-			// 	...prev,
-			// 	answerData: writeAnswerForElement(prev, elementName, value),
-			// }));
-			setIsPreviewing(true);
-		},
-		[config, elementName, isPreviewing, setConfig]
-	);
-
-	const save = useCallback(() => {
-		// originalRef.current = null;
-		setIsPreviewing(false);
-	}, []);
-
-	const cancel = useCallback(() => {
-		if (isPreviewing) {
-			// setConfig((prev: any) => ({
-			// 	...prev,
-			// 	answerData: writeAnswerForElement(prev, elementName, originalRef.current),
-			// }));
-		}
-		originalRef.current = null;
-		setIsPreviewing(false);
-	}, [elementName, isPreviewing, setConfig]);
-
-	const current = useMemo(
-		() => readAnswerForElement(config, elementName),
-		[config?.answerData, elementName]
-	);
-
-	return { current, preview, save, cancel, isPreviewing } as const;
-}
-
 function useConfigStringPreview(key: 'answerData') {
 	const [config, setConfig] = useConfigState();
 	const originalRef = useRef<string | null>(null);
@@ -270,15 +227,15 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 	const [config, setConfig] = useConfigState();
 	const [open, setOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState<number | null>(null);
-	const { preview, cancel, save, isPreviewing } = useAnswerPreview(elementName);
 	const boxRef = useRef<HTMLDivElement>(null);
+	const [isPreviewing, setIsPreviewing] = useState(false);
 
 	const scrollRef = useRef<HTMLUListElement>(null);
 	const [hasScrollbar, setHasScrollbar] = useState(false);
 
 	useOnClickOutside(boxRef, () => {
 		if (!open) return;
-		if (isPreviewing) cancel();
+		if (isPreviewing) setIsPreviewing(false);
 		setActiveIndex(null);
 		setOpen(false);
 	});
@@ -295,22 +252,11 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 			const curr = answerHistory[i]?.answers[elementName];
 			const next = answerHistory[i + 1]?.answers[elementName];
 
-			if (deepEqual(curr, next)) {
-				console.log(
-					'Skipping',
-					curr,
-					next,
-					answerHistory[i].user,
-					answerHistory[i + 1]?.user
-				);
-				continue;
-			}
+			if (deepEqual(curr, next)) continue;
 			out.push(answerHistory[i]);
 		}
 		return out;
 	}, [answerHistory, elementName]);
-
-	console.log('Filtered', filtered, answerHistory);
 
 	const panelRef = useRef<HTMLDivElement>(null);
 
@@ -381,11 +327,11 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 									key={i}
 									onClick={() => {
 										if (activeIndex === i) {
-											cancel();
+											setIsPreviewing(false);
 											setActiveIndex(null);
 										} else {
 											setActiveIndex(i);
-											preview(answer);
+											setIsPreviewing(true);
 										}
 									}}
 								>
@@ -465,7 +411,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 													className="answer-history__button use"
 													onClick={(e) => {
 														e.stopPropagation();
-														save();
+														setIsPreviewing(false);
 														setActiveIndex(null);
 														setOpen(false);
 														if (
@@ -524,7 +470,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 													className="answer-history__button cancel"
 													onClick={(e) => {
 														e.stopPropagation();
-														cancel();
+														setIsPreviewing(false);
 														setActiveIndex(null);
 													}}
 												>

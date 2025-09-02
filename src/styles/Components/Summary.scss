@@ -1,7 +1,7 @@
 .summary {
 	min-height: calc(100vh - 2px);
 	border: 1px solid var(--border-color);
-	overflow: hidden;
+	// overflow: hidden;
 	background-color: var(--background-color);
 
 	p {
@@ -17,15 +17,18 @@
 		bottom: 8px;
 		right: 8px;
 
+		display: flex;
+		max-height: calc(100% - 16px);
+		overflow: hidden;
+		z-index: 100;
+
+		// position: sticky;
+		// top: 0px;
+		// left: 0px;
+
 		&.open {
 			width: min(21rem, calc(100% - 16px));
 		}
-
-		max-height: calc(100% - 16px);
-		overflow: hidden;
-
-		display: flex;
-		justify-content: flex-end;
 
 		&__badge:hover {
 			background: var(--background-color);
