@@ -44,14 +44,20 @@
 		}
 
 		&__button {
-			padding: 4px 8px;
+			padding: 4px;
 			border-radius: 5px;
+			border: 1px solid #009cc6;
 			background: var(--background-color-secondary);
-			border: 1px solid var(--border-color);
 			cursor: pointer;
 
+			flex-grow: 1;
+			background: #009cc6;
 			&:hover {
-				background: var(--background-color);
+				background: #3ab2d3;
+			}
+
+			&:active {
+				background: #6fc7df;
 			}
 		}
 
@@ -184,6 +190,10 @@
 			}
 
 			&__list {
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+
 				margin: 0;
 				padding: 0;
 				list-style: none;
@@ -284,19 +294,12 @@
 					}
 
 					.divider {
-						padding: 2px;
-						background: var(--background-color-secondary);
-						border-radius: 4px;
-						// height: 100%;
-
 						display: flex;
 						align-items: center;
-						justify-content: center;
 
-						&__arrow {
-							width: 16px;
-							height: 16px;
-							transform: rotate(-90deg);
+						&__chevron {
+							width: 24px;
+							height: 24px;
 						}
 					}
 				}
@@ -308,12 +311,12 @@
 					width: 100%;
 
 					&.open {
-						.arrow {
+						.chevron {
 							transform: rotate(0deg);
 						}
 					}
 
-					&__arrow-box {
+					&__chevron-box {
 						padding: 2px;
 						background-color: var(--background-color-secondary);
 						border-radius: 4px;
@@ -322,9 +325,9 @@
 						align-items: center;
 						justify-content: center;
 
-						.arrow {
-							width: 16px;
-							height: 16px;
+						.chevron {
+							width: 24px;
+							height: 24px;
 							transform: rotate(180deg);
 						}
 					}

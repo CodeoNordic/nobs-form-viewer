@@ -12,7 +12,8 @@ import History from 'jsx:@svg/history.svg';
 import performScript from '@utils/performScript';
 import dateFromString from '@utils/dateFromString';
 import Crossmark from 'jsx:@svg/crossmark.svg';
-import ArrowDown from 'jsx:@svg/arrow-down.svg';
+import DoubleChevronLeft from 'jsx:@svg/double-chevron-left.svg';
+import ChevronUp from 'jsx:@svg/chevron-up.svg';
 import SummaryItem from './SummaryItem';
 
 function safeParse<T = any>(raw?: string | null): T {
@@ -370,7 +371,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 																</p>
 															</div>
 															<div className="divider">
-																<ArrowDown className="divider__arrow" />
+																<DoubleChevronLeft className="divider__chevron" />
 															</div>
 														</>
 													)}
@@ -389,8 +390,8 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 													}
 												>
 													<p>Vis endringer</p>
-													<div className="show-more__arrow-box">
-														<ArrowDown className="arrow" />
+													<div className="show-more__chevron-box">
+														<ChevronUp className="chevron" />
 													</div>
 												</div>
 											)}
