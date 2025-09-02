@@ -49,6 +49,10 @@ function EditableTextarea(props: {
 		return () => ro.disconnect();
 	}, []);
 
+	useEffect(() => {
+		resize();
+	}, [value]);
+
 	return (
 		<textarea
 			ref={inputRef}

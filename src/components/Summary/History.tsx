@@ -167,7 +167,7 @@ type HistoryItemProps = {
 
 const deepEqual = (a: any, b: any) => a === b || JSON.stringify(a) === JSON.stringify(b);
 
-type Coords = { top?: number; maxHeight?: number };
+type Coords = { top?: number; maxHeight?: number; right?: number };
 
 export function useGrowCalc(
 	anchorRef: React.RefObject<HTMLElement>,
@@ -228,7 +228,11 @@ export function useGrowCalc(
 
 		const maxHeight = Math.max(0, pageBottom - desiredTopDoc);
 
-		applyIfChanged({ top: topInParent, maxHeight });
+		applyIfChanged({
+			top: topInParent,
+			maxHeight,
+			right: -Math.min(0, window.innerWidth - aRect.right - MARGIN),
+		});
 	};
 
 	const schedule = () => {
@@ -279,8 +283,6 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 		setOpen(false);
 	});
 
-	console.log('Rendering history item', elementName, answerHistory);
-
 	const hasAny = useMemo(
 		() => answerHistory.some((h) => h.answers[elementName] !== undefined),
 		[answerHistory, elementName]
@@ -298,8 +300,6 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 		}
 		return out;
 	}, [answerHistory, elementName]);
-
-	console.log(answerHistory, filtered);
 
 	const panelRef = useRef<HTMLDivElement>(null);
 
@@ -323,7 +323,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 					className="answer-history__panel"
 					style={{
 						position: 'absolute',
-						right: 0,
+						right: coords.right,
 						top: coords.top,
 						maxHeight: coords.maxHeight && `${coords.maxHeight}px`,
 					}}
