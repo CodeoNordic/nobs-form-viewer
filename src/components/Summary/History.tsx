@@ -88,29 +88,29 @@ function useAnswerPreview(elementName: string) {
 
 	const preview = useCallback(
 		(value: any) => {
-			if (!isPreviewing) {
-				originalRef.current = readAnswerForElement(config, elementName);
-			}
-			setConfig((prev: any) => ({
-				...prev,
-				answerData: writeAnswerForElement(prev, elementName, value),
-			}));
+			// if (!isPreviewing) {
+			// 	originalRef.current = readAnswerForElement(config, elementName);
+			// }
+			// setConfig((prev: any) => ({
+			// 	...prev,
+			// 	answerData: writeAnswerForElement(prev, elementName, value),
+			// }));
 			setIsPreviewing(true);
 		},
 		[config, elementName, isPreviewing, setConfig]
 	);
 
 	const save = useCallback(() => {
-		originalRef.current = null;
+		// originalRef.current = null;
 		setIsPreviewing(false);
 	}, []);
 
 	const cancel = useCallback(() => {
 		if (isPreviewing) {
-			setConfig((prev: any) => ({
-				...prev,
-				answerData: writeAnswerForElement(prev, elementName, originalRef.current),
-			}));
+			// setConfig((prev: any) => ({
+			// 	...prev,
+			// 	answerData: writeAnswerForElement(prev, elementName, originalRef.current),
+			// }));
 		}
 		originalRef.current = null;
 		setIsPreviewing(false);
@@ -295,11 +295,22 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 			const curr = answerHistory[i]?.answers[elementName];
 			const next = answerHistory[i + 1]?.answers[elementName];
 
-			if (deepEqual(curr, next)) continue;
+			if (deepEqual(curr, next)) {
+				console.log(
+					'Skipping',
+					curr,
+					next,
+					answerHistory[i].user,
+					answerHistory[i + 1]?.user
+				);
+				continue;
+			}
 			out.push(answerHistory[i]);
 		}
 		return out;
 	}, [answerHistory, elementName]);
+
+	console.log('Filtered', filtered, answerHistory);
 
 	const panelRef = useRef<HTMLDivElement>(null);
 
@@ -466,18 +477,35 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 																config.answers || [];
 															const now = new Date();
 															const timestamp = now.toISOString();
-															const newAnswerEntry = {
-																answer: config.answerData || '',
-																user: config.addToAnswers,
-																timestamp,
-															};
-															setConfig({
-																...config,
+															setConfig((prev: any) => ({
+																...prev,
 																answers: [
 																	...answersArray,
-																	newAnswerEntry,
+																	{
+																		answer: writeAnswerForElement(
+																			prev,
+																			elementName,
+																			answer
+																		),
+																		user: config.addToAnswers,
+																		timestamp,
+																	},
 																],
-															});
+																answerData: writeAnswerForElement(
+																	prev,
+																	elementName,
+																	answer
+																),
+															}));
+														} else {
+															setConfig((prev: any) => ({
+																...prev,
+																answerData: writeAnswerForElement(
+																	prev,
+																	elementName,
+																	answer
+																),
+															}));
 														}
 														if (config?.scriptNames?.onChange) {
 															performScript('onChange', {

@@ -133,7 +133,7 @@
 
 			&__toolbar {
 				display: flex;
-				padding: 2px;
+				padding-top: 8px;
 				gap: 2px;
 			}
 
@@ -218,7 +218,7 @@
 			li {
 				cursor: pointer;
 				border-radius: 4px;
-				padding: 4px;
+				padding: 8px;
 
 				transition: background 200ms ease;
 
@@ -235,7 +235,7 @@
 					justify-content: space-between;
 					align-items: center;
 					gap: 8px;
-					padding-bottom: 4px;
+					padding-bottom: 8px;
 					font-size: smaller;
 
 					color: var(--text-secondary);
@@ -279,8 +279,11 @@
 						padding: 0 2px;
 						background: var(--background-color-secondary);
 						border-radius: 4px;
+						height: 100%;
+
 						display: flex;
 						align-items: center;
+						justify-content: center;
 
 						&__arrow {
 							width: 16px;
@@ -303,9 +306,14 @@
 					}
 
 					&__arrow-box {
-						padding: 2px;
+						padding: 0 2px;
 						background-color: var(--background-color-secondary);
 						border-radius: 4px;
+						height: 100%;
+
+						display: flex;
+						align-items: center;
+						justify-content: center;
 
 						.arrow {
 							width: 16px;
@@ -328,6 +336,7 @@
 				}
 
 				.expando.open {
+					padding-top: 8px;
 					grid-template-rows: 1fr;
 					opacity: 1;
 					pointer-events: auto;
