@@ -199,9 +199,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 				{hasTitle ? (
 					<p className="question-title">
 						{!element.elements
-							? element.titleLocation == 'hidden'
-								? ''
-								: element.title
+							? element.title
 								? element.title + ':'
 								: element.name + ':'
 							: element.title ?? element.title}
