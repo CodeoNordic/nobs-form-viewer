@@ -231,9 +231,6 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 	const boxRef = useRef<HTMLDivElement>(null);
 	const [isPreviewing, setIsPreviewing] = useState(false);
 
-	const scrollRef = useRef<HTMLUListElement>(null);
-	const [hasScrollbar, setHasScrollbar] = useState(false);
-
 	useOnClickOutside(boxRef, () => {
 		if (!open) return;
 		if (isPreviewing) setIsPreviewing(false);
@@ -261,9 +258,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 
 	const panelRef = useRef<HTMLDivElement>(null);
 
-	const coords = useGrowCalc(boxRef, panelRef, open && activeIndex === null, [filtered.length]);
-
-	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length]);
+	const coords = useGrowCalc(boxRef, panelRef, open, [filtered.length]);
 
 	const hasTitle =
 		element.titleLocation != 'hidden' &&
@@ -309,7 +304,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 							</p>
 						)}
 					</div>
-					<ul ref={scrollRef} className="answer-history__list">
+					<ul className="answer-history__list">
 						{filtered.map((h, i) => {
 							const answer = h.answers[elementName];
 							const parsedAnswer = h.parsedAnswers[elementName];
@@ -317,7 +312,6 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 
 							let className = '';
 							if (activeIndex === i) className += ' active';
-							if (hasScrollbar) className += ' has-scrollbar';
 							if (i % 2 === 0) className += ' even';
 							else className += ' odd';
 							className = className.trim();
