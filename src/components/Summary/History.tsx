@@ -496,9 +496,6 @@ export const HistoryList: FC<{
 	const [activeIndex, setActiveIndex] = useState<number | null>(null);
 	const { isPreviewing, preview, save, cancel } = useConfigStringPreview('answerData');
 
-	const scrollRef = useRef<HTMLUListElement>(null);
-	const [hasScrollbar, setHasScrollbar] = useState(false);
-
 	if (!config) return null;
 
 	// TODO: Is needed?
@@ -514,10 +511,8 @@ export const HistoryList: FC<{
 		return out;
 	}, [sortedHistory]);
 
-	useCheckScrollbar(scrollRef, setHasScrollbar, [open, filtered.length]);
-
 	return (
-		<div className={'change-history' + (open ? ' open' : '')}>
+		<div className="change-history">
 			<div className="change-history__header">
 				{!open ? (
 					<button
@@ -528,8 +523,18 @@ export const HistoryList: FC<{
 						{config.locale === 'no' ? 'Endringshistorikk' : 'Change history'} (
 						{filtered.length})
 					</button>
-				) : isPreviewing ? (
-					<div>
+				) : !isPreviewing ? (
+					<button
+						onClick={() => {
+							setActiveIndex(null);
+							setOpen(false);
+						}}
+						className="change-history__button"
+					>
+						{config.locale === 'no' ? 'Lukk' : 'Close'}
+					</button>
+				) : (
+					<>
 						<button
 							className="change-history__button"
 							onClick={() => {
@@ -572,56 +577,53 @@ export const HistoryList: FC<{
 						>
 							{config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
 						</button>
-					</div>
-				) : (
-					<div className="change-history__panel">
-						<div className="change-history__buttons">
-							<button
-								className="change-history__button"
+					</>
+				)}
+			</div>
+			{open && !isPreviewing && (
+				<div className="change-history__list">
+					<ul>
+						{filtered.map((h, index) => (
+							<li
+								className={index % 2 === 0 ? 'even' : 'odd'}
+								key={index}
 								onClick={() => {
-									if (isPreviewing) cancel();
-									setActiveIndex(null);
-									setOpen(false);
+									if (activeIndex === null) {
+										preview(h.answer);
+									} else {
+										preview(h.answer);
+									}
+									setActiveIndex(index);
 								}}
 							>
-								{config.locale === 'no' ? 'Lukk' : 'Close'}
-							</button>
-						</div>
-						<ul ref={scrollRef} className={hasScrollbar ? 'scrollbar' : ''}>
-							{filtered.map((h, index) => (
-								<li
-									className={activeIndex === index ? 'active' : ''}
-									key={index}
-									onClick={() => {
-										if (activeIndex === null) {
-											preview(h.answer);
-										} else {
-											preview(h.answer);
-										}
-										setActiveIndex(index);
-									}}
-								>
-									<span className="user">{h.user}</span>
+								<div className="user-time">
+									<p className="user">{h.user}</p>
 									{dateFromString(h.timestamp) && (
-										<>
-											<span>•</span>
-											<span className="time-ago">
+										<div className="time-ago">
+											<p>Redigert:</p>
+											<p>
 												{dateFromString(h.timestamp)?.toLocaleString(
-													config.locale === 'no' ? 'nb-NO' : 'en-US',
+													config?.locale === 'no' ? 'nb-NO' : 'en-US',
 													{
 														dateStyle: 'short',
 														timeStyle: 'short',
 													}
 												)}
-											</span>
-										</>
+											</p>
+										</div>
 									)}
-								</li>
-							))}
-						</ul>
-					</div>
-				)}
-			</div>
+								</div>
+								<div className="show-changes">
+									<p>Vis endringer</p>
+									<div className="show-changes__chevron-box">
+										<ChevronUp className="chevron" />
+									</div>
+								</div>
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
 		</div>
 	);
 };
