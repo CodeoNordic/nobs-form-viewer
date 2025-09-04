@@ -30,47 +30,6 @@ function writeAnswerForElement(prev: any, elementName: string, value: any): stri
 	return JSON.stringify({ ...obj, [elementName]: value });
 }
 
-function readAnswerForElement(config: any, elementName: string) {
-	const obj = safeParse<Record<string, any>>(config?.answerData);
-	return obj[elementName] ?? null;
-}
-
-function useCheckScrollbar(
-	ref: React.RefObject<HTMLUListElement>,
-	setHasScrollbar: (has: boolean) => void,
-	deps: any[] = []
-) {
-	const check = useCallback(() => {
-		const el = ref.current;
-		if (el) setHasScrollbar(el.scrollHeight > el.clientHeight);
-	}, [ref, setHasScrollbar]);
-
-	useEffect(() => {
-		const el = ref.current;
-		if (!el) return;
-
-		check();
-		// If fonts change size
-		(document as any).fonts?.ready?.then(check).catch(() => {});
-
-		// Observers to handle dynamic content changes
-		const ro = new ResizeObserver(check);
-		ro.observe(el);
-
-		const mo = new MutationObserver(check);
-		mo.observe(el, { childList: true });
-
-		window.addEventListener('resize', check);
-		return () => {
-			ro.disconnect();
-			mo.disconnect();
-			window.removeEventListener('resize', check);
-		};
-	}, [ref, check]);
-
-	useEffect(check, deps);
-}
-
 function useOnClickOutside(ref: React.RefObject<HTMLElement>, handler: (e: MouseEvent) => void) {
 	useEffect(() => {
 		const listener = (e: MouseEvent) => {
@@ -82,7 +41,7 @@ function useOnClickOutside(ref: React.RefObject<HTMLElement>, handler: (e: Mouse
 	}, [ref, handler]);
 }
 
-function useConfigStringPreview(key: 'answerData') {
+function useListPreview(key: 'answerData') {
 	const [config, setConfig] = useConfigState();
 	const originalRef = useRef<string | null>(null);
 	const [isPreviewing, setIsPreviewing] = useState(false);
@@ -151,17 +110,7 @@ export function useGrowCalc(
 		if (!open || !anchorRef.current || !panelRef.current) return;
 		const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
 
-		const docEl = document.documentElement;
-		const body = document.body;
-		const docH = Math.max(
-			docEl.scrollHeight,
-			body.scrollHeight,
-			docEl.offsetHeight,
-			body.offsetHeight,
-			docEl.clientHeight
-		);
-
-		const pageBottom = docH - MARGIN;
+		const pageBottom = document.documentElement.scrollHeight - MARGIN;
 
 		const aRect = anchorRef.current.getBoundingClientRect();
 		const anchorBottomDoc = aRect.bottom + scrollY;
@@ -206,7 +155,7 @@ export function useGrowCalc(
 		schedule();
 
 		window.addEventListener('resize', schedule);
-		window.addEventListener('scroll', schedule, true);
+		window.addEventListener('scroll', schedule, { capture: true, passive: true });
 
 		const ro = new ResizeObserver(schedule);
 		if (anchorRef.current) ro.observe(anchorRef.current);
@@ -214,7 +163,7 @@ export function useGrowCalc(
 
 		return () => {
 			window.removeEventListener('resize', schedule);
-			window.removeEventListener('scroll', schedule, true);
+			window.removeEventListener('scroll', schedule, { capture: true });
 			ro.disconnect();
 			if (raf.current != null) cancelAnimationFrame(raf.current);
 			raf.current = null;
@@ -335,7 +284,11 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 											<p className="user">{h.user}</p>
 											{dateFromString(h.timestamp) && (
 												<div className="time-ago">
-													<p>Redigert:</p>
+													<p>
+														{config?.locale === 'no'
+															? 'Redigert:'
+															: 'Edited:'}
+													</p>
 													<p>
 														{dateFromString(
 															h.timestamp
@@ -409,50 +362,40 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 														setIsPreviewing(false);
 														setActiveIndex(null);
 														setOpen(false);
+
+														const newAnswer = writeAnswerForElement(
+															config,
+															elementName,
+															answer
+														);
+
 														if (
 															typeof config?.addToAnswers ===
 																'string' &&
 															config.addToAnswers.trim() !== ''
 														) {
-															const answersArray =
-																config.answers || [];
-															const now = new Date();
-															const timestamp = now.toISOString();
 															setConfig((prev: any) => ({
 																...prev,
 																answers: [
-																	...answersArray,
+																	...(prev.answers || []),
 																	{
-																		answer: writeAnswerForElement(
-																			prev,
-																			elementName,
-																			answer
-																		),
+																		answer: newAnswer,
 																		user: config.addToAnswers,
-																		timestamp,
+																		timestamp:
+																			new Date().toISOString(),
 																	},
 																],
-																answerData: writeAnswerForElement(
-																	prev,
-																	elementName,
-																	answer
-																),
+																answerData: newAnswer,
 															}));
 														} else {
 															setConfig((prev: any) => ({
 																...prev,
-																answerData: writeAnswerForElement(
-																	prev,
-																	elementName,
-																	answer
-																),
+																answerData: newAnswer,
 															}));
 														}
 														if (config?.scriptNames?.onChange) {
 															performScript('onChange', {
-																result: safeParse(
-																	config.answerData
-																),
+																result: safeParse(newAnswer),
 																hasErrors: false,
 																type: config.type,
 															});
@@ -493,12 +436,10 @@ export const HistoryList: FC<{
 }> = ({ sortedHistory }) => {
 	const [config, setConfig] = useConfigState();
 	const [open, setOpen] = useState(false);
-	const [activeIndex, setActiveIndex] = useState<number | null>(null);
-	const { isPreviewing, preview, save, cancel } = useConfigStringPreview('answerData');
+	const { isPreviewing, preview, save, cancel } = useListPreview('answerData');
 
 	if (!config) return null;
 
-	// TODO: Is needed?
 	const filtered = useMemo(() => {
 		const out: typeof sortedHistory = [];
 		for (let i = 0; i < sortedHistory.length; i++) {
@@ -524,24 +465,12 @@ export const HistoryList: FC<{
 						{filtered.length})
 					</button>
 				) : !isPreviewing ? (
-					<button
-						onClick={() => {
-							setActiveIndex(null);
-							setOpen(false);
-						}}
-						className="change-history__button"
-					>
+					<button onClick={() => setOpen(false)} className="change-history__button">
 						{config.locale === 'no' ? 'Lukk' : 'Close'}
 					</button>
 				) : (
 					<>
-						<button
-							className="change-history__button"
-							onClick={() => {
-								cancel();
-								setActiveIndex(null);
-							}}
-						>
+						<button className="change-history__button" onClick={() => cancel()}>
 							{config.locale === 'no'
 								? 'Stopp visning av endringer'
 								: 'Stop viewing changes'}
@@ -550,8 +479,8 @@ export const HistoryList: FC<{
 							className="change-history__button"
 							onClick={() => {
 								save();
-								setActiveIndex(null);
 								setOpen(false);
+
 								if (config?.addToAnswers && config.addToAnswers.trim() != '') {
 									const answersArray = config.answers || [];
 									const now = new Date();
@@ -561,11 +490,12 @@ export const HistoryList: FC<{
 										user: config.addToAnswers,
 										timestamp: timestamp,
 									};
-									setConfig({
-										...config,
-										answers: [...answersArray, newAnswerEntry],
-									});
+									setConfig((prev: any) => ({
+										...prev,
+										answers: [...(prev.answers ?? []), newAnswerEntry],
+									}));
 								}
+
 								if (config?.scriptNames?.onChange) {
 									performScript('onChange', {
 										result: safeParse(config.answerData),
@@ -587,20 +517,15 @@ export const HistoryList: FC<{
 							<li
 								className={index % 2 === 0 ? 'even' : 'odd'}
 								key={index}
-								onClick={() => {
-									if (activeIndex === null) {
-										preview(h.answer);
-									} else {
-										preview(h.answer);
-									}
-									setActiveIndex(index);
-								}}
+								onClick={() => preview(h.answer)}
 							>
 								<div className="user-time">
 									<p className="user">{h.user}</p>
 									{dateFromString(h.timestamp) && (
 										<div className="time-ago">
-											<p>Redigert:</p>
+											<p>
+												{config?.locale === 'no' ? 'Redigert:' : 'Edited:'}
+											</p>
 											<p>
 												{dateFromString(h.timestamp)?.toLocaleString(
 													config?.locale === 'no' ? 'nb-NO' : 'en-US',
