@@ -163,6 +163,8 @@
 			top: 0;
 			right: 4px;
 			z-index: 20;
+			width: 100%;
+			height: 0;
 
 			&.open {
 				display: block;
@@ -210,7 +212,7 @@
 				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
 
 				width: 400px;
-				max-width: calc(100vw - 16px);
+				max-width: calc(100% - 16px);
 
 				display: flex;
 				flex-direction: column;
@@ -443,7 +445,8 @@
 
 		:hover {
 			> .answer-history {
-				display: block;
+				display: flex;
+				justify-content: flex-end;
 			}
 		}
 	}
