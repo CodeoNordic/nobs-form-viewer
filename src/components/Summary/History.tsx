@@ -482,13 +482,10 @@ export const HistoryList: FC<{
 								setOpen(false);
 
 								if (config?.addToAnswers && config.addToAnswers.trim() != '') {
-									const answersArray = config.answers || [];
-									const now = new Date();
-									const timestamp = now.toISOString();
 									const newAnswerEntry = {
 										answer: config.answerData || '',
 										user: config.addToAnswers,
-										timestamp: timestamp,
+										timestamp: new Date().toISOString(),
 									};
 									setConfig((prev: any) => ({
 										...prev,
