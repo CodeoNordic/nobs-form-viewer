@@ -282,7 +282,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 									<div className="content">
 										<div className="user-time">
 											<p className="user">{h.user}</p>
-											{dateFromString(h.timestamp) && (
+											{dateFromString(h.timestamp || '') && (
 												<div className="time-ago">
 													<p>
 														{config?.locale === 'no'
@@ -291,7 +291,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 													</p>
 													<p>
 														{dateFromString(
-															h.timestamp
+															h.timestamp || ''
 														)?.toLocaleString(
 															config?.locale === 'no'
 																? 'nb-NO'
@@ -521,13 +521,13 @@ export const HistoryList: FC<{
 							>
 								<div className="user-time">
 									<p className="user">{h.user}</p>
-									{dateFromString(h.timestamp) && (
+									{dateFromString(h.timestamp || '') && (
 										<div className="time-ago">
 											<p>
 												{config?.locale === 'no' ? 'Redigert:' : 'Edited:'}
 											</p>
 											<p>
-												{dateFromString(h.timestamp)?.toLocaleString(
+												{dateFromString(h.timestamp || '')?.toLocaleString(
 													config?.locale === 'no' ? 'nb-NO' : 'en-US',
 													{
 														dateStyle: 'short',

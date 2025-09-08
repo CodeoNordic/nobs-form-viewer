@@ -1,45 +1,40 @@
-export default function dateFromString(timestamp: string | undefined) {
-	if (!timestamp) return null;
+export default function dateFromString(input: string): Date | null {
+	const s = input.trim();
 
-	const testDate = new Date(timestamp);
+	// DD.MM.YYYY HH:MM:SS
+	const m = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+	if (m) {
+		const [, dd, mm, yyyy, HH = '0', MM = '0', SS = '0'] = m;
+		const day = parseInt(dd);
+		const mon = parseInt(mm) - 1; // Months are 0-indexed
+		const yr = parseInt(yyyy);
+		const h = parseInt(HH);
+		const min = parseInt(MM);
+		const sec = parseInt(SS);
 
-	if (!isNaN(testDate.getTime())) return testDate;
+		if (
+			mon < 0 ||
+			mon > 11 ||
+			day < 1 ||
+			day > 31 ||
+			h < 0 ||
+			h > 23 ||
+			min < 0 ||
+			min > 59 ||
+			sec < 0 ||
+			sec > 59
+		)
+			return null;
 
-	const [strDate, strTime] = timestamp.split(' ') as [string, string | undefined];
+		const d = new Date(yr, mon, day, h, min, sec);
 
-	const getParts = (str: string) => {
-		if (str.includes('/')) {
-			const [m, d, y] = str.split('/');
-			return [d, m, y];
-		}
-		if (str.includes('-')) {
-			const [m, d, y] = str.split('-');
-			return [d, m, y];
-		}
-		if (str.includes('.')) return str.split('.');
-		if (str.includes(' ')) return str.split(' ');
-		return [str];
-	};
+		if (d.getFullYear() !== yr || d.getMonth() !== mon || d.getDate() !== day) return null;
 
-	const parts = getParts(strDate);
-	if (parts.length !== 3) return null;
-
-	const [day, month, year] = parts.map(Number);
-
-	// null matches both undefined and null
-	if (year == null || month == null || day == null) return null;
-
-	let result = new Date(year, month - 1, day);
-	if (isNaN(result.getTime())) return null;
-
-	if (strTime) {
-		// Add time if it exists
-		const time = strTime.match(/^(\d{1,2}):?(\d{2})?:?(\d{2})?/);
-		if (time) {
-			result.setHours(Number(time[1]) || 0, Number(time[2]) || 0, Number(time[3]) || 0);
-		}
+		return d;
 	}
 
-	if (!result) return null;
-	return result;
+	const native = new Date(s);
+	if (!isNaN(native.getTime())) return native;
+
+	return null;
 }
