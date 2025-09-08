@@ -1,3 +1,7 @@
+#app:has(.change-history .change-history__list) {
+	overflow: hidden;
+}
+
 .summary {
 	min-height: calc(100vh - 2px);
 	border: 1px solid var(--border-color);
