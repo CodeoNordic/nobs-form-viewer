@@ -75,7 +75,7 @@ const FormViewer: FC = () => {
 
 			if (config.scriptNames?.onChange) {
 				performScript('onChange', {
-					result: data,
+					result: JSON.stringify(data),
 					hasErrors,
 					type: config.type,
 				});

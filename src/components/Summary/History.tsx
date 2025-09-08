@@ -395,7 +395,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 														}
 														if (config?.scriptNames?.onChange) {
 															performScript('onChange', {
-																result: safeParse(newAnswer),
+																result: newAnswer,
 																hasErrors: false,
 																type: config.type,
 															});
@@ -498,7 +498,7 @@ export const HistoryList: FC<{
 
 								if (config?.scriptNames?.onChange) {
 									performScript('onChange', {
-										result: safeParse(config.answerData),
+										result: config.answerData,
 										hasErrors: false,
 										type: config.type,
 									});
