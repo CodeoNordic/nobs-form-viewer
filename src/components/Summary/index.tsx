@@ -10,6 +10,8 @@ import dateFromString from '@utils/dateFromString';
 const Summary: FC = () => {
 	const config = useConfig();
 
+	const [historyItemOpen, setHistoryItemOpen] = useState(false);
+
 	// Used for bottom right button
 	const [sortedHitory, setSortedHistory] = useState<any[]>([]);
 	// Used for each summary item
@@ -71,7 +73,9 @@ const Summary: FC = () => {
 	return (
 		<div className={'summary' + (config.style ? ' ' + config.style : '')}>
 			<Header />
-			{sortedHitory.length > 0 && <HistoryList sortedHistory={sortedHitory} />}
+			{sortedHitory.length > 0 && (
+				<HistoryList sortedHistory={sortedHitory} historyItemOpen={historyItemOpen} />
+			)}
 			<div className="summary__content">
 				{survey.title && survey.showTitle !== false && (
 					<p className="title">{survey.title}</p>
@@ -85,6 +89,8 @@ const Summary: FC = () => {
 						element={page}
 						answers={answers}
 						answerHistory={sortedAnswerHistory}
+						open={historyItemOpen}
+						setOpen={setHistoryItemOpen}
 					/>
 				))}
 			</div>

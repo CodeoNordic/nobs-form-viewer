@@ -50,6 +50,8 @@ type HistoryItemProps = {
 	}>;
 	elementName: string;
 	element: any;
+	anyOpen: boolean;
+	setAnyOpen: (open: boolean) => void;
 };
 
 const deepEqual = (a: any, b: any) => a === b || JSON.stringify(a) === JSON.stringify(b);
@@ -141,20 +143,17 @@ export function useGrowCalc(
 	return coords;
 }
 
-export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, element }) => {
+export const HistoryItem: FC<HistoryItemProps> = ({
+	answerHistory,
+	elementName,
+	element,
+	anyOpen,
+	setAnyOpen,
+}) => {
 	const [config, setConfig] = useConfigState();
-	const [open, setOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState<number | null>(null);
+	const [open, setOpen] = useState(false);
 	const boxRef = useRef<HTMLDivElement>(null);
-	const [isPreviewing, setIsPreviewing] = useState(false);
-
-	useOnClickOutside(boxRef, () => {
-		if (!open) return;
-		if (isPreviewing) setIsPreviewing(false);
-		setActiveIndex(null);
-		setOpen(false);
-	});
-
 	const hasAny = useMemo(
 		() => answerHistory.some((h) => h.answers[elementName] !== undefined),
 		[answerHistory, elementName]
@@ -173,9 +172,12 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 		return out;
 	}, [answerHistory, elementName]);
 
-	const panelRef = useRef<HTMLDivElement>(null);
-
-	const coords = useGrowCalc(boxRef, panelRef, open, [filtered.length]);
+	useOnClickOutside(boxRef, () => {
+		if (!open) return;
+		setActiveIndex(null);
+		setOpen(false);
+		setAnyOpen(false);
+	});
 
 	const hasTitle =
 		element.titleLocation != 'hidden' &&
@@ -187,32 +189,27 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 			{!open ? (
 				<button
 					className="answer-history__open"
-					onClick={() => setOpen(true)}
+					onClick={() => {
+						setOpen(true);
+						setAnyOpen(true);
+					}}
 					aria-label="Open answer history"
 				>
 					<History />
 				</button>
 			) : (
-				<div
-					ref={panelRef}
-					className="answer-history__panel"
-					style={{
-						position: 'absolute',
-						right: coords.right,
-						top: coords.top,
-						maxHeight: coords.maxHeight && `${coords.maxHeight}px`,
-					}}
-				>
+				<div className="answer-history__panel">
 					<div className="answer-history__header">
 						<Crossmark
 							className="answer-history__close"
 							onClick={() => {
 								setActiveIndex(null);
 								setOpen(false);
+								setAnyOpen(false);
 							}}
 						/>
 						{hasTitle && (
-							<p className="question-title">
+							<p className="history-title">
 								{!element.elements
 									? element.title
 										? element.title
@@ -239,11 +236,9 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 									key={i}
 									onClick={() => {
 										if (activeIndex === i) {
-											setIsPreviewing(false);
 											setActiveIndex(null);
 										} else {
 											setActiveIndex(i);
-											setIsPreviewing(true);
 										}
 									}}
 								>
@@ -327,9 +322,9 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 													className="answer-history__button use"
 													onClick={(e) => {
 														e.stopPropagation();
-														setIsPreviewing(false);
 														setActiveIndex(null);
 														setOpen(false);
+														setAnyOpen(false);
 
 														const newAnswer = writeAnswerForElement(
 															config,
@@ -376,7 +371,6 @@ export const HistoryItem: FC<HistoryItemProps> = ({ answerHistory, elementName, 
 													className="answer-history__button cancel"
 													onClick={(e) => {
 														e.stopPropagation();
-														setIsPreviewing(false);
 														setActiveIndex(null);
 													}}
 												>
@@ -401,7 +395,8 @@ export const HistoryList: FC<{
 		timestamp?: string;
 		answer: string;
 	}>;
-}> = ({ sortedHistory }) => {
+	historyItemOpen: boolean;
+}> = ({ sortedHistory, historyItemOpen }) => {
 	const [config, setConfig] = useConfigState();
 	const [open, setOpen] = useState(false);
 	const originalRef = useRef<string | null>(null);
@@ -443,8 +438,9 @@ export const HistoryList: FC<{
 			<div className="change-history__header">
 				{!open ? (
 					<button
-						className="change-history__button"
+						className="change-history__button open"
 						aria-label="Show change history"
+						disabled={historyItemOpen}
 						onClick={() => setOpen(true)}
 					>
 						{config.locale === 'no' ? 'Endringshistorikk' : 'Change history'} (
@@ -457,7 +453,7 @@ export const HistoryList: FC<{
 				) : (
 					<>
 						<button
-							className="change-history__button"
+							className="change-history__button use"
 							onClick={() => {
 								originalRef.current = null;
 								setIsPreviewing(false);
@@ -486,7 +482,7 @@ export const HistoryList: FC<{
 						>
 							{config.locale === 'no' ? 'Bruk versjon' : 'Save version'}
 						</button>
-						<button className="change-history__button" onClick={() => cancel()}>
+						<button className="change-history__button cancel" onClick={() => cancel()}>
 							{config.locale === 'no'
 								? 'Avbryt visning av endringer'
 								: 'Stop viewing changes'}

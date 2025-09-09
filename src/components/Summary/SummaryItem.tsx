@@ -72,9 +72,11 @@ interface SummaryItemProps {
 	element: any;
 	answers: any;
 	answerHistory?: any;
+	open?: boolean;
+	setOpen?: (open: boolean) => void;
 }
 
-const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) => {
+const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory, open, setOpen }) => {
 	const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always available in summary
 	let newElements: any[] = [];
 	const [answer, setAnswer] = useState(answers[element.name]);
@@ -399,6 +401,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 					answerHistory={answerHistory}
 					elementName={element.name}
 					element={element}
+					anyOpen={open || false}
+					setAnyOpen={setOpen || (() => {})}
 				/>
 			)}
 			{newElements.length > 0 && (
@@ -410,6 +414,8 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory }) 
 							element={subElement}
 							answers={answers}
 							answerHistory={answerHistory || undefined}
+							open={open}
+							setOpen={setOpen}
 						/>
 					))}
 				</div>
