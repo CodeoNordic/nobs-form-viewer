@@ -359,6 +359,8 @@
 
 				.from-to {
 					display: flex;
+					align-items: center;
+
 					word-break: break-word;
 					gap: 4px;
 
@@ -379,6 +381,7 @@
 						&__chevron {
 							width: 24px;
 							height: 24px;
+							fill: #009cc6;
 						}
 					}
 				}

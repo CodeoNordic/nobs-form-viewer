@@ -90,18 +90,16 @@ export function useGrowCalc(
 			: ({ top: 0 } as DOMRect);
 		const parentTopDoc = parentRect.top + scrollY;
 
-		const contentH = panelRef.current.scrollHeight;
-
 		const spaceBelowPage = Math.max(0, pageBottom - anchorBottomDoc);
 
 		const totalAvailPage = Math.max(0, pageBottom - MARGIN);
-		const desired = Math.min(contentH, totalAvailPage);
+		const desired = Math.min(panelRef.current.scrollHeight, totalAvailPage);
 
 		const deficit = Math.max(0, desired - spaceBelowPage);
 
 		const desiredTopDoc = Math.max(MARGIN, anchorBottomDoc - deficit);
 
-		const topInParent = desiredTopDoc - parentTopDoc;
+		const topInParent = desiredTopDoc - (parentRect.top + scrollY);
 
 		const maxHeight = Math.max(0, pageBottom - desiredTopDoc);
 
@@ -458,11 +456,6 @@ export const HistoryList: FC<{
 					</button>
 				) : (
 					<>
-						<button className="change-history__button" onClick={() => cancel()}>
-							{config.locale === 'no'
-								? 'Stopp visning av endringer'
-								: 'Stop viewing changes'}
-						</button>
 						<button
 							className="change-history__button"
 							onClick={() => {
@@ -491,7 +484,12 @@ export const HistoryList: FC<{
 								}
 							}}
 						>
-							{config.locale === 'no' ? 'Lagre versjon' : 'Save version'}
+							{config.locale === 'no' ? 'Bruk versjon' : 'Save version'}
+						</button>
+						<button className="change-history__button" onClick={() => cancel()}>
+							{config.locale === 'no'
+								? 'Avbryt visning av endringer'
+								: 'Stop viewing changes'}
 						</button>
 					</>
 				)}
