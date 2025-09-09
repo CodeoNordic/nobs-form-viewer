@@ -41,36 +41,6 @@ function useOnClickOutside(ref: React.RefObject<HTMLElement>, handler: (e: Mouse
 	}, [ref, handler]);
 }
 
-function useListPreview(key: 'answerData') {
-	const [config, setConfig] = useConfigState();
-	const originalRef = useRef<string | null>(null);
-	const [isPreviewing, setIsPreviewing] = useState(false);
-
-	const preview = useCallback(
-		(value: string) => {
-			if (!isPreviewing) originalRef.current = (config as any)?.[key] ?? null;
-			setConfig((prev: any) => ({ ...prev, [key]: value }));
-			setIsPreviewing(true);
-		},
-		[config, isPreviewing, key, setConfig]
-	);
-
-	const save = useCallback(() => {
-		originalRef.current = null;
-		setIsPreviewing(false);
-	}, []);
-
-	const cancel = useCallback(() => {
-		if (isPreviewing) {
-			setConfig((prev: any) => ({ ...prev, [key]: originalRef.current }));
-		}
-		originalRef.current = null;
-		setIsPreviewing(false);
-	}, [isPreviewing, key, setConfig]);
-
-	return { isPreviewing, preview, save, cancel } as const;
-}
-
 type HistoryItemProps = {
 	answerHistory: Array<{
 		user: string;
@@ -436,9 +406,27 @@ export const HistoryList: FC<{
 }> = ({ sortedHistory }) => {
 	const [config, setConfig] = useConfigState();
 	const [open, setOpen] = useState(false);
-	const { isPreviewing, preview, save, cancel } = useListPreview('answerData');
+	const originalRef = useRef<string | null>(null);
+	const [isPreviewing, setIsPreviewing] = useState(false);
 
 	if (!config) return null;
+
+	const preview = useCallback(
+		(value: string) => {
+			if (!isPreviewing) originalRef.current = (config as any)?.answerData ?? null;
+			setConfig((prev: any) => ({ ...prev, answerData: value }));
+			setIsPreviewing(true);
+		},
+		[isPreviewing, setConfig]
+	);
+
+	const cancel = useCallback(() => {
+		if (isPreviewing) {
+			setConfig((prev: any) => ({ ...prev, answerData: originalRef.current }));
+		}
+		originalRef.current = null;
+		setIsPreviewing(false);
+	}, [isPreviewing, setConfig]);
 
 	const filtered = useMemo(() => {
 		const out: typeof sortedHistory = [];
@@ -478,7 +466,8 @@ export const HistoryList: FC<{
 						<button
 							className="change-history__button"
 							onClick={() => {
-								save();
+								originalRef.current = null;
+								setIsPreviewing(false);
 								setOpen(false);
 
 								if (config?.addToAnswers && config.addToAnswers.trim() != '') {
