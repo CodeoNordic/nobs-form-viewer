@@ -179,6 +179,24 @@ export const HistoryItem: FC<HistoryItemProps> = ({
 		setAnyOpen(false);
 	});
 
+	// useEffect(() => {
+	// 	if (open) {
+	// 		const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+	// 		document.body.style.overflow = 'hidden';
+	// 		document.body.style.marginTop = `-${scrollY}px`;
+	// 	} else {
+	// 		const scrollY = document.body.style.marginTop;
+	// 		console.log(scrollY, -parseInt(scrollY.split('px')[0] || '0', 10));
+	// 		document.body.style.overflow = '';
+	// 		document.body.style.marginTop = '';
+	// 		if (scrollY) {
+	// 			setTimeout(() => {
+	// 				window.scrollTo(0, -parseInt(scrollY.split('px')[0] || '0', 10));
+	// 			}, 0);
+	// 		}
+	// 	}
+	// }, [open]);
+
 	const hasTitle =
 		element.titleLocation != 'hidden' &&
 		((element.type != undefined && element.type != 'panel') ||
@@ -443,8 +461,8 @@ export const HistoryList: FC<{
 						disabled={historyItemOpen}
 						onClick={() => setOpen(true)}
 					>
-						{config.locale === 'no' ? 'Endringshistorikk' : 'Change history'} (
-						{filtered.length})
+						<p>{config.locale === 'no' ? 'Endringshistorikk' : 'Change history'}</p>
+						<div className="num-his">{filtered.length}</div>
 					</button>
 				) : !isPreviewing ? (
 					<button onClick={() => setOpen(false)} className="change-history__button">

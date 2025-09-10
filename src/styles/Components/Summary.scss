@@ -1,6 +1,6 @@
 #app:has(.change-history .change-history__list),
 #app:has(.question .answer-history.open) {
-	overflow: hidden;
+	// overflow: visible;
 }
 
 .summary {
@@ -45,8 +45,29 @@
 
 			background: #fff;
 
+			.open {
+				display: flex;
+				align-items: center;
+				gap: 4px;
+
+				p {
+					margin: 0;
+				}
+
+				.num-his {
+					border-radius: 999px;
+					background-color: #d2edf5;
+				}
+			}
+
 			&:disabled {
 				cursor: not-allowed;
+				&:hover {
+					background: #fff;
+				}
+				&:active {
+					background: #fff;
+				}
 			}
 
 			&:hover {
@@ -225,8 +246,9 @@
 
 				border-bottom: 1px solid var(--border-color);
 
-				> .title {
+				> .history-title {
 					text-wrap: nowrap;
+					font-weight: bold;
 				}
 			}
 
