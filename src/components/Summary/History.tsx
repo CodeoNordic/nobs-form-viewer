@@ -179,23 +179,43 @@ export const HistoryItem: FC<HistoryItemProps> = ({
 		setAnyOpen(false);
 	});
 
-	// useEffect(() => {
-	// 	if (open) {
-	// 		const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-	// 		document.body.style.overflow = 'hidden';
-	// 		document.body.style.marginTop = `-${scrollY}px`;
-	// 	} else {
-	// 		const scrollY = document.body.style.marginTop;
-	// 		console.log(scrollY, -parseInt(scrollY.split('px')[0] || '0', 10));
-	// 		document.body.style.overflow = '';
-	// 		document.body.style.marginTop = '';
-	// 		if (scrollY) {
-	// 			setTimeout(() => {
-	// 				window.scrollTo(0, -parseInt(scrollY.split('px')[0] || '0', 10));
-	// 			}, 0);
-	// 		}
-	// 	}
-	// }, [open]);
+	const savedY = useRef(0);
+
+	useEffect(() => {
+		const body = document.body;
+		const doc = document.documentElement;
+
+		const scrollEl = (document.scrollingElement || doc) as HTMLElement;
+
+		if (open) {
+			const y = scrollEl.scrollTop;
+			savedY.current = y;
+
+			const scrollbarW = window.innerWidth - doc.clientWidth;
+			body.style.position = 'fixed';
+			body.style.top = `-${y}px`;
+			body.style.left = '0';
+			body.style.right = '0';
+			body.style.width = '100%';
+			if (scrollbarW > 0) body.style.paddingRight = `${scrollbarW}px`;
+		} else {
+			const y = savedY.current;
+
+			body.style.position = '';
+			body.style.top = '';
+			body.style.left = '';
+			body.style.right = '';
+			body.style.width = '';
+			body.style.paddingRight = '';
+
+			const prev = doc.style.scrollBehavior;
+			doc.style.scrollBehavior = 'auto';
+			scrollEl.scrollTop = y;
+			window.scrollTo(0, y);
+			console.log({ y });
+			doc.style.scrollBehavior = prev || '';
+		}
+	}, [open]);
 
 	const hasTitle =
 		element.titleLocation != 'hidden' &&
@@ -462,7 +482,9 @@ export const HistoryList: FC<{
 						onClick={() => setOpen(true)}
 					>
 						<p>{config.locale === 'no' ? 'Endringshistorikk' : 'Change history'}</p>
-						<div className="num-his">{filtered.length}</div>
+						<div className="num-his">
+							{filtered.length >= 100 ? '99+' : filtered.length}
+						</div>
 					</button>
 				) : !isPreviewing ? (
 					<button onClick={() => setOpen(false)} className="change-history__button">
