@@ -74,9 +74,17 @@ interface SummaryItemProps {
 	answerHistory?: any;
 	open?: boolean;
 	setOpen?: (open: boolean) => void;
+	index?: number;
 }
 
-const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory, open, setOpen }) => {
+const SummaryItem: FC<SummaryItemProps> = ({
+	element,
+	answers,
+	answerHistory,
+	open,
+	setOpen,
+	index,
+}) => {
 	const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always available in summary
 	let newElements: any[] = [];
 	const [answer, setAnswer] = useState(answers[element.name]);
@@ -196,7 +204,11 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory, op
 	};
 
 	return (
-		<div className={`question${element.type ? ' ' + element.type : ''}`}>
+		<div
+			className={`question${element.type ? ' ' + element.type : ''} ${
+				typeof index === 'number' ? (index % 2 === 0 ? 'even' : 'odd') : ''
+			}`}
+		>
 			<div className="question-content">
 				{hasTitle ? (
 					<p className="question-title">
@@ -410,6 +422,7 @@ const SummaryItem: FC<SummaryItemProps> = ({ element, answers, answerHistory, op
 					{' '}
 					{newElements.map((subElement: any, index: number) => (
 						<SummaryItem
+							index={index}
 							key={index}
 							element={subElement}
 							answers={answers}

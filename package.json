@@ -30,7 +30,9 @@
     "node": ">=20"
   },
   "browserslist": "> 0.5%, last 2 versions, not IE 9-11, not dead",
-  "dependencies": {},
+  "dependencies": {
+    "react-tooltip": "^5.29.1"
+  },
   "devDependencies": {
     "@parcel/optimizer-data-url": "^2.12.0",
     "@parcel/transformer-image": "^2.12.0",

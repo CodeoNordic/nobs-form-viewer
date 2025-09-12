@@ -1,12 +1,11 @@
 #app:has(.change-history .change-history__list),
 #app:has(.question .answer-history.open) {
-	// overflow: visible;
+	overflow: hidden;
 }
 
 .summary {
 	min-height: calc(100vh - 2px);
 	border: 1px solid var(--border-color);
-	// overflow: hidden;
 	background-color: var(--background-color);
 
 	p {
@@ -15,6 +14,20 @@
 
 	&__content {
 		position: relative;
+	}
+
+	.tooltip {
+		z-index: 400;
+		padding: 4px 8px;
+		background: #2b2b2b;
+		font-size: small;
+		letter-spacing: 0.02px;
+		line-height: 150%;
+		border-radius: 2px;
+
+		> .react-tooltip__show {
+			opacity: 1;
+		}
 	}
 
 	.change-history {
@@ -669,8 +682,16 @@
 
 	&.default {
 		.question {
-			margin: 1px 0;
+			// margin: 4px 0;
+			padding: 2px 0;
 			position: relative;
+
+			&.even {
+				background: #b4b4b4;
+			}
+			&.odd {
+				background: #fff;
+			}
 		}
 
 		.title {
@@ -679,7 +700,7 @@
 		}
 
 		.question-title {
-			min-width: min-content;
+			min-width: 110px;
 			flex-shrink: 1;
 			font-weight: bold;
 			width: 110px;
@@ -696,6 +717,8 @@
 			border: 1px solid var(--border-color);
 			min-height: 16px;
 			white-space: pre-line;
+			word-break: break-all;
+			min-width: 142px;
 		}
 
 		.text-input {
@@ -707,7 +730,7 @@
 		}
 
 		.sub-elements {
-			border-radius: 5px;
+			// border-radius: 5px;
 			margin: 0 1px;
 			background-color: var(--background-color-secondary);
 		}

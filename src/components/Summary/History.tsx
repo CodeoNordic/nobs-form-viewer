@@ -15,6 +15,7 @@ import Crossmark from 'jsx:@svg/crossmark.svg';
 import DoubleChevronLeft from 'jsx:@svg/double-chevron-left.svg';
 import ChevronUp from 'jsx:@svg/chevron-up.svg';
 import SummaryItem from './SummaryItem';
+import { Tooltip } from 'react-tooltip';
 
 function safeParse<T = any>(raw?: string | null): T {
 	if (!raw) return {} as T;
@@ -179,43 +180,43 @@ export const HistoryItem: FC<HistoryItemProps> = ({
 		setAnyOpen(false);
 	});
 
-	const savedY = useRef(0);
+	// const savedY = useRef(0);
 
-	useEffect(() => {
-		const body = document.body;
-		const doc = document.documentElement;
+	// useEffect(() => {
+	// 	const body = document.body;
+	// 	const doc = document.documentElement;
 
-		const scrollEl = (document.scrollingElement || doc) as HTMLElement;
+	// 	const scrollEl = (document.scrollingElement || doc) as HTMLElement;
 
-		if (open) {
-			const y = scrollEl.scrollTop;
-			savedY.current = y;
+	// 	if (open) {
+	// 		const y = scrollEl.scrollTop;
+	// 		savedY.current = y;
 
-			const scrollbarW = window.innerWidth - doc.clientWidth;
-			body.style.position = 'fixed';
-			body.style.top = `-${y}px`;
-			body.style.left = '0';
-			body.style.right = '0';
-			body.style.width = '100%';
-			if (scrollbarW > 0) body.style.paddingRight = `${scrollbarW}px`;
-		} else {
-			const y = savedY.current;
+	// 		const scrollbarW = window.innerWidth - doc.clientWidth;
+	// 		body.style.position = 'fixed';
+	// 		body.style.top = `-${y}px`;
+	// 		body.style.left = '0';
+	// 		body.style.right = '0';
+	// 		body.style.width = '100%';
+	// 		if (scrollbarW > 0) body.style.paddingRight = `${scrollbarW}px`;
+	// 	} else {
+	// 		const y = savedY.current;
 
-			body.style.position = '';
-			body.style.top = '';
-			body.style.left = '';
-			body.style.right = '';
-			body.style.width = '';
-			body.style.paddingRight = '';
+	// 		body.style.position = '';
+	// 		body.style.top = '';
+	// 		body.style.left = '';
+	// 		body.style.right = '';
+	// 		body.style.width = '';
+	// 		body.style.paddingRight = '';
 
-			const prev = doc.style.scrollBehavior;
-			doc.style.scrollBehavior = 'auto';
-			scrollEl.scrollTop = y;
-			window.scrollTo(0, y);
-			console.log({ y });
-			doc.style.scrollBehavior = prev || '';
-		}
-	}, [open]);
+	// 		const prev = doc.style.scrollBehavior;
+	// 		doc.style.scrollBehavior = 'auto';
+	// 		scrollEl.scrollTop = y;
+	// 		window.scrollTo(0, y);
+	// 		console.log({ y });
+	// 		doc.style.scrollBehavior = prev || '';
+	// 	}
+	// }, [open]);
 
 	const hasTitle =
 		element.titleLocation != 'hidden' &&
@@ -232,6 +233,13 @@ export const HistoryItem: FC<HistoryItemProps> = ({
 						setAnyOpen(true);
 					}}
 					aria-label="Open answer history"
+					data-tooltip-id={'tooltip-history-item' + elementName}
+					data-tooltip-content={
+						config?.locale === 'no'
+							? `Se historikk for "${element.title ?? element.name}"`
+							: `See history for "${element.title ?? element.name}"`
+					}
+					data-tooltip-delay-show={500}
 				>
 					<History />
 				</button>
@@ -247,13 +255,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({
 							}}
 						/>
 						{hasTitle && (
-							<p className="history-title">
-								{!element.elements
-									? element.title
-										? element.title
-										: element.name
-									: element.title ?? element.title}
-							</p>
+							<p className="history-title">{element.title ?? element.name}</p>
 						)}
 					</div>
 					<ul className="answer-history__list">
@@ -423,6 +425,7 @@ export const HistoryItem: FC<HistoryItemProps> = ({
 					</ul>
 				</div>
 			)}
+			<Tooltip id={'tooltip-history-item' + elementName} className="tooltip" />
 		</div>
 	);
 };
@@ -480,6 +483,13 @@ export const HistoryList: FC<{
 						aria-label="Show change history"
 						disabled={historyItemOpen}
 						onClick={() => setOpen(true)}
+						data-tooltip-id="tooltip-history-list"
+						data-tooltip-content={
+							config.locale === 'no'
+								? 'Se hele endringshistorikken for skjemaet'
+								: 'See the full change history for the form'
+						}
+						data-tooltip-delay-show={500}
 					>
 						<p>{config.locale === 'no' ? 'Endringshistorikk' : 'Change history'}</p>
 						<div className="num-his">
@@ -569,6 +579,7 @@ export const HistoryList: FC<{
 					</ul>
 				</div>
 			)}
+			<Tooltip id="tooltip-history-list" className="tooltip" />
 		</div>
 	);
 };

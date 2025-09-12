@@ -6,6 +6,7 @@ import Footer from './Footer';
 import Header from './Header';
 import { HistoryList } from './History';
 import dateFromString from '@utils/dateFromString';
+import { Tooltip } from 'react-tooltip';
 
 const Summary: FC = () => {
 	const config = useConfig();
@@ -85,6 +86,7 @@ const Summary: FC = () => {
 				)}
 				{survey.pages.map((page: any, index: number) => (
 					<SummaryItem
+						index={index}
 						key={index}
 						element={page}
 						answers={answers}
