@@ -8,6 +8,13 @@ import { HistoryList } from './History';
 import dateFromString from '@utils/dateFromString';
 import { Tooltip } from 'react-tooltip';
 
+import { default as buildPDF, Resolution } from 'react-to-pdf';
+
+import { useCreateMethod } from '@utils/createMethod';
+import { useRef } from 'react';
+
+import performScript from '@utils/performScript';
+
 const Summary: FC = () => {
 	const config = useConfig();
 
@@ -71,32 +78,73 @@ const Summary: FC = () => {
 		return newAnswers;
 	}, [config.answerData, survey]);
 
+	const targetRef = useRef<HTMLDivElement | null>(null);
+
+	// Handle PDF generation
+	useCreateMethod(
+		'generatePDF',
+		() => {
+			if (!targetRef.current) return;
+
+			const copy = targetRef.current.cloneNode(true) as HTMLDivElement;
+			document.body.appendChild(copy);
+			copy.classList.add('pdf-root', 'summary');
+
+			buildPDF(() => copy, {
+				method: 'build',
+				resolution: Resolution.MEDIUM,
+				page: {
+					format: 'A4',
+					orientation: 'portrait',
+				},
+			}).then((pdf) => {
+				const blob = pdf.output('blob');
+
+				const reader = new FileReader();
+
+				// This function runs when the reader has finished converting the PDF to base64
+				reader.onloadend = () => {
+					if (typeof reader.result !== 'string')
+						return console.error(`Reader result was not a string: ${reader.result}`);
+					else performScript('onPDF', reader.result);
+
+					copy.remove();
+				};
+
+				reader.readAsDataURL(blob);
+			});
+		},
+		[targetRef]
+	);
+
 	return (
-		<div className={'summary' + (config.style ? ' ' + config.style : '')}>
-			<Header />
+		<div>
 			{sortedHitory.length > 0 && (
 				<HistoryList sortedHistory={sortedHitory} historyItemOpen={historyItemOpen} />
 			)}
-			<div className="summary__content">
-				{survey.title && survey.showTitle !== false && (
-					<p className="title">{survey.title}</p>
-				)}
-				{survey.description && survey.showTitle !== false && (
-					<p className="description">{survey.description}</p>
-				)}
-				{survey.pages.map((page: any, index: number) => (
-					<SummaryItem
-						index={index}
-						key={index}
-						element={page}
-						answers={answers}
-						answerHistory={sortedAnswerHistory}
-						open={historyItemOpen}
-						setOpen={setHistoryItemOpen}
-					/>
-				))}
+			<div className={'summary' + (config.style ? ' ' + config.style : '')} ref={targetRef}>
+				<Header />
+				<div className="summary__content">
+					{survey.title && survey.showTitle !== false && (
+						<p className="title">{survey.title}</p>
+					)}
+					{survey.description && survey.showTitle !== false && (
+						<p className="description">{survey.description}</p>
+					)}
+					{survey.pages.map((page: any, index: number) => (
+						<SummaryItem
+							index={index}
+							key={index}
+							element={page}
+							answers={answers}
+							answerHistory={sortedAnswerHistory}
+							open={historyItemOpen}
+							setOpen={setHistoryItemOpen}
+						/>
+					))}
+				</div>
+				<Footer />
 			</div>
-			<Footer />
 		</div>
 	);
 };

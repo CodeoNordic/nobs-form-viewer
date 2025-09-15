@@ -40,7 +40,7 @@ declare global {
 			// Hides the button to complete the form
 			hideCompleteButton?: boolean;
 
-			style?: 'minimal' | 'default';
+			style?: 'minimal' | 'rounded' | 'default';
 
 			// The language of the form, can be more if needed
 			locale: 'no' | 'en';

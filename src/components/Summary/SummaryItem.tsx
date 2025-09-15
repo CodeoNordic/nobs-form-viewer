@@ -3,6 +3,7 @@ import { HistoryItem } from './History';
 import { useEffect, useRef, useState } from 'react';
 import performScript from '@utils/performScript';
 import { evaluateLogic } from './evaluateLogic';
+import DoubleChevronLeft from 'jsx:@svg/double-chevron-left.svg';
 
 function useConsistentBlur(ref: any, onBlur: () => void) {
 	useEffect(() => {
@@ -205,20 +206,31 @@ const SummaryItem: FC<SummaryItemProps> = ({
 
 	return (
 		<div
-			className={`question${element.type ? ' ' + element.type : ''} ${
-				typeof index === 'number' ? (index % 2 === 0 ? 'even' : 'odd') : ''
-			}`}
+			className={`question ${element.type ? element.type : ''} ${
+				typeof index === 'number' && element.type && element.type !== 'panel'
+					? index % 2 === 0
+						? 'even'
+						: 'odd'
+					: ''
+			} ${element.type && element.type !== 'panel' ? 'with-answer' : ''}`}
 		>
 			<div className="question-content">
 				{hasTitle ? (
-					<p className="question-title">
-						{!element.elements
-							? element.title
-								? element.title + ':'
-								: element.name + ':'
-							: element.title ?? element.title}
-						{isRequired && <span className="required">*</span>}
-					</p>
+					<>
+						<p className="question-title">
+							{!element.elements
+								? element.title
+									? element.title + ':'
+									: element.name + ':'
+								: element.title ?? element.title}
+							{isRequired && <span className="required">*</span>}
+						</p>
+						{element.type !== 'panel' && (
+							<div className="chevron-box">
+								<DoubleChevronLeft className="chevron-left" />
+							</div>
+						)}
+					</>
 				) : (
 					isRequired && <span className="required">*</span>
 				)}
