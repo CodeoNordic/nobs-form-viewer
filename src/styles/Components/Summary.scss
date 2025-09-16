@@ -3,6 +3,13 @@
 	overflow: hidden;
 }
 
+:root {
+	--hlist-header-h: 46px;
+	--hitem-header-h: 33px;
+
+	--button-height: 36px;
+}
+
 .tooltip {
 	z-index: 400;
 	padding: 4px 8px;
@@ -18,35 +25,31 @@
 }
 
 .change-history {
-	border: 1px solid var(--border-color);
-	height: 44px;
+	height: calc(var(--hlist-header-h) - 1px); // -1px for border
 	position: relative;
 	z-index: 100;
-	margin-bottom: -1px;
 
 	&__header {
-		display: flex;
-		gap: 4px;
-
+		border: 1px solid var(--border-color);
 		background: var(--background-color-secondary);
-		// border-bottom: 1px solid var(--border-color);
-		// border-top: 1px solid var(--border-color);
-		// margin-top: -1px;
+
+		width: calc(100% - 10px);
 		padding: 4px;
 
 		position: fixed;
-		width: calc(100% - 10px);
+		display: flex;
+		gap: 4px;
 	}
 
 	&__button {
-		height: 36px;
+		height: var(--button-height);
 		padding: 0 12px;
 		border-radius: 5px;
 
 		display: flex;
-		gap: 4px;
 		align-items: center;
 		justify-content: center;
+		gap: 8px;
 
 		cursor: pointer;
 
@@ -103,13 +106,15 @@
 
 	&__list {
 		position: fixed;
-		top: 46px;
+		top: var(--hlist-header-h);
 		padding: 4px;
 		width: calc(100% - 10px);
+		max-height: calc(100vh - var(--hlist-header-h) - 9px); // -8px for padding, -1px for border
 
-		border-bottom: 1px solid var(--border-color);
+		border: 1px solid var(--border-color);
+		border-top: none;
+
 		background: var(--background-color-secondary);
-		max-height: calc(100vh - 43px);
 		overflow-y: auto;
 
 		ul {
@@ -208,7 +213,7 @@
 }
 
 .summary {
-	min-height: calc(100vh - 47px);
+	min-height: calc(100vh - var(--hlist-header-h) - 1px); // -1px for border
 	border: 1px solid var(--border-color);
 	background-color: var(--background-color);
 
@@ -277,15 +282,14 @@
 
 			&__panel {
 				position: fixed;
-				top: 46px;
+				top: var(--hlist-header-h);
 				left: 0;
 				padding: 0;
 				width: calc(100% - 2px);
-				max-height: calc(100vh - 35px);
+				max-height: calc(100vh - var(--hlist-header-h) - 1px); // -1px for border
 
-				border-bottom: 1px solid var(--border-color);
-				border-right: 1px solid var(--border-color);
-				border-left: 1px solid var(--border-color);
+				border: 1px solid var(--border-color);
+				border-top: none;
 
 				background: var(--background-color-secondary);
 			}
@@ -297,7 +301,7 @@
 			}
 
 			&__button {
-				height: 36px;
+				height: var(--button-height);
 				padding: 0 12px;
 
 				display: flex;
@@ -355,7 +359,9 @@
 				gap: 4px;
 
 				overflow-y: auto;
-				max-height: calc(100vh - 77px);
+				max-height: calc(
+					100vh - var(--hlist-header-h) - var(--hitem-header-height) - 9px
+				); // -8px for padding, -1px for border
 
 				li:hover:not(:has(.answer-history__button:hover)) {
 					&.even {
