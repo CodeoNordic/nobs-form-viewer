@@ -1,19 +1,15 @@
-import { useConfig } from '@context/Config';
-import { useEffect, useMemo, useState } from 'react';
-import SummaryItem from './SummaryItem';
-import extractAnswers from './extractAnswers';
-import Footer from './Footer';
-import Header from './Header';
-import { HistoryList } from './History';
-import dateFromString from '@utils/dateFromString';
-import { Tooltip } from 'react-tooltip';
-
 import { default as buildPDF, Resolution } from 'react-to-pdf';
+import { useRef, useEffect, useMemo, useState } from 'react';
 
 import { useCreateMethod } from '@utils/createMethod';
-import { useRef } from 'react';
-
+import dateFromString from '@utils/dateFromString';
 import performScript from '@utils/performScript';
+import extractAnswers from './extractAnswers';
+import { useConfig } from '@context/Config';
+import { HistoryList } from './History';
+import SummaryItem from './SummaryItem';
+import Footer from './Footer';
+import Header from './Header';
 
 const Summary: FC = () => {
 	const config = useConfig();
