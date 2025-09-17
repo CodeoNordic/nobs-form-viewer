@@ -204,6 +204,15 @@ const SummaryItem: FC<SummaryItemProps> = ({
 		}
 	};
 
+	const hasContent =
+		(element.type !== 'imagepicker' &&
+			element.type !== 'file' &&
+			element.type !== 'multipletext' &&
+			element.type !== 'matrixdynamic' &&
+			element.type !== 'matrix' &&
+			element.type !== 'matrixdropdown') ||
+		hasTitle;
+
 	return (
 		<div
 			className={`question ${element.type ? element.type : ''} ${
@@ -214,64 +223,70 @@ const SummaryItem: FC<SummaryItemProps> = ({
 					: ''
 			} ${element.type && element.type !== 'panel' ? 'with-answer' : ''}`}
 		>
-			<div className="question-content">
-				{hasTitle ? (
-					<>
-						<p className="question-title">
-							{!element.elements
-								? element.title
-									? element.title + ':'
-									: element.name + ':'
-								: element.title ?? element.title}
-							{isRequired && <span className="required">*</span>}
-						</p>
-						{element.type !== 'panel' && (
-							<div className="chevron-box">
-								<DoubleChevronLeft className="chevron-left" />
-							</div>
-						)}
-					</>
-				) : (
-					isRequired && <span className="required">*</span>
-				)}
-				{element.inputType == 'color' && answer && (
-					<div className="color-box" style={{ backgroundColor: answer }}></div>
-				)}
-				{element.inputType == 'range' && answer && (
-					<p className="question-answer">{answer}%</p>
-				)}
-				{(element.type == 'text' || element.type == 'comment') &&
-					element.inputType == undefined &&
-					(canEdit ? (
-						<EditableTextarea
-							value={answer || ''}
-							onChangeValue={(v) => setAnswer(v)}
-							onCommit={() => {
-								if (answer !== answers[element.name]) {
-									const answerData = JSON.parse(config.answerData || '{}');
-									const newAnswerData = {
-										...answerData,
-										[element.name]: answer,
-									};
-
-									saveAnswers(JSON.stringify(newAnswerData));
-								}
-							}}
-						/>
+			{hasContent && (
+				<div className="question-content">
+					{hasTitle ? (
+						<>
+							<p
+								className={`question-title ${
+									!element.type || element.type === 'panel' ? 'panel-title' : ''
+								}`}
+							>
+								{!element.elements
+									? element.title
+										? element.title + ':'
+										: element.name + ':'
+									: element.title ?? element.title}
+								{isRequired && <span className="required">*</span>}
+							</p>
+							{element.type && element.type !== 'panel' && (
+								<div className="chevron-box">
+									<DoubleChevronLeft className="chevron-left" />
+								</div>
+							)}
+						</>
 					) : (
-						<p className="question-answer">{answer || ' '}</p>
-					))}
-				{element.inputType !== 'color' &&
-					element.inputType !== 'range' &&
-					element.type !== 'imagepicker' &&
-					element.type !== 'comment' &&
-					typeof answer !== 'object' &&
-					answer != undefined &&
-					!(
-						(element.type == 'text' || element.type == 'comment') &&
-						element.inputType == undefined
-					) && <p className="question-answer">{answer}</p>}
-			</div>
+						isRequired && <span className="required">*</span>
+					)}
+					{element.inputType == 'color' && answer && (
+						<div className="color-box" style={{ backgroundColor: answer }}></div>
+					)}
+					{element.inputType == 'range' && answer && (
+						<p className="question-answer">{answer}%</p>
+					)}
+					{(element.type == 'text' || element.type == 'comment') &&
+						element.inputType == undefined &&
+						(canEdit ? (
+							<EditableTextarea
+								value={answer || ''}
+								onChangeValue={(v) => setAnswer(v)}
+								onCommit={() => {
+									if (answer !== answers[element.name]) {
+										const answerData = JSON.parse(config.answerData || '{}');
+										const newAnswerData = {
+											...answerData,
+											[element.name]: answer,
+										};
+
+										saveAnswers(JSON.stringify(newAnswerData));
+									}
+								}}
+							/>
+						) : (
+							<p className="question-answer">{answer || ' '}</p>
+						))}
+					{element.inputType !== 'color' &&
+						element.inputType !== 'range' &&
+						element.type !== 'imagepicker' &&
+						element.type !== 'comment' &&
+						typeof answer !== 'object' &&
+						answer != undefined &&
+						!(
+							(element.type == 'text' || element.type == 'comment') &&
+							element.inputType == undefined
+						) && <p className="question-answer">{answer}</p>}
+				</div>
+			)}
 			{element.type == 'imagepicker' && answer && (
 				<img src={answer} alt={answer} className="image" />
 			)}

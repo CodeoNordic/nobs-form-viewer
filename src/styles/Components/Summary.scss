@@ -212,13 +212,20 @@
 	}
 }
 
-.summary {
+#app:has(.change-history) .summary {
 	min-height: calc(100vh - var(--hlist-header-h) - 1px); // -1px for border
+}
+
+#app:not(:has(.change-history)) .summary {
+	height: calc(100vh - 2px); // -2px for border
+}
+
+.summary {
 	border: 1px solid var(--border-color);
 	background-color: var(--background-color);
 
 	p {
-		margin: 3px 4px;
+		margin: 0;
 	}
 
 	&__content {
@@ -651,7 +658,7 @@
 
 	.question-content {
 		display: flex;
-		gap: 10px;
+		gap: 4px;
 	}
 
 	.required {
@@ -726,7 +733,7 @@
 			}
 
 			&.with-answer {
-				padding: 4px 8px;
+				padding: 3px 0;
 			}
 
 			.answer-history {
@@ -751,6 +758,7 @@
 		.with-answer > .question-content {
 			min-height: 24px;
 			align-items: center;
+			padding: 0 4px;
 		}
 
 		.title {
@@ -759,11 +767,14 @@
 		}
 
 		.question-title {
-			min-width: 110px;
 			flex-shrink: 1;
 			font-weight: bold;
-			width: 110px;
+			width: 80px;
 			margin-right: 0;
+
+			&.panel-title {
+				margin: 4px;
+			}
 		}
 
 		.chevron-box {
@@ -779,17 +790,8 @@
 		}
 
 		.question-answer {
-			// background-color: var(--background-color);
-			// padding: 2px 4px;
-			// margin: 0 4px;
-			// border-radius: 5px;
-			// height: min-content;
-			// flex-grow: 1;
-			// border: 1px solid var(--border-color);
-			// min-height: 16px;
-			// white-space: pre-line;
 			word-break: break-all;
-			min-width: 120px;
+			min-width: 60px;
 		}
 
 		.text-input {
@@ -821,8 +823,13 @@
 		.matrix,
 		.matrixdropdown,
 		.matrixdynamic {
-			// Note: added extra margin because of the border
-			margin-right: 5px;
+			> div {
+				padding: 0 4px;
+
+				p {
+					margin: 3px 0;
+				}
+			}
 
 			.row-header {
 				min-width: 110px;
@@ -836,37 +843,12 @@
 				margin-right: 0;
 			}
 
-			.row {
-				.column:nth-child(2) {
-					margin-left: 4px;
-				}
-			}
-
-			.row:nth-child(2) {
-				.column:nth-child(2) {
-					border-top-left-radius: 5px;
-				}
-
-				.column:last-child {
-					border-top-right-radius: 5px;
-				}
-			}
-
-			.row:last-of-type {
-				.column:nth-child(2) {
-					border-bottom-left-radius: 5px;
-				}
-
-				.column:last-child {
-					border-bottom-right-radius: 5px;
-				}
-			}
-
 			.column {
-				background-color: var(--background-color);
+				display: flex;
+				align-items: center;
 
 				p {
-					margin: 2px 4px;
+					margin: 0 4px;
 				}
 			}
 		}

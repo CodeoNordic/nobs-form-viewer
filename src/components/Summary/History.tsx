@@ -57,98 +57,10 @@ type HistoryItemProps = {
 
 const deepEqual = (a: any, b: any) => a === b || JSON.stringify(a) === JSON.stringify(b);
 
-type Coords = { top?: number; maxHeight?: number; right?: number };
-
-export function useGrowCalc(
-	anchorRef: React.RefObject<HTMLElement>,
-	panelRef: React.RefObject<HTMLElement>,
-	open: boolean,
-	deps: any[] = []
-) {
-	const MARGIN = 8;
-
-	const [coords, setCoords] = useState<Coords>({});
-	const raf = useRef<number | null>(null);
-
-	const applyIfChanged = (next: Coords) => {
-		setCoords((prev) => {
-			const same =
-				Math.abs((prev.top ?? 0) - (next.top ?? 0)) < 1 &&
-				Math.abs((prev.maxHeight ?? 0) - (next.maxHeight ?? 0)) < 1;
-			return same ? prev : next;
-		});
-	};
-
-	const compute = () => {
-		if (!open || !anchorRef.current || !panelRef.current) return;
-		const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-
-		const pageBottom = document.documentElement.scrollHeight - MARGIN;
-
-		const aRect = anchorRef.current.getBoundingClientRect();
-		const anchorBottomDoc = aRect.bottom + scrollY;
-		const offsetParent = panelRef.current.offsetParent as HTMLElement | null;
-		const parentRect = offsetParent
-			? offsetParent.getBoundingClientRect()
-			: ({ top: 0 } as DOMRect);
-		const parentTopDoc = parentRect.top + scrollY;
-
-		const spaceBelowPage = Math.max(0, pageBottom - anchorBottomDoc);
-
-		const totalAvailPage = Math.max(0, pageBottom - MARGIN);
-		const desired = Math.min(panelRef.current.scrollHeight, totalAvailPage);
-
-		const deficit = Math.max(0, desired - spaceBelowPage);
-
-		const desiredTopDoc = Math.max(MARGIN, anchorBottomDoc - deficit);
-
-		const topInParent = desiredTopDoc - (parentRect.top + scrollY);
-
-		const maxHeight = Math.max(0, pageBottom - desiredTopDoc);
-
-		applyIfChanged({
-			top: topInParent,
-			maxHeight,
-			right: -Math.min(0, window.innerWidth - aRect.right - MARGIN),
-		});
-	};
-
-	const schedule = () => {
-		if (raf.current != null) return;
-		raf.current = requestAnimationFrame(() => {
-			raf.current = null;
-			compute();
-		});
-	};
-
-	useLayoutEffect(() => {
-		if (!open) return;
-		schedule();
-
-		window.addEventListener('resize', schedule);
-		window.addEventListener('scroll', schedule, { capture: true, passive: true });
-
-		const ro = new ResizeObserver(schedule);
-		if (anchorRef.current) ro.observe(anchorRef.current);
-		if (panelRef.current) ro.observe(panelRef.current);
-
-		return () => {
-			window.removeEventListener('resize', schedule);
-			window.removeEventListener('scroll', schedule, { capture: true });
-			ro.disconnect();
-			if (raf.current != null) cancelAnimationFrame(raf.current);
-			raf.current = null;
-		};
-	}, [open, anchorRef, panelRef, ...deps]);
-
-	return coords;
-}
-
 export const HistoryItem: FC<HistoryItemProps> = ({
 	answerHistory,
 	elementName,
 	element,
-	anyOpen,
 	setAnyOpen,
 }) => {
 	const [config, setConfig] = useConfigState();
@@ -179,6 +91,22 @@ export const HistoryItem: FC<HistoryItemProps> = ({
 		setOpen(false);
 		setAnyOpen(false);
 	});
+
+	const handler = (e: MouseEvent) => {
+		if (!open) return;
+		setActiveIndex(null);
+		setOpen(false);
+		setAnyOpen(false);
+	};
+
+	useEffect(() => {
+		const listener = (e: MouseEvent) => {
+			if (!boxRef.current || boxRef.current.contains(e.target as Node)) return;
+			handler(e);
+		};
+		document.addEventListener('mousedown', listener);
+		return () => document.removeEventListener('mousedown', listener);
+	}, [boxRef, handler]);
 
 	// const savedY = useRef(0);
 
@@ -235,9 +163,13 @@ export const HistoryItem: FC<HistoryItemProps> = ({
 					aria-label="Open answer history"
 					data-tooltip-id={'tooltip-history-item' + elementName}
 					data-tooltip-content={
-						config?.locale === 'no'
-							? `Se historikk for "${element.title ?? element.name}"`
-							: `See history for "${element.title ?? element.name}"`
+						hasTitle
+							? config?.locale === 'no'
+								? `Se historikk for "${element.title ?? element.name}"`
+								: `See history for "${element.title ?? element.name}"`
+							: config?.locale === 'no'
+							? `Se historikk`
+							: `See history`
 					}
 					data-tooltip-delay-show={500}
 				>
