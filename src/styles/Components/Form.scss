@@ -1,199 +1,219 @@
 .svc-creator {
-    height: 100vh;
+	height: 100vh;
 }
 
 .formviewer {
-    height: 100vh;
+	height: 100vh;
 }
 
-.compact {    
-    .sd-element__content.sd-panel__content { // top and bottom of a panel
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
-    }
-    
-    .sd-row { // top of questions
-        margin-top: 4px !important;
-    }
+.compact {
+	.sd-element__content.sd-panel__content {
+		// top and bottom of a panel
+		padding-top: 0px !important;
+		padding-bottom: 0px !important;
+	}
 
-    .sd-element__erbox--above-element { // error box
-        margin-left: -4px !important;
-        margin-right: -4px !important;
-        margin-top: -4px !important;
-        margin-bottom: 0px !important;
-    }
+	.sd-row {
+		// top of questions
+		margin-top: 4px !important;
+	}
 
-    .sd-row__panel { // panel
-        padding-bottom: 4px !important;
-        padding-left: 4px !important;
-        padding-right: 4px !important;
-        height: min-content !important;
-    }
+	.sd-element__erbox--above-element {
+		// error box
+		margin-left: -4px !important;
+		margin-right: -4px !important;
+		margin-top: -4px !important;
+		margin-bottom: 0px !important;
+	}
 
-    .sd-body__navigation { // around Neste / Fullfør button
-        padding: 8px 0 0 0 !important;
+	.sd-row__panel {
+		// panel
+		padding-bottom: 4px !important;
+		padding-left: 4px !important;
+		padding-right: 4px !important;
+		height: min-content !important;
+	}
 
-        .sd-btn { // button itself
-            padding: 14px 40px;
-        }
-    }
+	.sd-body__navigation {
+		// around Neste / Fullfør button
+		padding: 8px 0 0 0 !important;
 
-    .sd-panel--as-page {
-        padding: 0px !important;
-    }
-    
-    .sd-body.sd-body--responsive .sd-page { // entire form
-        padding-bottom: 8px;
-    }
+		.sd-btn {
+			// button itself
+			padding: 14px 40px;
+		}
+	}
 
-    .sd-panel__header { // header of a panel
-        padding-top: 4px !important;
-        padding-bottom: 4px !important;
-    }
-    
-    .sd-element--complex > .sd-element__header:after { // line under header
-        content: none !important;
-    }
-    
-    .sd-input { // input fields
-        padding: 4px !important;
-        font-size: small !important;
+	.sd-panel--as-page {
+		padding: 0px !important;
+	}
 
-        &[type="date"] {
-            width: calc(100% - 8px) !important;
-        }
-    }
+	.sd-body.sd-body--responsive .sd-page {
+		// entire form
+		padding-bottom: 8px;
+	}
 
-    .sd-dropdown { // give space for clear button
-        padding-right: 40px !important;
-    }
-    
-    .sd-item { // over and under checkboxes, maybe more
-        padding-top: 0px !important;
-        padding-bottom: 4px !important;
-    }
-    
-    .sd-question__header { // over question text
-        margin-top: 0 !important;
-        padding-bottom: 4px !important;
-        padding-top: 0px !important;
-    }
-    
-    .sd-element--with-frame.sd-row__question { // around normal questions
-        padding: 4px !important;
-        overflow: hidden !important;
-    }
-    
-    .sd-question__comment-area { // over "Annet (beskriv)" area
-        margin-top: 4px !important;
-    }
-    
-    .sd-page {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
+	.sd-panel__header {
+		// header of a panel
+		padding-top: 4px !important;
+		padding-bottom: 4px !important;
+	}
 
-    .sd-body { // around the whole form
-        margin: 0;
-        padding: 4px 8px 0px 8px !important;
-        width: 100%;
-        max-width: 100% !important;
-    }
+	.sd-element--complex > .sd-element__header:after {
+		// line under header
+		content: none !important;
+	}
 
-    .sd-question__content { // around question text
-        padding-top: 0 !important;
-    }
-    
-    .sd-row--multiple {
-        gap: 4px;
-        margin-left: 0px !important
-    }
+	.sd-input {
+		// input fields
+		padding: 4px !important;
+		font-size: small !important;
 
-    .sd-row--multiple > div {
-        flex: 1 1 calc(50% - 2px) !important;
-        padding: 0 !important;
-    }
+		&[type='date'] {
+			width: calc(100% - 8px) !important;
+		}
+	}
 
-    .sd-row.sd-clearfix.sd-page__row {
-        margin-top: 4px !important;
+	.sd-dropdown {
+		// give space for clear button
+		padding-right: 40px !important;
+	}
 
-        width: 100% !important;
-    
-        .sd-table-wrapper {
-            width: 100% !important;
-            margin: 0 !important;
-            min-width: 0 !important;
-            display: block !important;
-        }
+	.sd-item {
+		// over and under checkboxes, maybe more
+		padding-top: 0px !important;
+		padding-bottom: 4px !important;
+	}
 
-        .sd-table-wrapper:before {
-            width: 0 !important;
-        }
-        
-        .sd-dropdown_clean-button {
-            z-index: 10 !important;    
-            margin-left: -24px !important;
-            padding: 0 !important;
-        }
-    }
+	.sd-question__header {
+		// over question text
+		margin-top: 0 !important;
+		padding-bottom: 4px !important;
+		padding-top: 0px !important;
+	}
 
+	.sd-element--with-frame.sd-row__question {
+		// around normal questions
+		padding: 4px !important;
+		overflow: hidden !important;
+	}
 
-    .sd-rating__item {
-        min-width: 32px !important;
-        height: 32px !important;
-        width: 32px !important;
-    }
+	.sd-question__comment-area {
+		// over "Annet (beskriv)" area
+		margin-top: 4px !important;
+	}
 
-    .sd-table__cell {
-        padding: 0 !important;
-        border: 0 !important;
-        padding-left: 8px !important;
+	.sd-page {
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
 
-        // fix for matrix going out of bounds
-        min-width: 0 !important;
-    }
+	.sd-body {
+		// around the whole form
+		margin: 0;
+		padding: 4px 8px 0px 8px !important;
+		width: 100%;
+		max-width: 100% !important;
+	}
 
-    .sd-boolean__label, .sd-boolean__thumb {
-        padding: 6px 12px;
-    }
+	.sd-question__content {
+		// around question text
+		padding-top: 0 !important;
+	}
 
-    .sd-element__title span { 
-        font-size: small !important;
-    }
+	.sd-row--multiple {
+		width: 100% !important;
+		gap: 4px;
+		margin-left: 0px !important;
+	}
 
-    .sd-item__control-label { 
-        font-size: small !important; 
-    }
+	.sd-row--multiple > div {
+		flex: 1 1 calc(50% - 2px) !important;
+		padding: 0 !important;
+	}
 
-    .sd-dropdown__value {
-        font-size: small !important;
-    }
+	.sd-row.sd-clearfix.sd-page__row {
+		margin-top: 4px !important;
 
-    .sd-dropdown__filter-string-input {
-        font-size: small !important;
-    }
+		width: 100% !important;
 
-    .sv-string-viewer {
-        font-size: small !important;
-    }
+		.sd-table-wrapper {
+			width: 100% !important;
+			margin: 0 !important;
+			min-width: 0 !important;
+			display: block !important;
+		}
 
-    .sv-list__empty-text {
-        font-size: small !important;
-    }
+		.sd-table-wrapper:before {
+			width: 0 !important;
+		}
 
-    .sv-list__empty-container {
-        padding: 4px !important;
-    }
+		.sd-dropdown_clean-button {
+			z-index: 10 !important;
+			margin-left: -24px !important;
+			padding: 0 !important;
+		}
+	}
 
-    .sd-list__item-body { // needs some padding for text to be visible
-        padding: 0 0 0 2px !important;
-    }
+	.sd-rating__item {
+		min-width: 32px !important;
+		height: 32px !important;
+		width: 32px !important;
+	}
 
-    .sd-container-modern__title { // Title of form
-        padding: 8px !important;
-        
-        .sv-string-viewer {
-            font-size: large !important;
-        }
-    }
+	.sd-table__cell {
+		padding: 0 !important;
+		border: 0 !important;
+		padding-left: 8px !important;
+
+		// fix for matrix going out of bounds
+		min-width: 0 !important;
+	}
+
+	.sd-boolean__label,
+	.sd-boolean__thumb {
+		padding: 6px 12px;
+	}
+
+	.sd-element__title span {
+		font-size: small !important;
+	}
+
+	.sd-item__control-label {
+		font-size: small !important;
+	}
+
+	.sd-dropdown__value {
+		font-size: small !important;
+	}
+
+	.sd-dropdown__filter-string-input {
+		font-size: small !important;
+	}
+
+	.sv-string-viewer {
+		font-size: small !important;
+	}
+
+	.sv-list__empty-text {
+		font-size: small !important;
+	}
+
+	.sv-list__empty-container {
+		padding: 4px !important;
+	}
+
+	.sd-list__item-body {
+		// needs some padding for text to be visible
+		padding: 0 0 0 2px !important;
+	}
+
+	.sd-container-modern__title {
+		// Title of form
+		padding: 8px !important;
+
+		.sv-string-viewer {
+			font-size: large !important;
+		}
+	}
 }
