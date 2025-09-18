@@ -3,12 +3,8 @@ import { loadCallbacks } from '@utils/performScript';
 import { warn } from '@utils/log';
 
 const defaultConfig: Partial<Form.Config> = {
-	type: 'viewer',
 	locale: 'no',
 	compact: false,
-	style: 'default',
-	hideUnanswered: false,
-	summaryEditable: true,
 };
 
 // Parses the JSON from FileMaker into a readable config
@@ -46,16 +42,9 @@ window.init = (cfg) => {
 
 // Validates the config object every time it's set or updated
 const validateConfig = (config: any): Form.Config => {
-	const validTypes = ['viewer', 'summary'];
 	const validLocales = ['en', 'no'];
 
 	const validatedConfig = { ...defaultConfig, ...config };
-
-	// Validate 'type'
-	if (!validTypes.includes(validatedConfig.type)) {
-		warn(`Invalid form type "${validatedConfig.type}", defaulting to "${defaultConfig.type}"`);
-		validatedConfig.type = defaultConfig.type;
-	}
 
 	// Validate 'locale'
 	if (!validLocales.includes(validatedConfig.locale)) {
@@ -79,18 +68,6 @@ const validateConfig = (config: any): Form.Config => {
 			warn('Failed to parse answer data, will start with empty data.', e);
 			validatedConfig.answerData = '';
 		}
-	}
-
-	if (config.style && !['minimal', 'rounded', 'default'].includes(config.style)) {
-		warn(`Invalid style "${config.style}", defaulting to "${defaultConfig.style}"`);
-		validatedConfig.style = defaultConfig.style;
-	}
-
-	if (config.hideUnanswered && typeof config.hideUnanswered !== 'boolean') {
-		warn(
-			`Invalid hideUnanswered "${config.hideUnanswered}", defaulting to "${defaultConfig.hideUnanswered}"`
-		);
-		validatedConfig.hideUnanswered = defaultConfig.hideUnanswered;
 	}
 
 	// Add additional validation

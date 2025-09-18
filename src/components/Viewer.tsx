@@ -9,9 +9,10 @@ import fetchFromFileMaker from '@utils/fetchFromFilemaker';
 import { useCreateMethod } from '@utils/createMethod';
 
 const FormViewer: FC = () => {
-	const [config, setConfig] = useConfigState();
-
-	if (!config) return null;
+	const [config, setConfig] = useConfigState() as [
+		Form.Config,
+		React.Dispatch<React.SetStateAction<Form.Config>>
+	]; // Config is always set here
 
 	useCreateMethod(
 		'validateForm',
@@ -77,7 +78,7 @@ const FormViewer: FC = () => {
 				performScript('onChange', {
 					result: JSON.stringify(data),
 					hasErrors,
-					type: config.type,
+					type: 'viewer',
 				});
 			}
 
