@@ -1,12 +1,15 @@
-.svc-creator {
-	height: 100vh;
-}
-
-.formviewer {
+.formviewer,
+.form-viewer {
 	height: 100vh;
 }
 
 .compact {
+	.numbered {
+		.sd-title {
+			margin-left: 22px !important;
+		}
+	}
+
 	.sd-element__content.sd-panel__content {
 		// top and bottom of a panel
 		padding-top: 0px !important;
@@ -24,6 +27,13 @@
 		margin-right: -4px !important;
 		margin-top: -4px !important;
 		margin-bottom: 0px !important;
+	}
+
+	.sd-question--table.sd-element--nested > .sd-question__content {
+		padding-left: 0;
+		padding-right: 0;
+		width: 100%;
+		margin-left: 0;
 	}
 
 	.sd-row__panel {

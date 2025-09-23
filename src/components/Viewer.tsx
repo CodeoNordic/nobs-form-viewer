@@ -2,7 +2,7 @@ import { useConfigState } from '@context/Config';
 import performScript from '@utils/performScript';
 import { Model, Survey } from 'survey-react-ui';
 import { warn } from '@utils/log';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import 'survey-core/i18n';
 import { Serializer, SurveyError } from 'survey-core';
 import fetchFromFileMaker from '@utils/fetchFromFilemaker';
@@ -13,6 +13,7 @@ const FormViewer: FC = () => {
 		Form.Config,
 		React.Dispatch<React.SetStateAction<Form.Config>>
 	]; // Config is always set here
+	const [numbered, setNumbered] = useState(false);
 
 	useCreateMethod(
 		'validateForm',
@@ -51,6 +52,14 @@ const FormViewer: FC = () => {
 
 		const newSurvey = new Model(config.value);
 
+		if (
+			JSON.parse(config?.value || '{}').showQuestionNumbers &&
+			JSON.parse(config?.value || '{}').showQuestionNumbers === 'off'
+		) {
+			setNumbered(false);
+		} else {
+			setNumbered(true);
+		}
 		// Attempt to add existing answer data
 		const prevData = config.answerData;
 		if (prevData) {
@@ -194,7 +203,11 @@ const FormViewer: FC = () => {
 		config.hideCompleteButton,
 	]); // Add deps that should trigger a re-render
 
-	return <Survey model={survey} />;
+	return (
+		<div className={`form-viewer ${numbered ? 'numbered' : ''}`}>
+			<Survey model={survey} />
+		</div>
+	);
 };
 
 export default FormViewer;
