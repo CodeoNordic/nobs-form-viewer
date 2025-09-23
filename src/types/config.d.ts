@@ -18,7 +18,7 @@ declare global {
 			// Hides the button to complete the form
 			hideCompleteButton?: boolean;
 
-			// The language of the form, can be more if needed
+			// The language of the form, can add more if needed
 			locale: 'no' | 'en';
 
 			scriptNames?: Form.ScriptNames;
