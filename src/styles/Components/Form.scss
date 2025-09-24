@@ -10,6 +10,19 @@
 		}
 	}
 
+	.sd-table {
+		border-spacing: 4px;
+	}
+
+	.sd-editor-button-item {
+		padding: 0 !important;
+	}
+
+	.sd-dropdown__value {
+		margin-top: 0 !important;
+		margin-bottom: 0 !important;
+	}
+
 	.sd-element__content.sd-panel__content {
 		// top and bottom of a panel
 		padding-top: 0px !important;
@@ -86,7 +99,8 @@
 
 	.sd-dropdown {
 		// give space for clear button
-		padding-right: 40px !important;
+		// TODO: maybe not needed, more testing needed
+		// padding-right: 40px !important;
 	}
 
 	.sd-item {

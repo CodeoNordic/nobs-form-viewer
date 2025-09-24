@@ -52,13 +52,10 @@ const FormViewer: FC = () => {
 
 		const newSurvey = new Model(config.value);
 
-		if (
-			JSON.parse(config?.value || '{}').showQuestionNumbers &&
-			JSON.parse(config?.value || '{}').showQuestionNumbers === 'off'
-		) {
-			setNumbered(false);
-		} else {
+		if (JSON.parse(config?.value || '{}').showQuestionNumbers) {
 			setNumbered(true);
+		} else {
+			setNumbered(false);
 		}
 		// Attempt to add existing answer data
 		const prevData = config.answerData;

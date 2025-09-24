@@ -30,9 +30,6 @@
 		"node": ">=20"
 	},
 	"browserslist": "> 0.5%, last 2 versions, not IE 9-11, not dead",
-	"dependencies": {
-		"react-tooltip": "^5.29.1"
-	},
 	"devDependencies": {
 		"@parcel/optimizer-data-url": "^2.12.0",
 		"@parcel/transformer-image": "^2.12.0",
@@ -61,11 +58,12 @@
 		"open": "8.2.1",
 		"parcel": "^2.12.0",
 		"postcss": "^8.4.35",
+		"posthtml": "^0.16.6",
 		"posthtml-doctype": "^1.1.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"rimraf": "^5.0.5",
-		"survey-react-ui": "^1.12.13",
+		"survey-react-ui": "^2.3.7",
 		"typescript": "^5.7.2",
 		"util": "^0.12.5",
 		"uuid": "^9.0.1"
