@@ -119,7 +119,7 @@
 	.sd-element--with-frame.sd-row__question {
 		// around normal questions
 		padding: 4px !important;
-		overflow: hidden !important;
+		// overflow: hidden !important;
 	}
 
 	.sd-question__comment-area {
@@ -156,9 +156,79 @@
 		padding: 0 !important;
 	}
 
+	.sd-dropdown {
+		height: 40px !important;
+	}
+
+	.sd-dropdown__value {
+		display: flex;
+		align-items: center;
+	}
+
+	.sv-tagbox__item {
+		padding: 4px 6px;
+	}
+
+	.sv-ranking-item__content.sv-ranking-item__content {
+		align-items: center !important;
+	}
+
+	.sv-ranking-shortcut {
+		height: 40px !important;
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+
+	.sv-ranking-item__index.sv-ranking-item__index {
+		height: 32px !important;
+		width: 32px !important;
+		align-self: auto !important;
+	}
+
+	.sv-ranking-item__ghost {
+		height: 32px !important;
+		margin: 0 !important;
+	}
+
+	.sd-question--table {
+		padding-right: 0 !important;
+		padding-bottom: 0 !important;
+	}
+
+	.sv-ranking-item--ghost {
+		height: 40px !important;
+	}
+
+	.sv-ranking-item__text {
+		padding: 0 !important;
+	}
+
+	.sv-ranking-item__icon-container {
+		align-self: auto !important;
+		position: static !important;
+		padding-left: 12px !important;
+	}
+
+	.sd-element--with-frame .sv-ranking-item {
+		left: 0 !important;
+	}
+
+	.sd-matrixdynamic {
+		width: calc(100% - 26px) !important;
+	}
+
+	.sd-matrixdynamic__footer {
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+
+	.sd-matrixdynamic__btn.sd-matrixdynamic__add-btn {
+		margin-left: 8px;
+		padding: 6px 8px;
+	}
+
 	.sd-row.sd-clearfix.sd-page__row {
 		margin-top: 4px !important;
-
 		width: 100% !important;
 
 		.sd-table-wrapper {
@@ -189,9 +259,6 @@
 		padding: 0 !important;
 		border: 0 !important;
 		padding-left: 8px !important;
-
-		// fix for matrix going out of bounds
-		min-width: 0 !important;
 	}
 
 	.sd-boolean__label,
