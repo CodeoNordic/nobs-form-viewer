@@ -93,7 +93,7 @@ const surveyJson = {
 		'--sjs-article-font-default-lineHeight': '28px',
 		'--sjs-article-font-default-paragraphIndent': '0px',
 		'--sjs-article-font-default-textCase': 'none',
-		'--sjs-general-backcolor-dim': 'rgba(243, 243, 243, 1)',
+		'--sjs-general-backcolor-dim': '#E8F6FA',
 		'--sjs-primary-backcolor': 'rgba(0, 102, 129, 1)',
 		'--sjs-primary-backcolor-dark': 'rgba(0, 90, 114, 1)',
 		'--sjs-primary-backcolor-light': 'rgba(0, 102, 129, 0.1)',
