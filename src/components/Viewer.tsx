@@ -7,6 +7,7 @@ import 'survey-core/i18n';
 import { Serializer, SurveyError } from 'survey-core';
 import fetchFromFileMaker from '@utils/fetchFromFilemaker';
 import { useCreateMethod } from '@utils/createMethod';
+import surveyJson from '@styles/survey_theme.js';
 
 const FormViewer: FC = () => {
 	const [config, setConfig] = useConfigState() as [
@@ -51,6 +52,8 @@ const FormViewer: FC = () => {
 		}
 
 		const newSurvey = new Model(config.value);
+
+		newSurvey.applyTheme(surveyJson as any);
 
 		if (JSON.parse(config?.value || '{}').showQuestionNumbers) {
 			setNumbered(true);
