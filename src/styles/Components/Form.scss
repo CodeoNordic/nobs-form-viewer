@@ -266,6 +266,31 @@
 		padding: 6px 12px;
 	}
 
+	.sd-multipletext .sd-input .sd-input {
+		margin: 0 !important;
+		padding: 0 8px !important;
+	}
+	.sd-multipletext__item-title {
+		margin: 0 !important;
+	}
+
+	.sd-multipletext__cell {
+		padding-bottom: 2px !important;
+		padding-top: 2px !important;
+	}
+
+	.sd-multipletext__row:first-of-type .sd-multipletext__cell {
+		padding-top: 0 !important;
+	}
+
+	.sd-multipletext__row:last-of-type .sd-multipletext__cell {
+		padding-bottom: 0 !important;
+	}
+
+	.sd-multipletext__item-container {
+		align-items: center !important;
+	}
+
 	.sd-element__title span {
 		font-size: small !important;
 	}
