@@ -329,7 +329,15 @@
 		padding: 8px !important;
 
 		.sv-string-viewer {
-			font-size: large !important;
+			font-size: 24px !important;
 		}
+	}
+
+	.sv-header__content {
+		padding: 8px 8px 0 8px;
+	}
+
+	.sv-header__title .sd-title {
+		font-size: 24px !important;
 	}
 }
