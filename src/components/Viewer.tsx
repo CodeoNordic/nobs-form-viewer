@@ -10,10 +10,7 @@ import { useCreateMethod } from '@utils/createMethod';
 import surveyJson from '@styles/survey_theme.js';
 
 const FormViewer: FC = () => {
-	const [config, setConfig] = useConfigState() as [
-		Form.Config,
-		React.Dispatch<React.SetStateAction<Form.Config>>
-	]; // Config is always set here
+	const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always set here
 	const [numbered, setNumbered] = useState(false);
 
 	useCreateMethod(
