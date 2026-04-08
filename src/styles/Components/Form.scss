@@ -255,11 +255,19 @@
 		width: 32px !important;
 	}
 
-	.sd-table__cell {
-		padding: 0 !important;
-		border: 0 !important;
-		padding-left: 8px !important;
-	}
+	// Add padding top to highest th
+    .sd-element > .sd-question__content:first-child th {
+        padding-top: 24px !important;
+    }
+
+    .sd-table__cell {
+        &:not(th) {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        border: 0 !important;
+        padding-left: 8px !important;
+    }
 
 	.sd-boolean__label,
 	.sd-boolean__thumb {
