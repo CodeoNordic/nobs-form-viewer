@@ -25,6 +25,12 @@ declare global {
 			/** The language of the form, can add more if needed */
 			locale: 'no' | 'en';
 
+			/** Used for identifying the form */
+			sub: string;
+
+			/** Shows the save button */
+			saveButton?: boolean;
+
 			scriptNames?: Form.ScriptNames;
 
 			ignoreInfo: boolean;

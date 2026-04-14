@@ -2,9 +2,9 @@ import { useConfigState } from '@context/Config';
 import performScript from '@utils/performScript';
 import { Model, Survey } from 'survey-react-ui';
 import { warn } from '@utils/log';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import 'survey-core/i18n';
-import { Serializer, SurveyError } from 'survey-core';
+import { Action, Serializer, SurveyError } from 'survey-core';
 import fetchFromFileMaker from '@utils/fetchFromFilemaker';
 import { useCreateMethod } from '@utils/createMethod';
 import surveyJson from '@styles/survey_theme.js';
@@ -85,6 +85,7 @@ const FormViewer: FC = () => {
 					result: JSON.stringify(data),
 					hasErrors,
 					type: 'viewer',
+					sub: config.sub || undefined,
 				});
 			}
 
@@ -189,6 +190,12 @@ const FormViewer: FC = () => {
 					newSurvey.navigationBar.actions.indexOf(completeButton),
 					1
 				);
+		} else if (config.saveButton) {
+			newSurvey.addNavigationItem({
+				id: 'sv-nav-save ',
+				title: config.locale === 'en' ? 'Save' : 'Lagre',
+				action: () => saveAnswerData(newSurvey),
+			});
 		}
 
 		return newSurvey;
@@ -198,6 +205,7 @@ const FormViewer: FC = () => {
 		config.compact,
 		config.scriptNames,
 		config.hideCompleteButton,
+		config.saveButton,
 	]); // Add deps that should trigger a re-render
 
 	return (
