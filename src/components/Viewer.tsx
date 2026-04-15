@@ -74,24 +74,6 @@ const FormViewer: FC = () => {
 
 		newSurvey.locale = config.locale;
 
-		// Save answer data on answer and page change
-		const saveAnswerData = (result: Model) => {
-			const hasErrors = result.hasErrors(false);
-			const data = result.data;
-			data.pageNo = result.currentPageNo;
-
-			if (config.scriptNames?.onChange) {
-				performScript('onChange', {
-					result: JSON.stringify(data),
-					hasErrors,
-					type: 'viewer',
-					sub: config.sub || undefined,
-				});
-			}
-
-			setConfig({ ...config, answerData: JSON.stringify(data) });
-		};
-
 		const validateQuestion = async (_: any, options: any, addErr: boolean = true) => {
 			const question = newSurvey.getQuestionByName(options.question.name);
 
@@ -167,6 +149,25 @@ const FormViewer: FC = () => {
 			});
 		}
 
+		// Save answer data on answer and page change
+		const saveAnswerData = (result: Model, close: boolean = false) => {
+			const hasErrors = result.hasErrors(false);
+			const data = result.data;
+			data.pageNo = result.currentPageNo;
+
+			if (config.scriptNames?.onChange) {
+				performScript('onChange', {
+					result: JSON.stringify(data),
+					hasErrors,
+					type: 'viewer',
+					sub: config.sub || undefined,
+					close,
+				});
+			}
+
+			setConfig({ ...config, answerData: JSON.stringify(data) });
+		};
+
 		newSurvey.onValueChanged.add((result) => {
 			saveAnswerData(result);
 		});
@@ -190,11 +191,13 @@ const FormViewer: FC = () => {
 					newSurvey.navigationBar.actions.indexOf(completeButton),
 					1
 				);
-		} else if (config.saveButton) {
+		}
+
+		if (config.saveButton) {
 			newSurvey.addNavigationItem({
 				id: 'sv-nav-save ',
-				title: config.locale === 'en' ? 'Save' : 'Lagre',
-				action: () => saveAnswerData(newSurvey),
+				title: config.locale === 'en' ? 'Save and close' : 'Lagre og lukk',
+				action: () => saveAnswerData(newSurvey, true),
 			});
 		}
 

@@ -59,7 +59,7 @@
 
 	.sd-body__navigation {
 		// around Neste / Fullfør button
-		padding: 8px 0 0 0 !important;
+		padding: 8px 0 8px 0 !important;
 
 		.sd-btn {
 			// button itself
@@ -256,18 +256,18 @@
 	}
 
 	// Add padding top to highest th
-    .sd-element > .sd-question__content:first-child th {
-        padding-top: 20px !important;
-    }
+	.sd-element > .sd-question__content:first-child th {
+		padding-top: 20px !important;
+	}
 
-    .sd-table__cell {
-        &:not(th) {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-        }
-        border: 0 !important;
-        padding-left: 8px !important;
-    }
+	.sd-table__cell {
+		&:not(th) {
+			padding-top: 0 !important;
+			padding-bottom: 0 !important;
+		}
+		border: 0 !important;
+		padding-left: 8px !important;
+	}
 
 	.sd-boolean__label,
 	.sd-boolean__thumb {
