@@ -8,6 +8,8 @@ import { Action, Serializer, SurveyError } from 'survey-core';
 import fetchFromFileMaker from '@utils/fetchFromFilemaker';
 import { useCreateMethod } from '@utils/createMethod';
 import surveyJson from '@styles/survey_theme.js';
+import { Tooltip } from 'react-tooltip';
+import LanguageIcon from 'jsx:@svg/language-icon.svg';
 
 const FormViewer: FC = () => {
 	const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always set here
@@ -211,9 +213,39 @@ const FormViewer: FC = () => {
 		config.saveButton,
 	]); // Add deps that should trigger a re-render
 
+	const changeLanguage = () => {
+		const newLocale = config.locale === 'en' ? 'no' : 'en';
+
+		console.log(`Switching locale from ${config.locale} to ${newLocale}`);
+
+		setConfig({
+			...config,
+			locale: newLocale,
+		});
+	};
+
 	return (
 		<div className={`form-viewer ${numbered ? 'numbered' : ''}`}>
-			<Survey model={survey} />
+			<div className="survey-header-container">
+				<div className="survey-header">
+					<button
+						className="change-language-button"
+						aria-label="Change language"
+						onClick={() => changeLanguage()}
+						data-tooltip-id="tooltip-lang-toggle"
+						data-tooltip-content={
+							config.locale === 'no' ? 'Bytt språk' : 'Change language'
+						}
+						data-tooltip-delay-show={500}
+					>
+						<LanguageIcon />
+					</button>
+				</div>
+			</div>
+			<div className="survey-container">
+				<Survey model={survey} />
+			</div>
+			<Tooltip id="tooltip-lang-toggle" className="tooltip" />
 		</div>
 	);
 };

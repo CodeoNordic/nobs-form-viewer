@@ -3,6 +3,69 @@
 	height: 100vh;
 }
 
+.tooltip {
+	z-index: 400;
+	padding: 4px 8px;
+	background: #2b2b2b;
+	font-size: small;
+	letter-spacing: 0.02px;
+	line-height: 150%;
+	border-radius: 2px;
+
+	> .react-tooltip__show {
+		opacity: 1;
+	}
+}
+
+.survey-header-container {
+	height: 47px;
+}
+
+.survey-header {
+	position: relative;
+	z-index: 100;
+	border: 1px solid #d3d3d3;
+	background: var(--background-color-secondary);
+
+	width: calc(100% - 10px);
+	padding: 4px;
+
+	position: fixed;
+	display: flex;
+	gap: 4px;
+
+	height: 37px;
+
+	.change-language-button {
+		height: var(--button-height);
+		padding: 0 12px;
+		border-radius: 5px;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+
+		cursor: pointer;
+
+		border: 1px solid #009cc6;
+		transition: background 200ms ease;
+		background: #fff;
+
+		&:hover {
+			background: #b3e2ee;
+		}
+
+		&:active {
+			background: #91d4e6;
+		}
+	}
+}
+
+.survey-container {
+	height: calc(100vh - 47px);
+}
+
 .compact {
 	.numbered {
 		.sd-title {
