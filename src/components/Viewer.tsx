@@ -195,14 +195,6 @@ const FormViewer: FC = () => {
 				);
 		}
 
-		if (config.saveButton) {
-			newSurvey.addNavigationItem({
-				id: 'sv-nav-save ',
-				title: config.locale === 'en' ? 'Save and close' : 'Lagre og lukk',
-				action: () => saveAnswerData(newSurvey, true),
-			});
-		}
-
 		return newSurvey;
 	}, [
 		config.value,
