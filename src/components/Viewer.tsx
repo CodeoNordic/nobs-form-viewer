@@ -229,7 +229,29 @@ const FormViewer: FC = () => {
 			<div className="survey-header-container">
 				<div className="survey-header">
 					<button
-						className="change-language-button"
+						className="save button"
+						aria-label={config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'}
+						onClick={() => {
+							if (config.scriptNames?.onChange) {
+								performScript('onChange', {
+									result: JSON.stringify(survey?.data),
+									hasErrors: survey?.hasErrors(false),
+									type: 'viewer',
+									sub: config.sub || undefined,
+									close: true,
+								});
+							}
+						}}
+						data-tooltip-id="tooltip-save-close"
+						data-tooltip-content={
+							config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'
+						}
+						data-tooltip-delay-show={500}
+					>
+						{config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'}
+					</button>
+					<button
+						className="change-language button"
 						aria-label="Change language"
 						onClick={() => changeLanguage()}
 						data-tooltip-id="tooltip-lang-toggle"

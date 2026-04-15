@@ -32,11 +32,12 @@
 
 	position: fixed;
 	display: flex;
+	justify-content: space-between;
 	gap: 4px;
 
 	height: 37px;
 
-	.change-language-button {
+	.button {
 		height: var(--button-height);
 		padding: 0 12px;
 		border-radius: 5px;
