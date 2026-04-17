@@ -2,14 +2,15 @@ import { useConfigState } from '@context/Config';
 import performScript from '@utils/performScript';
 import { Model, Survey } from 'survey-react-ui';
 import { warn } from '@utils/log';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import 'survey-core/i18n';
-import { Action, Serializer, SurveyError } from 'survey-core';
+import { Serializer, SurveyError } from 'survey-core';
 import fetchFromFileMaker from '@utils/fetchFromFilemaker';
 import { useCreateMethod } from '@utils/createMethod';
 import surveyJson from '@styles/survey_theme.js';
 import { Tooltip } from 'react-tooltip';
 import LanguageIcon from 'jsx:@svg/language-icon.svg';
+import { surveyLocalization } from 'survey-react-ui';
 
 const FormViewer: FC = () => {
 	const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always set here
@@ -51,6 +52,11 @@ const FormViewer: FC = () => {
 		}
 
 		const newSurvey = new Model(config.value);
+		newSurvey.locale = config.locale;
+
+		surveyLocalization.defaultLocale = 'no';
+		surveyLocalization.currentLocale = config.locale;
+		surveyLocalization.supportedLocales = ['no', 'en'];
 
 		newSurvey.applyTheme(surveyJson as any);
 
@@ -73,8 +79,6 @@ const FormViewer: FC = () => {
 				warn('Failed to parse answer data, will start with empty data.', e);
 			}
 		}
-
-		newSurvey.locale = config.locale;
 
 		const validateQuestion = async (_: any, options: any, addErr: boolean = true) => {
 			const question = newSurvey.getQuestionByName(options.question.name);
@@ -220,28 +224,38 @@ const FormViewer: FC = () => {
 		<div className={`form-viewer ${numbered ? 'numbered' : ''}`}>
 			<div className="survey-header-container">
 				<div className="survey-header">
-					<button
-						className="save button"
-						aria-label={config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'}
-						onClick={() => {
-							if (config.scriptNames?.onChange) {
-								performScript('onChange', {
-									result: JSON.stringify(survey?.data),
-									hasErrors: survey?.hasErrors(false),
-									type: 'viewer',
-									sub: config.sub || undefined,
-									close: true,
-								});
-							}
+					<div
+						style={{
+							height: '100%',
 						}}
-						data-tooltip-id="tooltip-save-close"
-						data-tooltip-content={
-							config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'
-						}
-						data-tooltip-delay-show={500}
 					>
-						{config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'}
-					</button>
+						{config.saveButton && (
+							<button
+								className="save button"
+								aria-label={
+									config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'
+								}
+								onClick={() => {
+									if (config.scriptNames?.onChange) {
+										performScript('onChange', {
+											result: JSON.stringify(survey?.data),
+											hasErrors: survey?.hasErrors(false),
+											type: 'viewer',
+											sub: config.sub || undefined,
+											close: true,
+										});
+									}
+								}}
+								data-tooltip-id="tooltip-save-close"
+								data-tooltip-content={
+									config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'
+								}
+								data-tooltip-delay-show={500}
+							>
+								{config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'}
+							</button>
+						)}
+					</div>
 					<button
 						className="change-language button"
 						aria-label="Change language"
