@@ -11,10 +11,12 @@ import surveyJson from '@styles/survey_theme.js';
 import { Tooltip } from 'react-tooltip';
 import LanguageIcon from 'jsx:@svg/language-icon.svg';
 import { surveyLocalization } from 'survey-react-ui';
+import { checkForTranslations } from './checkForTranslations';
 
 const FormViewer: FC = () => {
 	const [config, setConfig] = useConfigState() as State<Form.Config>; // Config is always set here
 	const [numbered, setNumbered] = useState(false);
+	const [hasTranslations, setHasTranslations] = useState(false);
 
 	useCreateMethod(
 		'validateForm',
@@ -199,6 +201,8 @@ const FormViewer: FC = () => {
 				);
 		}
 
+		setHasTranslations(checkForTranslations(JSON.parse(config.value || '{}')));
+
 		return newSurvey;
 	}, [
 		config.value,
@@ -221,55 +225,62 @@ const FormViewer: FC = () => {
 	};
 
 	return (
-		<div className={`form-viewer ${numbered ? 'numbered' : ''}`}>
-			<div className="survey-header-container">
-				<div className="survey-header">
-					<div
-						style={{
-							height: '100%',
-						}}
-					>
-						{config.saveButton && (
-							<button
-								className="save button"
-								aria-label={
-									config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'
-								}
-								onClick={() => {
-									if (config.scriptNames?.onChange) {
-										performScript('onChange', {
-											result: JSON.stringify(survey?.data),
-											hasErrors: survey?.hasErrors(false),
-											type: 'viewer',
-											sub: config.sub || undefined,
-											close: true,
-										});
+		<div
+			className={`form-viewer ${numbered ? 'numbered' : ''} ${hasTranslations || config.saveButton ? '' : 'no-header'}`}
+		>
+			{(hasTranslations || config.saveButton) && (
+				<div className="survey-header-container">
+					<div className="survey-header">
+						<div
+							style={{
+								height: '100%',
+							}}
+						>
+							{config.saveButton && (
+								<button
+									className="save button"
+									aria-label={
+										config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'
 									}
-								}}
-								data-tooltip-id="tooltip-save-close"
+									onClick={() => {
+										if (config.scriptNames?.onChange) {
+											performScript('onChange', {
+												result: JSON.stringify(survey?.data),
+												hasErrors: survey?.hasErrors(false),
+												type: 'viewer',
+												sub: config.sub || undefined,
+												close: true,
+											});
+										}
+									}}
+									data-tooltip-id="tooltip-save-close"
+									data-tooltip-content={
+										config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'
+									}
+									data-tooltip-delay-show={500}
+								>
+									{config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'}
+								</button>
+							)}
+						</div>
+						{hasTranslations && (
+							<button
+								className="change-language button"
+								aria-label="Change language"
+								onClick={() => changeLanguage()}
+								data-tooltip-id="tooltip-lang-toggle"
 								data-tooltip-content={
-									config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'
+									config.locale === 'no' ? 'Bytt språk' : 'Change language'
 								}
 								data-tooltip-delay-show={500}
 							>
-								{config.locale === 'en' ? 'Save and close' : 'Lagre og lukk'}
+								<LanguageIcon />
+								<p>{config.locale === 'no' ? 'EN' : 'NO'}</p>
 							</button>
 						)}
 					</div>
-					<button
-						className="change-language button"
-						aria-label="Change language"
-						onClick={() => changeLanguage()}
-						data-tooltip-id="tooltip-lang-toggle"
-						data-tooltip-content={
-							config.locale === 'no' ? 'Bytt språk' : 'Change language'
-						}
-						data-tooltip-delay-show={500}
-					>
-						<LanguageIcon />
-					</button>
 				</div>
-			</div>
+			)}
 			<div className="survey-container">
 				<Survey model={survey} />
 			</div>
